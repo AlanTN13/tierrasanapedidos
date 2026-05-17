@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#fffaf3"/>
+  <ellipse cx="180" cy="538" rx="190" ry="118" fill="#e8d8bf"/>
+  <ellipse cx="610" cy="118" rx="140" ry="100" fill="#dde8cf"/>
+  <g fill="#8a6a43">
+    <rect x="238" y="264" width="106" height="178" rx="22" transform="rotate(-8 238 264)"/>
+    <rect x="356" y="232" width="106" height="210" rx="22" transform="rotate(4 356 232)"/>
+    <rect x="476" y="266" width="106" height="170" rx="22" transform="rotate(-10 476 266)"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="37">Barritas de datiles y cacao</text>
+  <text x="72" y="136" fill="#8a6a43" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SNACKS</text>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#eef3e4"/>
+  <rect x="90" y="110" width="620" height="420" rx="42" fill="#fffdf8"/>
+  <circle cx="250" cy="310" r="110" fill="#3f4a2f"/>
+  <circle cx="540" cy="310" r="110" fill="#6f7f4f" opacity=".82"/>
+  <g fill="#dde8cf">
+    <circle cx="218" cy="278" r="6"/><circle cx="278" cy="260" r="6"/><circle cx="240" cy="334" r="6"/><circle cx="290" cy="338" r="6"/>
+    <circle cx="514" cy="282" r="6"/><circle cx="570" cy="322" r="6"/><circle cx="548" cy="264" r="6"/><circle cx="500" cy="336" r="6"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="46">Chia organica</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SEMILLAS</text>
+</svg>

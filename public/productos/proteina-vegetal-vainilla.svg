@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#faf4ea"/>
+  <ellipse cx="180" cy="538" rx="184" ry="112" fill="#e8d8bf"/>
+  <ellipse cx="606" cy="122" rx="140" ry="100" fill="#dde8cf"/>
+  <path d="M306 182h188l28 292c2 20-14 38-34 38H312c-20 0-36-18-34-38l28-292Z" fill="#fffdf8"/>
+  <rect x="334" y="236" width="132" height="108" rx="26" fill="#6f7f4f" opacity=".2"/>
+  <path d="M366 248c12 40 28 62 54 84 12-8 36-34 46-58" fill="none" stroke="#8a6a43" stroke-linecap="round" stroke-width="8"/>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="35">Proteina vegetal vainilla</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SUPLEMENTOS</text>
+</svg>

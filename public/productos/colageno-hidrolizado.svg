@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#f6f0e5"/>
+  <circle cx="638" cy="126" r="118" fill="#dde8cf"/>
+  <rect x="278" y="176" width="244" height="300" rx="48" fill="#fffdf8"/>
+  <rect x="314" y="218" width="172" height="126" rx="24" fill="#e8d8bf"/>
+  <rect x="314" y="360" width="172" height="76" rx="20" fill="#6f7f4f" opacity=".16"/>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="38">Colageno hidrolizado</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SUPLEMENTOS</text>
+</svg>

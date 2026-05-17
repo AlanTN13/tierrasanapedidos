@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#f7f1e5"/>
+      <stop offset="100%" stop-color="#dde8cf"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="640" rx="44" fill="url(#bg)"/>
+  <ellipse cx="620" cy="120" rx="150" ry="110" fill="#ffffff" opacity=".45"/>
+  <ellipse cx="220" cy="560" rx="170" ry="90" fill="#e8d8bf" opacity=".85"/>
+  <path d="M138 474c74-88 154-130 248-130s176 42 246 130" fill="#fffdf8" opacity=".65"/>
+  <g fill="#8a6a43">
+    <ellipse cx="310" cy="270" rx="46" ry="88" transform="rotate(-18 310 270)"/>
+    <ellipse cx="408" cy="252" rx="46" ry="88" transform="rotate(10 408 252)"/>
+    <ellipse cx="504" cy="286" rx="46" ry="88" transform="rotate(-8 504 286)"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="46">Almendras</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">TIERRA SANA</text>
+</svg>

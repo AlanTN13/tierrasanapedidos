@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#f7f1e5"/>
+  <circle cx="646" cy="134" r="120" fill="#dde8cf"/>
+  <path d="M170 452c0-108 74-188 190-188s190 80 190 188" fill="#fffdf8"/>
+  <path d="M256 442c22-62 62-92 104-92 42 0 82 30 104 92" fill="#e8d8bf"/>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="44">Harina de almendras</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">HARINAS</text>
+</svg>

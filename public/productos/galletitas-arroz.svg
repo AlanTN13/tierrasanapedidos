@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#fffbf4"/>
+  <circle cx="620" cy="122" r="112" fill="#dde8cf"/>
+  <g fill="#ead8b5">
+    <circle cx="318" cy="316" r="86"/>
+    <circle cx="462" cy="336" r="94"/>
+  </g>
+  <g fill="#f7efdc">
+    <circle cx="282" cy="290" r="7"/><circle cx="352" cy="332" r="8"/><circle cx="316" cy="360" r="6"/>
+    <circle cx="424" cy="308" r="7"/><circle cx="494" cy="350" r="8"/><circle cx="454" cy="392" r="6"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="41">Galletitas de arroz</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SIN TACC</text>
+</svg>

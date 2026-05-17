@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#f7f1e5"/>
+  <circle cx="632" cy="126" r="116" fill="#dde8cf"/>
+  <rect x="198" y="214" width="404" height="248" rx="124" fill="#fffdf8"/>
+  <g>
+    <circle cx="300" cy="336" r="30" fill="#8a6a43"/>
+    <circle cx="368" cy="304" r="28" fill="#b88349"/>
+    <circle cx="446" cy="350" r="32" fill="#6f7f4f"/>
+    <circle cx="516" cy="310" r="26" fill="#c79d6b"/>
+    <circle cx="390" cy="386" r="25" fill="#8a6a43"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="44">Mix energetico</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SNACKS SALUDABLES</text>
+</svg>

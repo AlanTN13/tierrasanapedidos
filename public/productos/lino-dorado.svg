@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#fffaf1"/>
+  <ellipse cx="200" cy="520" rx="200" ry="120" fill="#e8d8bf"/>
+  <ellipse cx="590" cy="148" rx="140" ry="100" fill="#dde8cf"/>
+  <g fill="#c9a36e">
+    <ellipse cx="270" cy="330" rx="18" ry="32" transform="rotate(-18 270 330)"/>
+    <ellipse cx="330" cy="288" rx="18" ry="32" transform="rotate(12 330 288)"/>
+    <ellipse cx="388" cy="340" rx="18" ry="32" transform="rotate(-8 388 340)"/>
+    <ellipse cx="450" cy="286" rx="18" ry="32" transform="rotate(16 450 286)"/>
+    <ellipse cx="510" cy="330" rx="18" ry="32" transform="rotate(-12 510 330)"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="46">Lino dorado</text>
+  <text x="72" y="136" fill="#8a6a43" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">SEMILLAS</text>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <rect width="800" height="640" rx="44" fill="#f5eee0"/>
+  <circle cx="650" cy="120" r="110" fill="#dde8cf"/>
+  <circle cx="145" cy="548" r="125" fill="#fffdf8"/>
+  <g fill="#8a6a43">
+    <path d="M320 216c-54 0-102 44-102 107 0 72 54 128 116 128 45 0 78-23 96-58 18 35 51 58 96 58 62 0 116-56 116-128 0-63-48-107-102-107-46 0-79 20-110 66-31-46-64-66-110-66Z"/>
+  </g>
+  <text x="72" y="92" fill="#3f4a2f" font-family="Georgia, serif" font-size="46">Nueces mariposa</text>
+  <text x="72" y="136" fill="#6f7f4f" font-family="Arial, sans-serif" font-size="22" letter-spacing="4">FRUTOS SECOS</text>
+</svg>

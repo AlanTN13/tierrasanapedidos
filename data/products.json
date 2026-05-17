@@ -1,0 +1,306 @@
+[
+  {
+    "id": "almendras",
+    "nombre": "Almendras",
+    "categoria": "Frutos secos",
+    "descripcion": "Almendras seleccionadas, ideales para snacks, desayunos y recetas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1900
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 4300
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 8500
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 16500
+      }
+    ],
+    "imagen": "/productos/almendras.png",
+    "destacado": true
+  },
+  {
+    "id": "nueces-mariposa",
+    "nombre": "Nueces mariposa",
+    "categoria": "Frutos secos",
+    "descripcion": "Textura crocante y sabor suave para sumar energia natural a tu dia.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2100
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 4700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 9200
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 17800
+      }
+    ],
+    "imagen": "/productos/nueces.png",
+    "destacado": false
+  },
+  {
+    "id": "chia-organica",
+    "nombre": "Chia organica",
+    "categoria": "Semillas",
+    "descripcion": "Semillas versatiles para puddings, panes y desayunos llenos de fibra.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7400
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 13900
+      }
+    ],
+    "imagen": "/productos/chia.png",
+    "destacado": true
+  },
+  {
+    "id": "lino-dorado",
+    "nombre": "Lino dorado",
+    "categoria": "Semillas",
+    "descripcion": "Aporta textura y nutricion a yogures, licuados y preparaciones caseras.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1400
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5900
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 11200
+      }
+    ],
+    "imagen": "/productos/lino-dorado.svg",
+    "destacado": false
+  },
+  {
+    "id": "harina-almendras",
+    "nombre": "Harina de almendras",
+    "categoria": "Harinas",
+    "descripcion": "Harina fina y aromatica para recetas low carb y pasteleria saludable.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7600
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 14800
+      }
+    ],
+    "imagen": "/productos/harina-almendras.svg",
+    "destacado": true
+  },
+  {
+    "id": "harina-avena-sin-tacc",
+    "nombre": "Harina de avena sin TACC",
+    "categoria": "Sin TACC",
+    "descripcion": "Molienda suave certificada, perfecta para pancakes y budines caseros.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1200
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4700
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 8900
+      }
+    ],
+    "imagen": "/productos/harina-avena-sin-tacc.svg",
+    "destacado": false
+  },
+  {
+    "id": "granola-artesanal",
+    "nombre": "Granola artesanal",
+    "categoria": "Cereales",
+    "descripcion": "Blend tostado con avena, frutos secos y un toque de canela natural.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2100
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 5400
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 9900
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 18800
+      }
+    ],
+    "imagen": "/productos/granola-artesanal.svg",
+    "destacado": true
+  },
+  {
+    "id": "quinoa-blanca",
+    "nombre": "Quinoa blanca",
+    "categoria": "Cereales",
+    "descripcion": "Cereal noble y liviano para bowls, ensaladas y platos calientes.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1600
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3600
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6900
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 13200
+      }
+    ],
+    "imagen": "/productos/quinoa-blanca.svg",
+    "destacado": false
+  },
+  {
+    "id": "mix-energetico",
+    "nombre": "Mix energetico",
+    "categoria": "Snacks saludables",
+    "descripcion": "Combinacion de frutos secos, pasas y chips de coco para llevar.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2300
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 6300
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 11800
+      },
+      {
+        "etiqueta": "1kg",
+        "precio": 22400
+      }
+    ],
+    "imagen": "/productos/mix-energetico.svg",
+    "destacado": false
+  },
+  {
+    "id": "barritas-datiles-cacao",
+    "nombre": "Barritas de datiles y cacao",
+    "categoria": "Snacks saludables",
+    "descripcion": "Snack suave y natural, sin azucar agregada, listo para cualquier pausa.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 2800
+      }
+    ],
+    "imagen": "/productos/barritas-datiles-cacao.svg",
+    "destacado": false
+  },
+  {
+    "id": "colageno-hidrolizado",
+    "nombre": "Colageno hidrolizado",
+    "categoria": "Suplementos",
+    "descripcion": "Suplemento neutro para sumar a infusiones o licuados de manera simple.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 12400
+      }
+    ],
+    "imagen": "/productos/colageno-hidrolizado.svg",
+    "destacado": false
+  },
+  {
+    "id": "proteina-vegetal-vainilla",
+    "nombre": "Proteina vegetal vainilla",
+    "categoria": "Suplementos",
+    "descripcion": "Blend vegetal de textura cremosa y sabor delicado para batidos post entrenamiento.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 15800
+      }
+    ],
+    "imagen": "/productos/proteina-vegetal-vainilla.svg",
+    "destacado": true
+  },
+  {
+    "id": "galletitas-arroz",
+    "nombre": "Galletitas de arroz",
+    "categoria": "Sin TACC",
+    "descripcion": "Livianas y crocantes, ideales para untables, meriendas y colaciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 2600
+      }
+    ],
+    "imagen": "/productos/galletitas-arroz.svg",
+    "destacado": false
+  },
+  {
+    "id": "combo-desayuno-natural",
+    "nombre": "Combo desayuno natural",
+    "categoria": "Ofertas",
+    "descripcion": "Granola, semillas y frutos secos en promo para empezar la semana.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 13200
+      }
+    ],
+    "imagen": "/productos/combo-desayuno-natural.svg",
+    "destacado": false
+  }
+]
