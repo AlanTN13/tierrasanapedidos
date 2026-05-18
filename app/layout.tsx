@@ -21,10 +21,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo-tierra-sana-header.png",
+        url: "/og-tierra-sana.png",
         width: 1200,
-        height: 1200,
-        alt: "Logo Tierra Sana",
+        height: 630,
+        alt: "Tierra Sana · Dietetica & Bienestar",
       },
     ],
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: "Tierra Sana · Dietetica & Bienestar",
     description:
       "Catalogo natural con pedido simple por WhatsApp para Tierra Sana.",
-    images: ["/logo-tierra-sana-header.png"],
+    images: ["/og-tierra-sana.png"],
   },
 };
 
