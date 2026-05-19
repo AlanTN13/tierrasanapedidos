@@ -54,22 +54,22 @@ export function Header({
             />
           </a>
 
-          <div className="organic-outline flex w-full max-w-3xl items-center gap-4 rounded-[2rem] bg-white/72 px-4 py-3 shadow-[0_14px_30px_rgba(111,127,79,0.08)]">
+          <div className="organic-outline flex w-full max-w-3xl items-center gap-4 rounded-[2rem] bg-olive px-4 py-3 text-white shadow-[0_14px_30px_rgba(111,127,79,0.18)]">
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-olive-soft text-lg">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/18 text-lg">
                 📦
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold tracking-[0.12em] text-earth uppercase">
-                  Entregas locales sin costo
+                <p className="text-xs font-bold tracking-[0.12em] text-white uppercase">
+                  Entregas en la zona sin costo
                 </p>
-                <p className="mt-0.5 text-sm leading-5 text-foreground/66">
+                <p className="mt-0.5 text-sm leading-5 text-white/84">
                   Avellaneda, Villa Dominico, Gerli, Bernal y Don Bosco.
                   Coordinamos por WhatsApp.
                 </p>
               </div>
             </div>
-            <span className="shrink-0 rounded-full bg-olive/10 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-olive-dark uppercase">
+            <span className="shrink-0 rounded-full bg-white/16 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-white uppercase">
               Sin cargo
             </span>
           </div>
@@ -195,15 +195,18 @@ export function Header({
               setIsMenuOpen(false);
               onOpenShipping();
             }}
-            className="organic-outline card-shadow inline-flex items-center gap-2 rounded-full bg-white/82 px-3 py-2 text-sm font-semibold text-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
+            className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
             aria-label="Ver informacion de entregas"
           >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive-soft text-base">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/18 text-base">
               📦
             </span>
-            <span>Envios</span>
-            <span className="rounded-full bg-olive/10 px-2 py-0.5 text-[10px] font-bold tracking-[0.08em] text-olive-dark uppercase">
-              Gratis
+            <span>Ver envios gratis</span>
+            <span
+              aria-hidden="true"
+              className="text-base leading-none text-white/88"
+            >
+              →
             </span>
           </button>
         </div>
