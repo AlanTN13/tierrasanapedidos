@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { CategoryFilters } from "@/components/category-filters";
@@ -26,6 +26,7 @@ export function Storefront({ products }: StorefrontProps) {
 function StorefrontContent({ products }: StorefrontProps) {
   const availableCategories = getCategories(products);
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("Todos");
+  const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
   const visibleProducts = filterProducts(products, activeCategory, "");
   const activeCategoryLabel =
     activeCategory === "Todos" ? "Todas las categorias" : activeCategory;
@@ -42,6 +43,16 @@ function StorefrontContent({ products }: StorefrontProps) {
     updateQuantity,
   } = useCart();
 
+  useEffect(() => {
+    if (!recentlyAddedLabel) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setRecentlyAddedLabel(null), 2800);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [recentlyAddedLabel]);
+
   function handleCategoryChange(category: FilterCategory) {
     setActiveCategory(category);
 
@@ -51,6 +62,17 @@ function StorefrontContent({ products }: StorefrontProps) {
         block: "start",
       });
     });
+  }
+
+  function handleAddItem(
+    product: Product,
+    presentation: Product["presentaciones"][number],
+    quantity: number,
+  ) {
+    addItem(product, presentation, quantity);
+    setRecentlyAddedLabel(
+      `${quantity} x ${product.nombre} · ${presentation.etiqueta}`,
+    );
   }
 
   return (
@@ -98,7 +120,11 @@ function StorefrontContent({ products }: StorefrontProps) {
           {visibleProducts.length > 0 ? (
             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               {visibleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} onAdd={addItem} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAdd={handleAddItem}
+                />
               ))}
             </div>
           ) : (
@@ -150,6 +176,43 @@ function StorefrontContent({ products }: StorefrontProps) {
         onRemove={removeItem}
         onUpdateQuantity={updateQuantity}
       />
+
+      <div
+        className={`fixed right-4 bottom-24 z-40 w-[min(92vw,26rem)] transition-all duration-300 sm:right-6 sm:bottom-28 ${
+          recentlyAddedLabel
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-4 opacity-0"
+        }`}
+        aria-live="polite"
+      >
+        <div className="organic-outline card-shadow rounded-[1.6rem] bg-[#fffdf9]/96 p-4 backdrop-blur">
+          <p className="text-sm font-semibold text-olive-dark">
+            Producto agregado al carrito
+          </p>
+          <p className="mt-1 text-sm leading-6 text-foreground/66">
+            {recentlyAddedLabel}
+          </p>
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setRecentlyAddedLabel(null);
+                openCart();
+              }}
+              className="rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
+            >
+              Ver carrito
+            </button>
+            <button
+              type="button"
+              onClick={() => setRecentlyAddedLabel(null)}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-olive-dark hover:bg-olive-soft/55 focus:outline-none focus:ring-2 focus:ring-olive/25"
+            >
+              Seguir comprando
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

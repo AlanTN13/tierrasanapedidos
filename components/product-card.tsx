@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { formatARS } from "@/lib/format";
 import type { Product, ProductPresentation } from "@/types/catalog";
 
@@ -16,6 +16,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, onAdd }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
   const [selectedPresentationLabel, setSelectedPresentationLabel] = useState(
     product.presentaciones[0]?.etiqueta ?? "unidad",
   );
@@ -26,6 +27,16 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
     ) ?? product.presentaciones[0];
 
   const hasMultiplePresentations = product.presentaciones.length > 1;
+
+  useEffect(() => {
+    if (!justAdded) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => setJustAdded(false), 1800);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [justAdded]);
 
   return (
     <article className="card-shadow organic-outline flex h-full flex-col overflow-hidden rounded-[1.8rem] bg-card">
@@ -126,10 +137,14 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
 
           <button
             type="button"
-            onClick={() => onAdd(product, selectedPresentation, quantity)}
+            onClick={() => {
+              onAdd(product, selectedPresentation, quantity);
+              setQuantity(1);
+              setJustAdded(true);
+            }}
             className="flex-1 rounded-full bg-olive px-4 py-3 text-sm font-semibold text-white hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
           >
-            Agregar
+            {justAdded ? "Agregado" : "Agregar"}
           </button>
         </div>
       </div>

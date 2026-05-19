@@ -130,8 +130,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
             ),
           );
         }
-
-        setIsOpen(true);
       },
       updateQuantity: (productId, presentationLabel, quantity) => {
         const currentItems = readCartSnapshot();
