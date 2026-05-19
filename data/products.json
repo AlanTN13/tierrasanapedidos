@@ -1,24 +1,24 @@
 [
   {
-    "id": "almendras",
-    "nombre": "Almendras",
+    "id": "almendra",
+    "nombre": "Almendra",
     "categoria": "Frutos secos",
-    "descripcion": "Almendras seleccionadas, ideales para snacks, desayunos y recetas.",
+    "descripcion": "Fruto seco crocante y versatil, ideal para snacks, desayunos y recetas caseras.",
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1900
+        "precio": 1650
       },
       {
         "etiqueta": "250g",
-        "precio": 4300
+        "precio": 4100
       },
       {
         "etiqueta": "500g",
-        "precio": 8500
+        "precio": 8250
       },
       {
-        "etiqueta": "1kg",
+        "etiqueta": "1 kilo",
         "precio": 16500
       }
     ],
@@ -26,36 +26,36 @@
     "destacado": true
   },
   {
-    "id": "nueces-mariposa",
-    "nombre": "Nueces mariposa",
+    "id": "almendras-con-cascara",
+    "nombre": "Almendras con cáscara",
     "categoria": "Frutos secos",
-    "descripcion": "Textura crocante y sabor suave para sumar energia natural a tu dia.",
+    "descripcion": "Almendra entera con su cáscara, perfecta para quienes buscan un formato más natural.",
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 2100
+        "precio": 1050
       },
       {
         "etiqueta": "250g",
-        "precio": 4700
+        "precio": 2600
       },
       {
         "etiqueta": "500g",
-        "precio": 9200
+        "precio": 5250
       },
       {
-        "etiqueta": "1kg",
-        "precio": 17800
+        "etiqueta": "1 kilo",
+        "precio": 10500
       }
     ],
-    "imagen": "/productos/nueces.png",
+    "imagen": "/productos/almendras-con-cascara.png",
     "destacado": false
   },
   {
-    "id": "chia-organica",
-    "nombre": "Chia organica",
-    "categoria": "Semillas",
-    "descripcion": "Semillas versatiles para puddings, panes y desayunos llenos de fibra.",
+    "id": "nuez-mariposa",
+    "nombre": "Nuez mariposa",
+    "categoria": "Frutos secos",
+    "descripcion": "Nueces seleccionadas de sabor suave, muy rendidoras para consumir solas o en granolas.",
     "presentaciones": [
       {
         "etiqueta": "100g",
@@ -63,103 +63,51 @@
       },
       {
         "etiqueta": "250g",
-        "precio": 3900
+        "precio": 4450
       },
       {
         "etiqueta": "500g",
-        "precio": 7400
-      },
-      {
-        "etiqueta": "1kg",
-        "precio": 13900
-      }
-    ],
-    "imagen": "/productos/chia.png",
-    "destacado": true
-  },
-  {
-    "id": "lino-dorado",
-    "nombre": "Lino dorado",
-    "categoria": "Semillas",
-    "descripcion": "Aporta textura y nutricion a yogures, licuados y preparaciones caseras.",
-    "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 1400
-      },
-      {
-        "etiqueta": "250g",
-        "precio": 3100
-      },
-      {
-        "etiqueta": "500g",
-        "precio": 5900
-      },
-      {
-        "etiqueta": "1kg",
-        "precio": 11200
-      }
-    ],
-    "imagen": "/productos/lino-dorado.svg",
-    "destacado": false
-  },
-  {
-    "id": "harina-almendras",
-    "nombre": "Harina de almendras",
-    "categoria": "Harinas",
-    "descripcion": "Harina fina y aromatica para recetas low carb y pasteleria saludable.",
-    "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 1700
-      },
-      {
-        "etiqueta": "250g",
-        "precio": 3900
-      },
-      {
-        "etiqueta": "500g",
-        "precio": 7600
-      },
-      {
-        "etiqueta": "1kg",
-        "precio": 14800
-      }
-    ],
-    "imagen": "/productos/harina-almendras.svg",
-    "destacado": true
-  },
-  {
-    "id": "harina-avena-sin-tacc",
-    "nombre": "Harina de avena sin TACC",
-    "categoria": "Sin TACC",
-    "descripcion": "Molienda suave certificada, perfecta para pancakes y budines caseros.",
-    "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 1200
-      },
-      {
-        "etiqueta": "250g",
-        "precio": 2600
-      },
-      {
-        "etiqueta": "500g",
-        "precio": 4700
-      },
-      {
-        "etiqueta": "1kg",
         "precio": 8900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 17800
       }
     ],
-    "imagen": "/productos/harina-avena-sin-tacc.svg",
+    "imagen": "/productos/nueces.png",
+    "destacado": true
+  },
+  {
+    "id": "nuez-con-cascara",
+    "nombre": "Nuez con cáscara",
+    "categoria": "Frutos secos",
+    "descripcion": "Nuez con cáscara para conservar mejor su frescura y disfrutarla recién abierta.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1000
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 2450
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 9800
+      }
+    ],
+    "imagen": "/productos/nueces-con-cascara.png",
     "destacado": false
   },
   {
-    "id": "granola-artesanal",
-    "nombre": "Granola artesanal",
-    "categoria": "Cereales",
-    "descripcion": "Blend tostado con avena, frutos secos y un toque de canela natural.",
+    "id": "castanas-de-caju",
+    "nombre": "Castañas de cajú",
+    "categoria": "Frutos secos",
+    "descripcion": "Castañas de cajú tiernas y crocantes, ideales para picadas, ensaladas y snacks.",
     "presentaciones": [
       {
         "etiqueta": "100g",
@@ -167,140 +115,938 @@
       },
       {
         "etiqueta": "250g",
-        "precio": 5400
+        "precio": 5250
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 10500
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 21000
+      }
+    ],
+    "imagen": "/productos/castanas-de-caju.png",
+    "destacado": true
+  },
+  {
+    "id": "pistachos-pelados",
+    "nombre": "Pistachos pelados",
+    "categoria": "Frutos secos",
+    "descripcion": "Pistachos pelados listos para consumir, con sabor intenso y textura delicada.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2450
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 6100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 12250
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 24500
+      }
+    ],
+    "imagen": "/productos/pistachos-pelados.png",
+    "destacado": false
+  },
+  {
+    "id": "pistachos-con-cascara",
+    "nombre": "Pistachos con cáscara",
+    "categoria": "Frutos secos",
+    "descripcion": "Pistachos con cáscara para una experiencia más natural y un snack para compartir.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2200
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 5500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 11000
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 22000
+      }
+    ],
+    "imagen": "/productos/pistachos-con-cascara.png",
+    "destacado": false
+  },
+  {
+    "id": "mani-tostado-con-sal",
+    "nombre": "Maní tostado con sal",
+    "categoria": "Frutos secos",
+    "descripcion": "Maní tostado con un toque de sal, clásico para colaciones y picadas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 700
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 3600
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 7200
+      }
+    ],
+    "imagen": "/productos/mani-tostado-con-sal.png",
+    "destacado": false
+  },
+  {
+    "id": "mix-con-avellanas",
+    "nombre": "Mix con avellanas",
+    "categoria": "Frutos secos",
+    "descripcion": "Blend de frutos secos con avellanas, pensado para sumar energía y sabor en cualquier momento.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2000
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 4950
       },
       {
         "etiqueta": "500g",
         "precio": 9900
       },
       {
-        "etiqueta": "1kg",
-        "precio": 18800
+        "etiqueta": "1 kilo",
+        "precio": 19800
       }
     ],
-    "imagen": "/productos/granola-artesanal.svg",
-    "destacado": true
+    "imagen": "/productos/mix-con-avellanas.png",
+    "destacado": false
   },
   {
-    "id": "quinoa-blanca",
-    "nombre": "Quinoa blanca",
-    "categoria": "Cereales",
-    "descripcion": "Cereal noble y liviano para bowls, ensaladas y platos calientes.",
+    "id": "mix-con-pasas-y-banana",
+    "nombre": "Mix con pasas y banana",
+    "categoria": "Frutos secos",
+    "descripcion": "Combinación dulce y equilibrada de frutos secos, pasas y banana deshidratada.",
     "presentaciones": [
       {
         "etiqueta": "100g",
+        "precio": 1450
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3650
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7300
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 14600
+      }
+    ],
+    "imagen": "/productos/mix-con-pasas-y-banana.png",
+    "destacado": false
+  },
+  {
+    "id": "harina-integral",
+    "nombre": "Harina integral",
+    "categoria": "Harinas",
+    "descripcion": "Harina de molienda integral, rendidora para panes, prepizzas y recetas caseras.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
         "precio": 1600
       },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3200
+      }
+    ],
+    "imagen": "/productos/harina-integral.png",
+    "destacado": false
+  },
+  {
+    "id": "harina-de-almendras",
+    "nombre": "Harina de almendras",
+    "categoria": "Harinas",
+    "descripcion": "Harina fina de almendras para pastelería saludable, repostería y recetas sin harinas comunes.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 7400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 14800
+      }
+    ],
+    "imagen": "/productos/harina-de-almendras.png",
+    "destacado": true
+  },
+  {
+    "id": "harina-de-centeno",
+    "nombre": "Harina de centeno",
+    "categoria": "Harinas",
+    "descripcion": "Harina de centeno de sabor intenso, ideal para panes rústicos y masas con cuerpo.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 1900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3800
+      }
+    ],
+    "imagen": "/productos/harina-de-centeno.png",
+    "destacado": false
+  },
+  {
+    "id": "fecula-de-mandioca",
+    "nombre": "Fécula de mandioca",
+    "categoria": "Harinas",
+    "descripcion": "Fécula suave y versátil para panificados, ligantes y recetas sin gluten por naturaleza.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 2800
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 5600
+      }
+    ],
+    "imagen": "/productos/fecula-de-mandioca.png",
+    "destacado": false
+  },
+  {
+    "id": "porotos-de-alubia",
+    "nombre": "Porotos de alubia",
+    "categoria": "Legumbres",
+    "descripcion": "Alubias secas seleccionadas, excelentes para guisos, ensaladas y platos de cuchara.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1050
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2100
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4200
+      }
+    ],
+    "imagen": "/productos/porotos-de-alubia.png",
+    "destacado": false
+  },
+  {
+    "id": "porotos-negros",
+    "nombre": "Porotos negros",
+    "categoria": "Legumbres",
+    "descripcion": "Porotos negros rendidores, ideales para preparaciones sabrosas y nutritivas.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2150
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4300
+      }
+    ],
+    "imagen": "/productos/porotos-negros.png",
+    "destacado": false
+  },
+  {
+    "id": "garbanzos",
+    "nombre": "Garbanzos",
+    "categoria": "Legumbres",
+    "descripcion": "Garbanzos de cocción noble, perfectos para hummus, ensaladas y platos calientes.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1150
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2300
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4600
+      }
+    ],
+    "imagen": "/productos/garbanzos.png",
+    "destacado": false
+  },
+  {
+    "id": "lentejas",
+    "nombre": "Lentejas",
+    "categoria": "Legumbres",
+    "descripcion": "Lentejas prácticas y rendidoras para guisos, sopas y ensaladas completas.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1000
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 1950
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3900
+      }
+    ],
+    "imagen": "/productos/lentejas.png",
+    "destacado": false
+  },
+  {
+    "id": "maiz-pisado-blanco",
+    "nombre": "Maíz pisado blanco",
+    "categoria": "Legumbres",
+    "descripcion": "Maíz blanco pisado para recetas tradicionales, guisos y preparaciones abundantes.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 750
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 1500
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3000
+      }
+    ],
+    "imagen": "/productos/maiz-pisado-blanco.png",
+    "destacado": false
+  },
+  {
+    "id": "maiz-pisingallo",
+    "nombre": "Maíz pisingallo",
+    "categoria": "Legumbres",
+    "descripcion": "Maíz pisingallo ideal para pochoclos caseros, crocantes y rendidores.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 850
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3400
+      }
+    ],
+    "imagen": "/productos/maiz-pisingallo.png",
+    "destacado": false
+  },
+  {
+    "id": "soja-texturizada",
+    "nombre": "Soja texturizada",
+    "categoria": "Legumbres",
+    "descripcion": "Proteína vegetal práctica y versátil para rellenos, salsas y comidas completas.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1300
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 5200
+      }
+    ],
+    "imagen": "/productos/soja-texturizada.png",
+    "destacado": false
+  },
+  {
+    "id": "chia-premium",
+    "nombre": "Chía premium",
+    "categoria": "Semillas",
+    "descripcion": "Chía premium de gran calidad, ideal para puddings, yogures, panes y licuados.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1400
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6950
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 13900
+      }
+    ],
+    "imagen": "/productos/chia-premium.png",
+    "destacado": true
+  },
+  {
+    "id": "lino",
+    "nombre": "Lino",
+    "categoria": "Semillas",
+    "descripcion": "Semilla de lino versátil, muy usada en desayunos, crackers y mezclas nutritivas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 700
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 3400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 6800
+      }
+    ],
+    "imagen": "/productos/lino.png",
+    "destacado": false
+  },
+  {
+    "id": "girasol",
+    "nombre": "Girasol",
+    "categoria": "Semillas",
+    "descripcion": "Semillas de girasol listas para sumar textura y sabor a ensaladas, granolas y panes.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 500
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 1300
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 5200
+      }
+    ],
+    "imagen": "/productos/girasol.png",
+    "destacado": false
+  },
+  {
+    "id": "mix-de-semillas",
+    "nombre": "Mix de semillas",
+    "categoria": "Semillas",
+    "descripcion": "Combinación equilibrada de semillas para acompañar desayunos, bowls y panificados.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 2200
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4450
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 8900
+      }
+    ],
+    "imagen": "/productos/mix-de-semillas.png",
+    "destacado": true
+  },
+  {
+    "id": "granola-energetica",
+    "nombre": "Granola energética",
+    "categoria": "Cereales",
+    "descripcion": "Granola crocante con perfil energético, ideal para desayunos completos y colaciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 4700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 9400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 18800
+      }
+    ],
+    "imagen": "/productos/granola-energetica.png",
+    "destacado": true
+  },
+  {
+    "id": "granola-tropical",
+    "nombre": "Granola tropical",
+    "categoria": "Cereales",
+    "descripcion": "Granola con perfil tropical, muy rica para yogur, fruta fresca o meriendas.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 4550
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 9100
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 18200
+      }
+    ],
+    "imagen": "/productos/granola-tropical.png",
+    "destacado": false
+  },
+  {
+    "id": "granola-natural",
+    "nombre": "Granola natural",
+    "categoria": "Cereales",
+    "descripcion": "Granola clásica y equilibrada para quienes buscan un sabor simple y versátil.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 4200
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 8450
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 16900
+      }
+    ],
+    "imagen": "/productos/granola-natural.png",
+    "destacado": false
+  },
+  {
+    "id": "avena-tradicional",
+    "nombre": "Avena tradicional",
+    "categoria": "Cereales",
+    "descripcion": "Avena tradicional para desayunos, galletitas, panqueques y recetas caseras.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3600
+      }
+    ],
+    "imagen": "/productos/avena-tradicional.png",
+    "destacado": false
+  },
+  {
+    "id": "avena-instantanea",
+    "nombre": "Avena instantánea",
+    "categoria": "Cereales",
+    "descripcion": "Avena instantánea de preparación práctica para licuados, porridge y repostería.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1000
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2050
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4100
+      }
+    ],
+    "imagen": "/productos/avena-instantanea.png",
+    "destacado": false
+  },
+  {
+    "id": "aros-frutales",
+    "nombre": "Aros frutales",
+    "categoria": "Cereales",
+    "descripcion": "Cereal dulce de colores, pensado para desayunos divertidos y colaciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 2450
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 9800
+      }
+    ],
+    "imagen": "/productos/aros-frutales.png",
+    "destacado": false
+  },
+  {
+    "id": "bolitas-de-chocolate",
+    "nombre": "Bolitas de chocolate",
+    "categoria": "Cereales",
+    "descripcion": "Cereal sabor chocolate, crocante y rendidor para desayunos y meriendas.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 2800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5600
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 11200
+      }
+    ],
+    "imagen": "/productos/bolitas-de-chocolate.png",
+    "destacado": false
+  },
+  {
+    "id": "almohaditas-de-frutilla",
+    "nombre": "Almohaditas de frutilla",
+    "categoria": "Cereales",
+    "descripcion": "Cereal relleno sabor frutilla, ideal para sumar variedad al desayuno.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 2700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 10800
+      }
+    ],
+    "imagen": "/productos/almohaditas-de-frutilla.png",
+    "destacado": false
+  },
+  {
+    "id": "quinoa-inflada",
+    "nombre": "Quinoa inflada",
+    "categoria": "Cereales",
+    "descripcion": "Quinoa inflada liviana y crocante para yogur, granolas y mezclas caseras.",
+    "presentaciones": [
       {
         "etiqueta": "250g",
         "precio": 3600
       },
       {
         "etiqueta": "500g",
-        "precio": 6900
+        "precio": 7250
       },
       {
-        "etiqueta": "1kg",
-        "precio": 13200
+        "etiqueta": "1 kilo",
+        "precio": 14500
       }
     ],
-    "imagen": "/productos/quinoa-blanca.svg",
+    "imagen": "/productos/quinoa-inflada.png",
     "destacado": false
   },
   {
-    "id": "mix-energetico",
-    "nombre": "Mix energetico",
-    "categoria": "Snacks saludables",
-    "descripcion": "Combinacion de frutos secos, pasas y chips de coco para llevar.",
+    "id": "maiz-inflado",
+    "nombre": "Maiz inflado",
+    "categoria": "Cereales",
+    "descripcion": "Maíz inflado suave y liviano para desayunos, colaciones y mix dulces.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 2300
-      },
-      {
         "etiqueta": "250g",
-        "precio": 6300
+        "precio": 1700
       },
       {
         "etiqueta": "500g",
-        "precio": 11800
+        "precio": 3450
       },
       {
-        "etiqueta": "1kg",
-        "precio": 22400
+        "etiqueta": "1 kilo",
+        "precio": 6900
       }
     ],
-    "imagen": "/productos/mix-energetico.svg",
+    "imagen": "/productos/maiz-inflado.png",
     "destacado": false
   },
   {
-    "id": "barritas-datiles-cacao",
-    "nombre": "Barritas de datiles y cacao",
-    "categoria": "Snacks saludables",
-    "descripcion": "Snack suave y natural, sin azucar agregada, listo para cualquier pausa.",
+    "id": "arroz-inflado",
+    "nombre": "Arroz inflado",
+    "categoria": "Cereales",
+    "descripcion": "Arroz inflado crocante, ideal para barras, granolas y desayunos livianos.",
     "presentaciones": [
       {
-        "etiqueta": "unidad",
-        "precio": 2800
+        "etiqueta": "250g",
+        "precio": 1900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 3800
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 7600
       }
     ],
-    "imagen": "/productos/barritas-datiles-cacao.svg",
+    "imagen": "/productos/arroz-inflado.png",
     "destacado": false
   },
   {
-    "id": "colageno-hidrolizado",
-    "nombre": "Colageno hidrolizado",
-    "categoria": "Suplementos",
-    "descripcion": "Suplemento neutro para sumar a infusiones o licuados de manera simple.",
+    "id": "oregano",
+    "nombre": "Orégano",
+    "categoria": "Especias",
+    "descripcion": "Orégano aromático para sumar sabor a pizzas, salsas, panes y aderezos.",
     "presentaciones": [
       {
-        "etiqueta": "unidad",
-        "precio": 12400
+        "etiqueta": "50g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 3600
       }
     ],
-    "imagen": "/productos/colageno-hidrolizado.svg",
+    "imagen": "/productos/oregano.png",
     "destacado": false
   },
   {
-    "id": "proteina-vegetal-vainilla",
-    "nombre": "Proteina vegetal vainilla",
-    "categoria": "Suplementos",
-    "descripcion": "Blend vegetal de textura cremosa y sabor delicado para batidos post entrenamiento.",
+    "id": "adobo-para-pizza",
+    "nombre": "Adobo para pizza",
+    "categoria": "Especias",
+    "descripcion": "Mezcla especiada pensada para pizzas, salsas y preparaciones de horno.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 850
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 3400
+      }
+    ],
+    "imagen": "/productos/adobo-para-pizza.png",
+    "destacado": false
+  },
+  {
+    "id": "pimenton",
+    "nombre": "Pimentón",
+    "categoria": "Especias",
+    "descripcion": "Pimentón de sabor intenso para realzar guisos, salteados y marinados.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 1100
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 2200
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 4400
+      }
+    ],
+    "imagen": "/productos/pimenton.png",
+    "destacado": false
+  },
+  {
+    "id": "ajo-en-polvo",
+    "nombre": "Ajo en polvo",
+    "categoria": "Especias",
+    "descripcion": "Ajo en polvo práctico y rendidor para condimentar de forma rápida y pareja.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 1300
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 5200
+      }
+    ],
+    "imagen": "/productos/ajo-en-polvo.png",
+    "destacado": false
+  },
+  {
+    "id": "polvo-de-hornear",
+    "nombre": "Polvo de hornear",
+    "categoria": "Reposteria",
+    "descripcion": "Leudante rendidor para budines, tortas, muffins y preparaciones dulces o saladas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4500
+      }
+    ],
+    "imagen": "/productos/polvo-de-hornear.png",
+    "destacado": false
+  },
+  {
+    "id": "coco-rallado",
+    "nombre": "Coco rallado",
+    "categoria": "Reposteria",
+    "descripcion": "Coco rallado suave y fragante para repostería, bowls y toppings.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 850
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 2150
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4300
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 8600
+      }
+    ],
+    "imagen": "/productos/coco-rallado.png",
+    "destacado": false
+  },
+  {
+    "id": "azucar-impalpable",
+    "nombre": "Azúcar impalpable",
+    "categoria": "Reposteria",
+    "descripcion": "Azúcar impalpable fina para glasé, rellenos, coberturas y terminaciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 350
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 850
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3400
+      }
+    ],
+    "imagen": "/productos/azucar-impalpable.png",
+    "destacado": false
+  },
+  {
+    "id": "dulce-de-leche-dona-magdalena",
+    "nombre": "Dulce de leche con stevia",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Dulce de leche estilo tradicional, sin azucar agregada y endulzado con stevia.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 15800
+        "precio": 5400
       }
     ],
-    "imagen": "/productos/proteina-vegetal-vainilla.svg",
+    "imagen": "/productos/dulce-de-leche-con-stevia.png",
+    "destacado": false
+  },
+  {
+    "id": "pasta-mani-entrenuts-caramel",
+    "nombre": "Pasta maní entrenuts caramel",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Pasta de maní sabor caramelo, cremosa y muy rica para desayunos y colaciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 6200
+      }
+    ],
+    "imagen": "/productos/pasta-mani-entrenuts-caramel.png",
     "destacado": true
   },
   {
-    "id": "galletitas-arroz",
-    "nombre": "Galletitas de arroz",
-    "categoria": "Sin TACC",
-    "descripcion": "Livianas y crocantes, ideales para untables, meriendas y colaciones.",
+    "id": "pasta-mani-entrenuts-cookie",
+    "nombre": "Pasta maní entrenuts cooking",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Pasta de mani protein ideal para recetas, snacks y desayunos con buen aporte proteico.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 2600
+        "precio": 6200
       }
     ],
-    "imagen": "/productos/galletitas-arroz.svg",
+    "imagen": "/productos/pasta-mani-entrenuts-cooking.png",
     "destacado": false
   },
   {
-    "id": "combo-desayuno-natural",
-    "nombre": "Combo desayuno natural",
-    "categoria": "Ofertas",
-    "descripcion": "Granola, semillas y frutos secos en promo para empezar la semana.",
+    "id": "pasta-mani-beepure",
+    "nombre": "Pasta maní beepure",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Pasta de maní de textura cremosa, ideal para tostadas, smoothies y snacks.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 13200
+        "precio": 5900
       }
     ],
-    "imagen": "/productos/combo-desayuno-natural.svg",
+    "imagen": "/productos/pasta-mani-beepure.png",
     "destacado": false
   }
 ]

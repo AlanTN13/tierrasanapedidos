@@ -1,16 +1,35 @@
 import type { FilterCategory, Product } from "@/types/catalog";
 
-export const categories: FilterCategory[] = [
-  "Todos",
+const CATEGORY_ORDER = [
   "Frutos secos",
   "Semillas",
   "Harinas",
+  "Legumbres",
   "Cereales",
-  "Snacks saludables",
-  "Suplementos",
-  "Sin TACC",
-  "Ofertas",
-];
+  "Especias",
+  "Reposteria",
+  "Dulces & Untables",
+] as const;
+
+export function getCategories(products: Product[]): FilterCategory[] {
+  const uniqueCategories = [...new Set(products.map((product) => product.categoria))];
+
+  const sortedCategories = uniqueCategories.sort((a, b) => {
+    const aIndex = CATEGORY_ORDER.indexOf(a as (typeof CATEGORY_ORDER)[number]);
+    const bIndex = CATEGORY_ORDER.indexOf(b as (typeof CATEGORY_ORDER)[number]);
+
+    if (aIndex === -1 && bIndex === -1) {
+      return a.localeCompare(b, "es");
+    }
+
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+
+    return aIndex - bIndex;
+  });
+
+  return ["Todos", ...sortedCategories];
+}
 
 export function filterProducts(
   products: Product[],

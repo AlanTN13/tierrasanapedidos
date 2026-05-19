@@ -1,17 +1,9 @@
-export type ProductCategory =
-  | "Frutos secos"
-  | "Semillas"
-  | "Harinas"
-  | "Cereales"
-  | "Snacks saludables"
-  | "Suplementos"
-  | "Sin TACC"
-  | "Ofertas";
+export type ProductCategory = string;
 
 export type FilterCategory = "Todos" | ProductCategory;
 
 export type ProductPresentation = {
-  etiqueta: "100g" | "250g" | "500g" | "1kg" | "unidad";
+  etiqueta: string;
   precio: number;
 };
 
