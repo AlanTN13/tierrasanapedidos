@@ -233,7 +233,7 @@ function StorefrontContent({ products }: StorefrontProps) {
                 id="shipping-title"
                 className="text-sm font-bold tracking-[0.12em] text-earth uppercase"
               >
-                Entregas locales sin costo
+                Entregas en la zona sin costo
               </p>
               <p className="mt-2 text-sm leading-6 text-foreground/68">
                 Realizamos entregas en Avellaneda, Villa Dominico, Gerli,
