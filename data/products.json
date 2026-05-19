@@ -7,19 +7,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1650
+        "precio": 4590
       },
       {
         "etiqueta": "250g",
-        "precio": 4100
+        "precio": 10590
       },
       {
         "etiqueta": "500g",
-        "precio": 8250
+        "precio": 19790
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 16500
+        "precio": 36590
       }
     ],
     "imagen": "/productos/almendras.png",
@@ -33,19 +33,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1050
+        "precio": 1790
       },
       {
         "etiqueta": "250g",
-        "precio": 2600
+        "precio": 4090
       },
       {
         "etiqueta": "500g",
-        "precio": 5250
+        "precio": 7590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 10500
+        "precio": 13990
       }
     ],
     "imagen": "/productos/almendras-con-cascara.png",
@@ -59,19 +59,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1800
+        "precio": 3990
       },
       {
         "etiqueta": "250g",
-        "precio": 4450
+        "precio": 9190
       },
       {
         "etiqueta": "500g",
-        "precio": 8900
+        "precio": 17290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 17800
+        "precio": 31890
       }
     ],
     "imagen": "/productos/nueces.png",
@@ -85,19 +85,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1000
+        "precio": 1590
       },
       {
         "etiqueta": "250g",
-        "precio": 2450
+        "precio": 3590
       },
       {
         "etiqueta": "500g",
-        "precio": 4900
+        "precio": 6690
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 9800
+        "precio": 12290
       }
     ],
     "imagen": "/productos/nueces-con-cascara.png",
@@ -111,19 +111,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 2100
+        "precio": 2990
       },
       {
         "etiqueta": "250g",
-        "precio": 5250
+        "precio": 6890
       },
       {
         "etiqueta": "500g",
-        "precio": 10500
+        "precio": 12990
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 21000
+        "precio": 23990
       }
     ],
     "imagen": "/productos/castanas-de-caju.png",
@@ -137,19 +137,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 2450
+        "precio": 13390
       },
       {
         "etiqueta": "250g",
-        "precio": 6100
+        "precio": 30690
       },
       {
         "etiqueta": "500g",
-        "precio": 12250
+        "precio": 57590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 24500
+        "precio": 106490
       }
     ],
     "imagen": "/productos/pistachos-pelados.png",
@@ -163,19 +163,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 2200
+        "precio": 7490
       },
       {
         "etiqueta": "250g",
-        "precio": 5500
+        "precio": 17290
       },
       {
         "etiqueta": "500g",
-        "precio": 11000
+        "precio": 32390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 22000
+        "precio": 59990
       }
     ],
     "imagen": "/productos/pistachos-con-cascara.png",
@@ -189,19 +189,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 700
+        "precio": 590
       },
       {
         "etiqueta": "250g",
-        "precio": 1800
+        "precio": 1290
       },
       {
         "etiqueta": "500g",
-        "precio": 3600
+        "precio": 2390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 7200
+        "precio": 4390
       }
     ],
     "imagen": "/productos/mani-tostado-con-sal.png",
@@ -215,19 +215,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 2000
+        "precio": 2590
       },
       {
         "etiqueta": "250g",
-        "precio": 4950
+        "precio": 5890
       },
       {
         "etiqueta": "500g",
-        "precio": 9900
+        "precio": 10990
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 19800
+        "precio": 20190
       }
     ],
     "imagen": "/productos/mix-con-avellanas.png",
@@ -241,19 +241,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1450
+        "precio": 1590
       },
       {
         "etiqueta": "250g",
-        "precio": 3650
+        "precio": 3590
       },
       {
         "etiqueta": "500g",
-        "precio": 7300
+        "precio": 6790
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 14600
+        "precio": 12590
       }
     ],
     "imagen": "/productos/mix-con-pasas-y-banana.png",
@@ -267,11 +267,11 @@
     "presentaciones": [
       {
         "etiqueta": "500g",
-        "precio": 1600
+        "precio": 590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3200
+        "precio": 1190
       }
     ],
     "imagen": "/productos/harina-integral.png",
@@ -285,11 +285,11 @@
     "presentaciones": [
       {
         "etiqueta": "500g",
-        "precio": 7400
+        "precio": 2790
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 14800
+        "precio": 5190
       }
     ],
     "imagen": "/productos/harina-de-almendras.png",
@@ -303,11 +303,11 @@
     "presentaciones": [
       {
         "etiqueta": "500g",
-        "precio": 1900
+        "precio": 1190
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3800
+        "precio": 2090
       }
     ],
     "imagen": "/productos/harina-de-centeno.png",
@@ -321,11 +321,11 @@
     "presentaciones": [
       {
         "etiqueta": "500g",
-        "precio": 2800
+        "precio": 2890
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 5600
+        "precio": 5290
       }
     ],
     "imagen": "/productos/fecula-de-mandioca.png",
@@ -339,15 +339,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1050
+        "precio": 990
       },
       {
         "etiqueta": "500g",
-        "precio": 2100
+        "precio": 1790
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 4200
+        "precio": 3290
       }
     ],
     "imagen": "/productos/porotos-de-alubia.png",
@@ -361,15 +361,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1100
+        "precio": 890
       },
       {
         "etiqueta": "500g",
-        "precio": 2150
+        "precio": 1590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 4300
+        "precio": 2890
       }
     ],
     "imagen": "/productos/porotos-negros.png",
@@ -383,15 +383,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1150
+        "precio": 790
       },
       {
         "etiqueta": "500g",
-        "precio": 2300
+        "precio": 1390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 4600
+        "precio": 2590
       }
     ],
     "imagen": "/productos/garbanzos.png",
@@ -405,40 +405,18 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1000
+        "precio": 1090
       },
       {
         "etiqueta": "500g",
-        "precio": 1950
+        "precio": 1890
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3900
+        "precio": 3490
       }
     ],
     "imagen": "/productos/lentejas.png",
-    "destacado": false
-  },
-  {
-    "id": "maiz-pisado-blanco",
-    "nombre": "Maíz pisado blanco",
-    "categoria": "Legumbres",
-    "descripcion": "Maíz blanco pisado para recetas tradicionales, guisos y preparaciones abundantes.",
-    "presentaciones": [
-      {
-        "etiqueta": "250g",
-        "precio": 750
-      },
-      {
-        "etiqueta": "500g",
-        "precio": 1500
-      },
-      {
-        "etiqueta": "1 kilo",
-        "precio": 3000
-      }
-    ],
-    "imagen": "/productos/maiz-pisado-blanco.png",
     "destacado": false
   },
   {
@@ -449,15 +427,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 850
+        "precio": 590
       },
       {
         "etiqueta": "500g",
-        "precio": 1700
+        "precio": 1090
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3400
+        "precio": 1990
       }
     ],
     "imagen": "/productos/maiz-pisingallo.png",
@@ -471,15 +449,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1300
+        "precio": 1090
       },
       {
         "etiqueta": "500g",
-        "precio": 2600
+        "precio": 1890
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 5200
+        "precio": 3490
       }
     ],
     "imagen": "/productos/soja-texturizada.png",
@@ -493,19 +471,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 1400
+        "precio": 1490
       },
       {
         "etiqueta": "250g",
-        "precio": 3500
+        "precio": 3390
       },
       {
         "etiqueta": "500g",
-        "precio": 6950
+        "precio": 6290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 13900
+        "precio": 11690
       }
     ],
     "imagen": "/productos/chia-premium.png",
@@ -519,19 +497,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 700
+        "precio": 590
       },
       {
         "etiqueta": "250g",
-        "precio": 1700
+        "precio": 1290
       },
       {
         "etiqueta": "500g",
-        "precio": 3400
+        "precio": 2390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 6800
+        "precio": 4290
       }
     ],
     "imagen": "/productos/lino.png",
@@ -545,19 +523,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 500
+        "precio": 790
       },
       {
         "etiqueta": "250g",
-        "precio": 1300
+        "precio": 1890
       },
       {
         "etiqueta": "500g",
-        "precio": 2600
+        "precio": 3490
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 5200
+        "precio": 6390
       }
     ],
     "imagen": "/productos/girasol.png",
@@ -571,19 +549,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 900
+        "precio": 890
       },
       {
         "etiqueta": "250g",
-        "precio": 2200
+        "precio": 1990
       },
       {
         "etiqueta": "500g",
-        "precio": 4450
+        "precio": 3590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 8900
+        "precio": 6690
       }
     ],
     "imagen": "/productos/mix-de-semillas.png",
@@ -597,15 +575,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 4700
+        "precio": 3390
       },
       {
         "etiqueta": "500g",
-        "precio": 9400
+        "precio": 6290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 18800
+        "precio": 11690
       }
     ],
     "imagen": "/productos/granola-energetica.png",
@@ -619,15 +597,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 4550
+        "precio": 3390
       },
       {
         "etiqueta": "500g",
-        "precio": 9100
+        "precio": 6290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 18200
+        "precio": 11690
       }
     ],
     "imagen": "/productos/granola-tropical.png",
@@ -641,15 +619,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 4200
+        "precio": 3390
       },
       {
         "etiqueta": "500g",
-        "precio": 8450
+        "precio": 6290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 16900
+        "precio": 11690
       }
     ],
     "imagen": "/productos/granola-natural.png",
@@ -663,15 +641,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 900
+        "precio": 790
       },
       {
         "etiqueta": "500g",
-        "precio": 1800
+        "precio": 1390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3600
+        "precio": 2590
       }
     ],
     "imagen": "/productos/avena-tradicional.png",
@@ -685,15 +663,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1000
+        "precio": 790
       },
       {
         "etiqueta": "500g",
-        "precio": 2050
+        "precio": 1490
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 4100
+        "precio": 2690
       }
     ],
     "imagen": "/productos/avena-instantanea.png",
@@ -707,15 +685,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 2450
+        "precio": 2190
       },
       {
         "etiqueta": "500g",
-        "precio": 4900
+        "precio": 4090
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 9800
+        "precio": 7590
       }
     ],
     "imagen": "/productos/aros-frutales.png",
@@ -729,15 +707,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 2800
+        "precio": 2390
       },
       {
         "etiqueta": "500g",
-        "precio": 5600
+        "precio": 4390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 11200
+        "precio": 8190
       }
     ],
     "imagen": "/productos/bolitas-de-chocolate.png",
@@ -751,15 +729,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 2700
+        "precio": 2890
       },
       {
         "etiqueta": "500g",
-        "precio": 5400
+        "precio": 5390
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 10800
+        "precio": 9890
       }
     ],
     "imagen": "/productos/almohaditas-de-frutilla.png",
@@ -773,15 +751,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 3600
+        "precio": 2490
       },
       {
         "etiqueta": "500g",
-        "precio": 7250
+        "precio": 4590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 14500
+        "precio": 8390
       }
     ],
     "imagen": "/productos/quinoa-inflada.png",
@@ -795,15 +773,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1700
+        "precio": 2590
       },
       {
         "etiqueta": "500g",
-        "precio": 3450
+        "precio": 4790
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 6900
+        "precio": 8790
       }
     ],
     "imagen": "/productos/maiz-inflado.png",
@@ -817,15 +795,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1900
+        "precio": 3090
       },
       {
         "etiqueta": "500g",
-        "precio": 3800
+        "precio": 5890
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 7600
+        "precio": 10790
       }
     ],
     "imagen": "/productos/arroz-inflado.png",
@@ -839,15 +817,15 @@
     "presentaciones": [
       {
         "etiqueta": "50g",
-        "precio": 900
+        "precio": 1390
       },
       {
         "etiqueta": "100g",
-        "precio": 1800
+        "precio": 2590
       },
       {
         "etiqueta": "200g",
-        "precio": 3600
+        "precio": 4790
       }
     ],
     "imagen": "/productos/oregano.png",
@@ -861,15 +839,15 @@
     "presentaciones": [
       {
         "etiqueta": "50g",
-        "precio": 850
+        "precio": 790
       },
       {
         "etiqueta": "100g",
-        "precio": 1700
+        "precio": 1390
       },
       {
         "etiqueta": "200g",
-        "precio": 3400
+        "precio": 2590
       }
     ],
     "imagen": "/productos/adobo-para-pizza.png",
@@ -883,15 +861,15 @@
     "presentaciones": [
       {
         "etiqueta": "50g",
-        "precio": 1100
+        "precio": 690
       },
       {
         "etiqueta": "100g",
-        "precio": 2200
+        "precio": 1190
       },
       {
         "etiqueta": "200g",
-        "precio": 4400
+        "precio": 2190
       }
     ],
     "imagen": "/productos/pimenton.png",
@@ -905,15 +883,15 @@
     "presentaciones": [
       {
         "etiqueta": "50g",
-        "precio": 1300
+        "precio": 990
       },
       {
         "etiqueta": "100g",
-        "precio": 2600
+        "precio": 1690
       },
       {
         "etiqueta": "200g",
-        "precio": 5200
+        "precio": 3190
       }
     ],
     "imagen": "/productos/ajo-en-polvo.png",
@@ -927,15 +905,15 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 900
+        "precio": 990
       },
       {
         "etiqueta": "200g",
-        "precio": 1800
+        "precio": 1890
       },
       {
         "etiqueta": "500g",
-        "precio": 4500
+        "precio": 4290
       }
     ],
     "imagen": "/productos/polvo-de-hornear.png",
@@ -949,19 +927,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 850
+        "precio": 1190
       },
       {
         "etiqueta": "250g",
-        "precio": 2150
+        "precio": 2590
       },
       {
         "etiqueta": "500g",
-        "precio": 4300
+        "precio": 4890
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 8600
+        "precio": 8990
       }
     ],
     "imagen": "/productos/coco-rallado.png",
@@ -975,19 +953,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 350
+        "precio": 490
       },
       {
         "etiqueta": "250g",
-        "precio": 850
+        "precio": 1090
       },
       {
         "etiqueta": "500g",
-        "precio": 1700
+        "precio": 1990
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3400
+        "precio": 3590
       }
     ],
     "imagen": "/productos/azucar-impalpable.png",
@@ -995,13 +973,13 @@
   },
   {
     "id": "dulce-de-leche-dona-magdalena",
-    "nombre": "Dulce de leche con stevia",
+    "nombre": "Dulce de leche Doña Magdalena",
     "categoria": "Dulces & Untables",
     "descripcion": "Dulce de leche estilo tradicional, sin azucar agregada y endulzado con stevia.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 5400
+        "precio": 7990
       }
     ],
     "imagen": "/productos/dulce-de-leche-con-stevia.png",
@@ -1009,13 +987,13 @@
   },
   {
     "id": "pasta-mani-entrenuts-caramel",
-    "nombre": "Pasta maní entrenuts caramel",
+    "nombre": "Pasta maní Entrenuts Caramel",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de maní sabor caramelo, cremosa y muy rica para desayunos y colaciones.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 6200
+        "precio": 5390
       }
     ],
     "imagen": "/productos/pasta-mani-entrenuts-caramel.png",
@@ -1023,13 +1001,13 @@
   },
   {
     "id": "pasta-mani-entrenuts-cookie",
-    "nombre": "Pasta maní entrenuts cooking",
+    "nombre": "Pasta Maní Entrenuts Cookie",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de mani protein ideal para recetas, snacks y desayunos con buen aporte proteico.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 6200
+        "precio": 5390
       }
     ],
     "imagen": "/productos/pasta-mani-entrenuts-cooking.png",
@@ -1037,13 +1015,13 @@
   },
   {
     "id": "pasta-mani-beepure",
-    "nombre": "Pasta maní beepure",
+    "nombre": "Pasta Maní Beepure",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de maní de textura cremosa, ideal para tostadas, smoothies y snacks.",
     "presentaciones": [
       {
         "etiqueta": "unidad",
-        "precio": 5900
+        "precio": 4990
       }
     ],
     "imagen": "/productos/pasta-mani-beepure.png",

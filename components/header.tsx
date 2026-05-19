@@ -20,6 +20,28 @@ export function Header({ totalItems, onOpenCart }: HeaderProps) {
           />
         </a>
 
+        <div className="hidden min-w-0 flex-1 items-center justify-center px-2 lg:flex">
+          <div className="organic-outline flex w-full max-w-3xl items-center gap-4 rounded-[2rem] bg-white/72 px-4 py-3 shadow-[0_14px_30px_rgba(111,127,79,0.08)]">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-olive-soft text-lg">
+                📦
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold tracking-[0.12em] text-earth uppercase">
+                  Entregas locales sin costo
+                </p>
+                <p className="mt-0.5 text-sm leading-5 text-foreground/66">
+                  Avellaneda, Villa Dominico, Gerli, Bernal y Don Bosco.
+                  Coordinamos por WhatsApp.
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 rounded-full bg-olive/10 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-olive-dark uppercase">
+              Sin cargo
+            </span>
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={onOpenCart}
@@ -34,6 +56,24 @@ export function Header({ totalItems, onOpenCart }: HeaderProps) {
             {totalItems}
           </span>
         </button>
+      </div>
+
+      <div className="border-t border-olive/8 lg:hidden">
+        <div className="container-shell py-2.5">
+          <div className="flex items-start gap-3 rounded-[1.1rem] bg-white/62 px-3 py-2.5">
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-olive-soft text-base">
+              📦
+            </span>
+            <div>
+              <p className="text-[11px] font-bold tracking-[0.12em] text-earth uppercase">
+                Entregas locales sin costo
+              </p>
+              <p className="mt-0.5 text-sm leading-5 text-foreground/66">
+                Avellaneda, Villa Dominico, Gerli, Bernal y Don Bosco. Coordinamos por WhatsApp.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );
