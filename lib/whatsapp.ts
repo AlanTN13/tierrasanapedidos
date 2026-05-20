@@ -12,7 +12,7 @@ export function createWhatsAppUrl(items: CartItem[], subtotal: number) {
   );
 
   const message = [
-    "Hola Tierra Sana! Quiero hacer este pedido:",
+    "Hola Tierra Sana! 🌱 Quiero hacer este pedido:",
     "",
     ...lines,
     "",
