@@ -136,20 +136,16 @@
     "descripcion": "Pistachos pelados listos para consumir, con sabor intenso y textura delicada.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 13390
-      },
-      {
         "etiqueta": "250g",
-        "precio": 30690
+        "precio": 28900
       },
       {
         "etiqueta": "500g",
-        "precio": 57590
+        "precio": 49900
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 106490
+        "precio": 85000
       }
     ],
     "imagen": "/productos/pistachos-pelados.png",
@@ -162,20 +158,16 @@
     "descripcion": "Pistachos con cáscara para una experiencia más natural y un snack para compartir.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 7490
-      },
-      {
         "etiqueta": "250g",
-        "precio": 17290
+        "precio": 16900
       },
       {
         "etiqueta": "500g",
-        "precio": 32390
+        "precio": 28900
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 59990
+        "precio": 49000
       }
     ],
     "imagen": "/productos/pistachos-con-cascara.png",
