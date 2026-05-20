@@ -339,15 +339,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 990
+        "precio": 1190
       },
       {
         "etiqueta": "500g",
-        "precio": 1790
+        "precio": 2090
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3290
+        "precio": 3890
       }
     ],
     "imagen": "/productos/porotos-de-alubia.png",
@@ -361,15 +361,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 890
+        "precio": 990
       },
       {
         "etiqueta": "500g",
-        "precio": 1590
+        "precio": 1890
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 2890
+        "precio": 3490
       }
     ],
     "imagen": "/productos/porotos-negros.png",
@@ -383,15 +383,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 790
+        "precio": 890
       },
       {
         "etiqueta": "500g",
-        "precio": 1390
+        "precio": 1690
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 2590
+        "precio": 3190
       }
     ],
     "imagen": "/productos/garbanzos.png",
@@ -405,15 +405,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1090
+        "precio": 1290
       },
       {
         "etiqueta": "500g",
-        "precio": 1890
+        "precio": 2290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3490
+        "precio": 4190
       }
     ],
     "imagen": "/productos/lentejas.png",
@@ -427,15 +427,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 590
+        "precio": 690
       },
       {
         "etiqueta": "500g",
-        "precio": 1090
+        "precio": 1290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 1990
+        "precio": 2290
       }
     ],
     "imagen": "/productos/maiz-pisingallo.png",
@@ -449,15 +449,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1090
+        "precio": 1290
       },
       {
         "etiqueta": "500g",
-        "precio": 1890
+        "precio": 2290
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 3490
+        "precio": 4190
       }
     ],
     "imagen": "/productos/soja-texturizada.png",
@@ -571,7 +571,7 @@
     "id": "granola-energetica",
     "nombre": "Granola energética",
     "categoria": "Cereales",
-    "descripcion": "Granola crocante con perfil energético, ideal para desayunos completos y colaciones.",
+    "descripcion": "Blend crocante de avena tostada, copos de maiz, almendras, mani y girasol, ideal para arrancar el dia con energia.",
     "presentaciones": [
       {
         "etiqueta": "250g",
@@ -593,7 +593,7 @@
     "id": "granola-tropical",
     "nombre": "Granola tropical",
     "categoria": "Cereales",
-    "descripcion": "Granola con perfil tropical, muy rica para yogur, fruta fresca o meriendas.",
+    "descripcion": "Mix de avena tostada, copos de maiz, almendras, banana y pasas de uva, con un toque dulce y tropical.",
     "presentaciones": [
       {
         "etiqueta": "250g",
@@ -615,7 +615,7 @@
     "id": "granola-natural",
     "nombre": "Granola natural",
     "categoria": "Cereales",
-    "descripcion": "Granola clásica y equilibrada para quienes buscan un sabor simple y versátil.",
+    "descripcion": "Combinacion de avena tostada, copos de maiz, almendras, sesamo y pasas de uva, equilibrada y rendidora para todos los dias.",
     "presentaciones": [
       {
         "etiqueta": "250g",
@@ -641,15 +641,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 790
+        "precio": 890
       },
       {
         "etiqueta": "500g",
-        "precio": 1390
+        "precio": 1590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 2590
+        "precio": 2900
       }
     ],
     "imagen": "/productos/avena-tradicional.png",
@@ -663,15 +663,15 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 790
+        "precio": 890
       },
       {
         "etiqueta": "500g",
-        "precio": 1490
+        "precio": 1590
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 2690
+        "precio": 2900
       }
     ],
     "imagen": "/productos/avena-instantanea.png",
@@ -996,7 +996,7 @@
         "precio": 5390
       }
     ],
-    "imagen": "/productos/pasta-mani-entrenuts-caramel.png",
+    "imagen": "/productos/pasta-mani-entrenuts-caramel-v2.png",
     "destacado": true
   },
   {
@@ -1010,7 +1010,7 @@
         "precio": 5390
       }
     ],
-    "imagen": "/productos/pasta-mani-entrenuts-cooking.png",
+    "imagen": "/productos/pasta-mani-entrenuts-cookie-v2.png",
     "destacado": false
   },
   {
