@@ -163,24 +163,43 @@ function StorefrontContent({ products }: StorefrontProps) {
           )}
         </section>
 
-        <section className="container-shell pb-4">
-          <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <span className="section-kicker">Pedido asistido</span>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground/68">
-                  Los precios y stock pueden confirmarse por WhatsApp antes de
-                  cerrar el pedido. Asi mantenemos una experiencia simple,
-                  cercana y actualizada.
-                </p>
+        <section className="container-shell pb-10">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-olive-soft text-xl text-olive-dark">
+                🛒
               </div>
+              <span className="section-kicker mt-4">Pedido asistido</span>
+              <p className="mt-3 max-w-md text-sm leading-6 text-foreground/68">
+                Revisa tu carrito antes de enviar el pedido y confirmamos stock,
+                precios y retiro por WhatsApp.
+              </p>
               <button
                 type="button"
                 onClick={openCart}
-                className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:border-olive/28 hover:bg-olive-soft/35 focus:outline-none focus:ring-2 focus:ring-olive/35"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(111,127,79,0.08)] hover:bg-olive-soft/45 focus:outline-none focus:ring-2 focus:ring-olive/35 sm:w-auto"
               >
                 Revisar carrito
               </button>
+            </div>
+
+            <div className="organic-outline rounded-[2rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.9)_0%,rgba(254,244,247,0.96)_30%,rgba(243,239,255,0.96)_100%)] px-5 py-6 sm:px-6">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,#fdf497_0%,#fd5949_38%,#d6249f_68%,#285AEB_100%)] text-white shadow-[0_12px_26px_rgba(214,36,159,0.18)]">
+                <InstagramMiniIcon />
+              </div>
+              <span className="section-kicker mt-4">Instagram</span>
+              <p className="mt-3 max-w-md text-sm leading-6 text-foreground/68">
+                Seguinos para ver ingresos, novedades y un poco del día a día de
+                Tierra Sana.
+              </p>
+              <a
+                href="https://www.instagram.com/tierrasana.dietetica/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(135deg,#fd5949_0%,#d6249f_58%,#285AEB_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(214,36,159,0.2)] hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-[#d6249f]/30 sm:w-auto"
+              >
+                Ir a @tierrasana.dietetica
+              </a>
             </div>
           </div>
         </section>
@@ -294,5 +313,24 @@ function StorefrontContent({ products }: StorefrontProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+function InstagramMiniIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="3.75" />
+      <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
   );
 }

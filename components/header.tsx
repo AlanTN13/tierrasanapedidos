@@ -22,6 +22,7 @@ export function Header({
   onOpenCart,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const instagramUrl = "https://www.instagram.com/tierrasana.dietetica/";
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -74,20 +75,32 @@ export function Header({
             </span>
           </div>
 
-          <button
-            type="button"
-            onClick={onOpenCart}
-            className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-card px-4 py-2.5 text-sm font-semibold text-olive-dark hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
-            aria-label={`Abrir carrito con ${totalItems} productos`}
-          >
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-olive text-white">
-              <CartIcon />
-            </span>
-            <span className="hidden sm:inline">Carrito</span>
-            <span className="rounded-full bg-olive-soft px-2.5 py-1 text-xs font-bold text-olive-dark">
-              {totalItems}
-            </span>
-          </button>
+          <div className="flex items-center gap-3">
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="card-shadow inline-flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#fdf497_0%,#fdf497_8%,#fd5949_38%,#d6249f_65%,#285AEB_100%)] text-white hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#d6249f]/30"
+              aria-label="Seguinos en Instagram"
+            >
+              <InstagramIcon />
+            </a>
+
+            <button
+              type="button"
+              onClick={onOpenCart}
+              className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-card px-4 py-2.5 text-sm font-semibold text-olive-dark hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+              aria-label={`Abrir carrito con ${totalItems} productos`}
+            >
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-olive text-white">
+                <CartIcon />
+              </span>
+              <span className="hidden sm:inline">Carrito</span>
+              <span className="rounded-full bg-olive-soft px-2.5 py-1 text-xs font-bold text-olive-dark">
+                {totalItems}
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="lg:hidden">
@@ -116,19 +129,31 @@ export function Header({
               />
             </a>
 
-            <button
-              type="button"
-              onClick={onOpenCart}
-              className="organic-outline card-shadow inline-flex shrink-0 items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-semibold text-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
-              aria-label={`Abrir carrito con ${totalItems} productos`}
-            >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
-                <CartIcon />
-              </span>
-              <span className="rounded-full bg-olive-soft px-2 py-0.5 text-xs font-bold text-olive-dark">
-                {totalItems}
-              </span>
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="card-shadow inline-flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#fdf497_0%,#fdf497_8%,#fd5949_38%,#d6249f_65%,#285AEB_100%)] text-white focus:outline-none focus:ring-2 focus:ring-[#d6249f]/30"
+                aria-label="Seguinos en Instagram"
+              >
+                <InstagramIcon />
+              </a>
+
+              <button
+                type="button"
+                onClick={onOpenCart}
+                className="organic-outline card-shadow inline-flex shrink-0 items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-semibold text-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
+                aria-label={`Abrir carrito con ${totalItems} productos`}
+              >
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
+                  <CartIcon />
+                </span>
+                <span className="rounded-full bg-olive-soft px-2 py-0.5 text-xs font-bold text-olive-dark">
+                  {totalItems}
+                </span>
+              </button>
+            </div>
           </div>
 
         </div>
@@ -248,6 +273,25 @@ function CartIcon() {
       <circle cx="9" cy="20" r="1.5" />
       <circle cx="18" cy="20" r="1.5" />
       <path d="M3 4h2l2.3 10.2a1 1 0 0 0 1 .8h9.8a1 1 0 0 0 1-.8L21 7H7.2" />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="3.75" />
+      <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
     </svg>
   );
 }
