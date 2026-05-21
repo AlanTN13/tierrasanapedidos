@@ -39,6 +39,7 @@ function StorefrontContent({ products }: StorefrontProps) {
     subtotal,
     openCart,
     closeCart,
+    clearCart,
     addItem,
     removeItem,
     updateQuantity,
@@ -196,6 +197,7 @@ function StorefrontContent({ products }: StorefrontProps) {
         isOpen={isOpen}
         subtotal={subtotal}
         onClose={closeCart}
+        onCheckout={clearCart}
         onRemove={removeItem}
         onUpdateQuantity={updateQuantity}
       />

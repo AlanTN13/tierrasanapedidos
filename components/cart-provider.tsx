@@ -17,6 +17,7 @@ type CartContextValue = {
   subtotal: number;
   openCart: () => void;
   closeCart: () => void;
+  clearCart: () => void;
   addItem: (
     product: Product,
     presentation: ProductPresentation,
@@ -110,6 +111,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       subtotal,
       openCart: () => setIsOpen(true),
       closeCart: () => setIsOpen(false),
+      clearCart: () => {
+        writeCartSnapshot(EMPTY_CART);
+        setIsOpen(false);
+      },
       addItem: (product, presentation, quantity) => {
         const currentItems = readCartSnapshot();
         const existingItem = currentItems.find(

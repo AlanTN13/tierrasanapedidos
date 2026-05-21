@@ -10,6 +10,7 @@ type CartDrawerProps = {
   isOpen: boolean;
   subtotal: number;
   onClose: () => void;
+  onCheckout: () => void;
   onRemove: (
     productId: string,
     presentationLabel: ProductPresentation["etiqueta"],
@@ -26,6 +27,7 @@ export function CartDrawer({
   isOpen,
   subtotal,
   onClose,
+  onCheckout,
   onRemove,
   onUpdateQuantity,
 }: CartDrawerProps) {
@@ -45,6 +47,11 @@ export function CartDrawer({
   }, [isOpen, onClose]);
 
   const whatsappUrl = createWhatsAppUrl(items, subtotal);
+
+  function handleCheckout() {
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    onCheckout();
+  }
 
   return (
     <div
@@ -172,14 +179,13 @@ export function CartDrawer({
           </div>
 
           {items.length > 0 ? (
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={handleCheckout}
               className="inline-flex w-full items-center justify-center rounded-full bg-olive px-5 py-3.5 text-sm font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
             >
               Enviar pedido por WhatsApp
-            </a>
+            </button>
           ) : (
             <button
               type="button"

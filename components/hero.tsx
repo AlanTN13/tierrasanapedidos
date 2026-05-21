@@ -17,12 +17,12 @@ export function Hero() {
         </div>
 
         <div className="relative max-w-3xl">
-          <span className="section-kicker">Bienestar cotidiano</span>
+          <span className="section-kicker">Tierra Sana</span>
           <h1 className="mt-5 max-w-4xl font-display text-5xl leading-[0.94] font-semibold text-olive-dark sm:text-6xl lg:text-7xl">
-            Productos naturales para tu dia a dia
+            Productos naturales para todos los días
           </h1>
           <p className="mt-5 max-w-xl text-base leading-7 text-foreground/68 sm:text-lg">
-            Arma tu pedido y envialo directo por WhatsApp.
+            Frutos secos, cereales, semillas y productos naturales para armar tus pedidos de forma simple.
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -30,10 +30,10 @@ export function Hero() {
               href="#productos"
               className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(111,127,79,0.28)] hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
             >
-              Ver productos
+              Ver catalogo
             </a>
             <p className="inline-flex items-center rounded-full bg-white/72 px-4 py-3 text-sm text-foreground/62">
-              Catalogo simple y pedido directo.
+              Armá tu pedido por WhatsApp
             </p>
           </div>
         </div>
