@@ -153,7 +153,7 @@
   },
   {
     "id": "pistachos-con-cascara",
-    "nombre": "Pistachos con cáscara",
+    "nombre": "Pistachos con cáscara salados",
     "categoria": "Frutos secos",
     "descripcion": "Pistachos con cáscara para una experiencia más natural y un snack para compartir.",
     "presentaciones": [
@@ -1017,6 +1017,62 @@
       }
     ],
     "imagen": "/productos/pasta-mani-beepure.png",
+    "destacado": false
+  },
+  {
+    "id": "miel-liquida-beepure",
+    "nombre": "Miel líquida Beepure",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Miel multifloral de textura fluida, ideal para endulzar infusiones, yogures y desayunos.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 5900
+      }
+    ],
+    "imagen": "/productos/miel-liquida-beepure.png",
+    "destacado": false
+  },
+  {
+    "id": "galletas-de-arroz-con-sal",
+    "nombre": "Galletitas de arroz con sal",
+    "categoria": "Galletitas",
+    "descripcion": "Galletitas de arroz integral con un toque salado, ideales para picadas, untables y colaciones livianas.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 1700
+      }
+    ],
+    "imagen": "/productos/galletas-de-arroz-con-sal.jpg",
+    "destacado": false
+  },
+  {
+    "id": "galletas-de-arroz-dulces",
+    "nombre": "Galletitas de arroz dulces",
+    "categoria": "Galletitas",
+    "descripcion": "Galletitas de arroz con perfil dulce, practicas para desayunos, meriendas o algo rico entre horas.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 1700
+      }
+    ],
+    "imagen": "/productos/galletas-de-arroz-dulces.webp",
+    "destacado": false
+  },
+  {
+    "id": "galletas-de-arroz-sin-sal",
+    "nombre": "Galletitas de arroz sin sal",
+    "categoria": "Galletitas",
+    "descripcion": "Galletitas de arroz integral sin sal agregada, versatiles para combinar con dulce, salado o consumir solas.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 1700
+      }
+    ],
+    "imagen": "/productos/galletas-de-arroz-sin-sal.jpg",
     "destacado": false
   }
 ]
