@@ -15,11 +15,17 @@ export function CategoryFilters({
   onChange,
 }: CategoryFiltersProps) {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const hasHydratedRef = useRef(false);
   const activeIndex = categories.findIndex((category) => category === activeCategory);
   const canGoBack = activeIndex > 0;
   const canGoForward = activeIndex >= 0 && activeIndex < categories.length - 1;
 
   useEffect(() => {
+    if (!hasHydratedRef.current) {
+      hasHydratedRef.current = true;
+      return;
+    }
+
     const activeButton = buttonRefs.current[activeIndex];
 
     activeButton?.scrollIntoView({

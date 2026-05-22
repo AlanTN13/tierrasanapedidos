@@ -18,7 +18,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
   const [selectedPresentationLabel, setSelectedPresentationLabel] = useState(
-    product.presentaciones[0]?.etiqueta ?? "unidad",
+    getDefaultPresentationLabel(product),
   );
 
   const selectedPresentation =
@@ -150,6 +150,20 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
       </div>
     </article>
   );
+}
+
+function getDefaultPresentationLabel(product: Product) {
+  const preferredLabelByCategory: Record<string, ProductPresentation["etiqueta"]> = {
+    Legumbres: "500g",
+    Semillas: "250g",
+  };
+
+  const preferredLabel = preferredLabelByCategory[product.categoria];
+  const matchingPresentation = product.presentaciones.find(
+    (presentation) => presentation.etiqueta === preferredLabel,
+  );
+
+  return matchingPresentation?.etiqueta ?? product.presentaciones[0]?.etiqueta ?? "unidad";
 }
 
 type QuantityButtonProps = {

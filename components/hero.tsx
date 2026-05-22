@@ -1,6 +1,10 @@
 import Image from "next/image";
 
-export function Hero() {
+type HeroProps = {
+  onOpenShipping?: () => void;
+};
+
+export function Hero({ onOpenShipping }: HeroProps) {
   return (
     <section id="inicio" className="container-shell pt-7 pb-10 sm:pt-10 sm:pb-14">
       <div className="surface-panel organic-outline relative overflow-hidden rounded-[2.3rem] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14">
@@ -36,6 +40,23 @@ export function Hero() {
               Armá tu pedido por WhatsApp
             </p>
           </div>
+
+          {onOpenShipping ? (
+            <button
+              type="button"
+              onClick={onOpenShipping}
+              className="mt-5 inline-flex items-center gap-3 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white shadow-[0_16px_30px_rgba(111,127,79,0.22)] focus:outline-none focus:ring-2 focus:ring-olive/35 lg:hidden"
+              aria-label="Ver informacion de entregas"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/18 text-base">
+                📦
+              </span>
+              <span>Ver envios gratis</span>
+              <span aria-hidden="true" className="text-base leading-none text-white/88">
+                →
+              </span>
+            </button>
+          ) : null}
         </div>
       </div>
     </section>

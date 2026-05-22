@@ -98,12 +98,11 @@ function StorefrontContent({ products }: StorefrontProps) {
         categories={availableCategories}
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
-        onOpenShipping={() => setIsShippingOpen(true)}
         totalItems={totalItems}
         onOpenCart={openCart}
       />
       <main>
-        <Hero />
+        <Hero onOpenShipping={() => setIsShippingOpen(true)} />
 
         <section id="productos" className="container-shell pb-12">
           <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
@@ -257,8 +256,8 @@ function StorefrontContent({ products }: StorefrontProps) {
                 Entregas en la zona sin costo
               </p>
               <p className="mt-2 text-sm leading-6 text-foreground/68">
-                Realizamos entregas en Avellaneda, Villa Dominico, Gerli,
-                Bernal y Don Bosco.
+                Realizamos entregas en Avellaneda, Sarandi, Villa Dominico,
+                Gerli, Bernal y Don Bosco.
               </p>
               <p className="mt-2 text-sm leading-6 text-foreground/68">
                 El dia y horario se coordina por WhatsApp.
