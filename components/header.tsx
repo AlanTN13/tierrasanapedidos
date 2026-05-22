@@ -8,6 +8,7 @@ type HeaderProps = {
   categories: FilterCategory[];
   activeCategory: FilterCategory;
   onChangeCategory: (category: FilterCategory) => void;
+  onOpenShipping: () => void;
   totalItems: number;
   onOpenCart: () => void;
 };
@@ -16,6 +17,7 @@ export function Header({
   categories,
   activeCategory,
   onChangeCategory,
+  onOpenShipping,
   totalItems,
   onOpenCart,
 }: HeaderProps) {
@@ -207,6 +209,31 @@ export function Header({
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="container-shell py-3 lg:hidden">
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              setIsMenuOpen(false);
+              onOpenShipping();
+            }}
+            className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+            aria-label="Ver informacion de entregas"
+          >
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/18 text-base">
+              📦
+            </span>
+            <span>Ver envios gratis</span>
+            <span
+              aria-hidden="true"
+              className="text-base leading-none text-white/88"
+            >
+              →
+            </span>
+          </button>
         </div>
       </div>
 

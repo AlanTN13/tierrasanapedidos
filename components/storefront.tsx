@@ -98,11 +98,12 @@ function StorefrontContent({ products }: StorefrontProps) {
         categories={availableCategories}
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
+        onOpenShipping={() => setIsShippingOpen(true)}
         totalItems={totalItems}
         onOpenCart={openCart}
       />
       <main>
-        <Hero onOpenShipping={() => setIsShippingOpen(true)} />
+        <Hero />
 
         <section id="productos" className="container-shell pb-12">
           <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
