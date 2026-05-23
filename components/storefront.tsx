@@ -257,8 +257,8 @@ function StorefrontContent({ products }: StorefrontProps) {
                 Entregas en la zona sin costo
               </p>
               <p className="mt-2 text-sm leading-6 text-foreground/68">
-                Realizamos entregas en Avellaneda, Sarandi, Villa Dominico,
-                Gerli, Bernal y Don Bosco.
+                Realizamos entregas en Avellaneda, Sarandi, Wilde, Villa
+                Dominico, Gerli, Bernal y Don Bosco.
               </p>
               <p className="mt-2 text-sm leading-6 text-foreground/68">
                 El dia y horario se coordina por WhatsApp.

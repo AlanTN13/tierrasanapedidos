@@ -65,8 +65,8 @@ export function Header({
                   Entregas en la zona sin costo
                 </p>
                 <p className="mt-0.5 text-sm leading-5 text-white/84">
-                  Avellaneda, Sarandi, Villa Dominico, Gerli, Bernal y Don Bosco.
-                  Coordinamos por WhatsApp.
+                  Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y
+                  Don Bosco. Coordinamos por WhatsApp.
                 </p>
               </div>
             </div>

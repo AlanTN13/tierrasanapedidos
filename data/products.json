@@ -7,19 +7,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 4590
+        "precio": 3500
       },
       {
         "etiqueta": "250g",
-        "precio": 10590
+        "precio": 7500
       },
       {
         "etiqueta": "500g",
-        "precio": 19790
+        "precio": 14500
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 36590
+        "precio": 28000
       }
     ],
     "imagen": "/productos/almendras.png",
@@ -59,19 +59,19 @@
     "presentaciones": [
       {
         "etiqueta": "100g",
-        "precio": 3990
+        "precio": 3000
       },
       {
         "etiqueta": "250g",
-        "precio": 9190
+        "precio": 6500
       },
       {
         "etiqueta": "500g",
-        "precio": 17290
+        "precio": 12500
       },
       {
         "etiqueta": "1 kilo",
-        "precio": 31890
+        "precio": 24000
       }
     ],
     "imagen": "/productos/nueces.png",
