@@ -808,10 +808,6 @@
     "descripcion": "Orégano aromático para sumar sabor a pizzas, salsas, panes y aderezos.",
     "presentaciones": [
       {
-        "etiqueta": "50g",
-        "precio": 1390
-      },
-      {
         "etiqueta": "100g",
         "precio": 2500
       },
@@ -833,10 +829,6 @@
     "categoria": "Especias",
     "descripcion": "Mezcla especiada pensada para pizzas, salsas y preparaciones de horno.",
     "presentaciones": [
-      {
-        "etiqueta": "50g",
-        "precio": 790
-      },
       {
         "etiqueta": "100g",
         "precio": 1400
@@ -860,10 +852,6 @@
     "descripcion": "Pimentón de sabor intenso para realzar guisos, salteados y marinados.",
     "presentaciones": [
       {
-        "etiqueta": "50g",
-        "precio": 690
-      },
-      {
         "etiqueta": "100g",
         "precio": 1300
       },
@@ -885,10 +873,6 @@
     "categoria": "Especias",
     "descripcion": "Ajo en polvo práctico y rendidor para condimentar de forma rápida y pareja.",
     "presentaciones": [
-      {
-        "etiqueta": "50g",
-        "precio": 990
-      },
       {
         "etiqueta": "100g",
         "precio": 1800
@@ -912,10 +896,6 @@
     "descripcion": "Romero aromatico e intenso, ideal para papas, focaccias, carnes y vegetales al horno.",
     "presentaciones": [
       {
-        "etiqueta": "50g",
-        "precio": 1000
-      },
-      {
         "etiqueta": "100g",
         "precio": 1800
       },
@@ -937,10 +917,6 @@
     "categoria": "Especias",
     "descripcion": "Pimenton ahumado de sabor profundo, perfecto para dar color y un toque intenso a salsas, arroces y marinados.",
     "presentaciones": [
-      {
-        "etiqueta": "50g",
-        "precio": 900
-      },
       {
         "etiqueta": "100g",
         "precio": 1600
@@ -964,10 +940,6 @@
     "descripcion": "Aji molido de picor equilibrado, ideal para sumar caracter a guisos, empanadas, adobos y salsas.",
     "presentaciones": [
       {
-        "etiqueta": "50g",
-        "precio": 900
-      },
-      {
         "etiqueta": "100g",
         "precio": 1500
       },
@@ -989,10 +961,6 @@
     "categoria": "Especias",
     "descripcion": "Blend clasico para carnes, vegetales y marinados, con notas herbales y picantes bien equilibradas.",
     "presentaciones": [
-      {
-        "etiqueta": "50g",
-        "precio": 900
-      },
       {
         "etiqueta": "100g",
         "precio": 1500
@@ -1016,10 +984,6 @@
     "descripcion": "Mezcla aromatica de ajo y perejil, versatil para pastas, panes, carnes, papas y salteados.",
     "presentaciones": [
       {
-        "etiqueta": "50g",
-        "precio": 800
-      },
-      {
         "etiqueta": "100g",
         "precio": 1400
       },
@@ -1041,10 +1005,6 @@
     "categoria": "Especias",
     "descripcion": "Canela en polvo de aroma calido y dulce, ideal para reposteria, infusiones, granolas y frutas.",
     "presentaciones": [
-      {
-        "etiqueta": "50g",
-        "precio": 1200
-      },
       {
         "etiqueta": "100g",
         "precio": 2000
