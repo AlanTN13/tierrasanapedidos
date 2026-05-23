@@ -2,7 +2,7 @@
   {
     "id": "almendra",
     "nombre": "Almendra",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Fruto seco crocante y versatil, ideal para snacks, desayunos y recetas caseras.",
     "presentaciones": [
       {
@@ -28,7 +28,7 @@
   {
     "id": "almendras-con-cascara",
     "nombre": "Almendras con cáscara",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Almendra entera con su cáscara, perfecta para quienes buscan un formato más natural.",
     "presentaciones": [
       {
@@ -54,7 +54,7 @@
   {
     "id": "nuez-mariposa",
     "nombre": "Nuez mariposa",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Nueces seleccionadas de sabor suave, muy rendidoras para consumir solas o en granolas.",
     "presentaciones": [
       {
@@ -80,7 +80,7 @@
   {
     "id": "nuez-con-cascara",
     "nombre": "Nuez con cáscara",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Nuez con cáscara para conservar mejor su frescura y disfrutarla recién abierta.",
     "presentaciones": [
       {
@@ -106,7 +106,7 @@
   {
     "id": "castanas-de-caju",
     "nombre": "Castañas de cajú",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Castañas de cajú tiernas y crocantes, ideales para picadas, ensaladas y snacks.",
     "presentaciones": [
       {
@@ -132,7 +132,7 @@
   {
     "id": "pistachos-pelados",
     "nombre": "Pistachos pelados",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Pistachos pelados listos para consumir, con sabor intenso y textura delicada.",
     "presentaciones": [
       {
@@ -154,7 +154,7 @@
   {
     "id": "pistachos-con-cascara",
     "nombre": "Pistachos con cáscara salados",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Pistachos con cáscara para una experiencia más natural y un snack para compartir.",
     "presentaciones": [
       {
@@ -176,7 +176,7 @@
   {
     "id": "mani-tostado-con-sal",
     "nombre": "Maní tostado con sal",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Maní tostado con un toque de sal, clásico para colaciones y picadas.",
     "presentaciones": [
       {
@@ -202,7 +202,7 @@
   {
     "id": "mix-con-avellanas",
     "nombre": "Mix con avellanas",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Combinacion de avellana, castaña de caju, almendra, nueces y mani, ideal para un snack rico, crocante y rendidor.",
     "presentaciones": [
       {
@@ -228,7 +228,7 @@
   {
     "id": "mix-con-pasas-y-banana",
     "nombre": "Mix con pasas y banana",
-    "categoria": "Frutos secos",
+    "categoria": "Frutos secos y snaks",
     "descripcion": "Blend dulce y equilibrado de pasas de uva, almendra, nueces, banana deshidratada y mani, perfecto para colaciones y desayunos.",
     "presentaciones": [
       {
@@ -813,11 +813,15 @@
       },
       {
         "etiqueta": "100g",
-        "precio": 2590
+        "precio": 2500
       },
       {
         "etiqueta": "200g",
-        "precio": 4790
+        "precio": 4500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 10500
       }
     ],
     "imagen": "/productos/oregano.png",
@@ -835,11 +839,15 @@
       },
       {
         "etiqueta": "100g",
-        "precio": 1390
+        "precio": 1400
       },
       {
         "etiqueta": "200g",
-        "precio": 2590
+        "precio": 2600
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6000
       }
     ],
     "imagen": "/productos/adobo-para-pizza.png",
@@ -857,11 +865,15 @@
       },
       {
         "etiqueta": "100g",
-        "precio": 1190
+        "precio": 1300
       },
       {
         "etiqueta": "200g",
-        "precio": 2190
+        "precio": 2400
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5500
       }
     ],
     "imagen": "/productos/pimenton.png",
@@ -879,14 +891,174 @@
       },
       {
         "etiqueta": "100g",
-        "precio": 1690
+        "precio": 1800
       },
       {
         "etiqueta": "200g",
-        "precio": 3190
+        "precio": 3300
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7500
       }
     ],
     "imagen": "/productos/ajo-en-polvo.png",
+    "destacado": false
+  },
+  {
+    "id": "romero",
+    "nombre": "Romero",
+    "categoria": "Especias",
+    "descripcion": "Romero aromatico e intenso, ideal para papas, focaccias, carnes y vegetales al horno.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 1000
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 3500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 8000
+      }
+    ],
+    "imagen": "/productos/romero.png",
+    "destacado": false
+  },
+  {
+    "id": "pimenton-ahumado",
+    "nombre": "Pimentón ahumado",
+    "categoria": "Especias",
+    "descripcion": "Pimenton ahumado de sabor profundo, perfecto para dar color y un toque intenso a salsas, arroces y marinados.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1600
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 3000
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7000
+      }
+    ],
+    "imagen": "/productos/pimenton-ahumado.png",
+    "destacado": false
+  },
+  {
+    "id": "aji-molido",
+    "nombre": "Ají molido",
+    "categoria": "Especias",
+    "descripcion": "Aji molido de picor equilibrado, ideal para sumar caracter a guisos, empanadas, adobos y salsas.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1500
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 2800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6500
+      }
+    ],
+    "imagen": "/productos/aji-molido.png",
+    "destacado": false
+  },
+  {
+    "id": "chimichurri",
+    "nombre": "Chimichurri",
+    "categoria": "Especias",
+    "descripcion": "Blend clasico para carnes, vegetales y marinados, con notas herbales y picantes bien equilibradas.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 900
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1500
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 2800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6500
+      }
+    ],
+    "imagen": "/productos/chimichurri.png",
+    "destacado": false
+  },
+  {
+    "id": "provenzal",
+    "nombre": "Provenzal",
+    "categoria": "Especias",
+    "descripcion": "Mezcla aromatica de ajo y perejil, versatil para pastas, panes, carnes, papas y salteados.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 800
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 1400
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6000
+      }
+    ],
+    "imagen": "/productos/provenzal.png",
+    "destacado": false
+  },
+  {
+    "id": "canela-en-polvo",
+    "nombre": "Canela en polvo",
+    "categoria": "Especias",
+    "descripcion": "Canela en polvo de aroma calido y dulce, ideal para reposteria, infusiones, granolas y frutas.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 1200
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 2000
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 3800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 9000
+      }
+    ],
+    "imagen": "/productos/canela-en-polvo.png",
     "destacado": false
   },
   {
@@ -961,6 +1133,32 @@
       }
     ],
     "imagen": "/productos/azucar-impalpable.png",
+    "destacado": false
+  },
+  {
+    "id": "cacao-amargo-alcalino",
+    "nombre": "Cacao amargo alcalino",
+    "categoria": "Reposteria",
+    "descripcion": "Cacao amargo de sabor profundo, ideal para budines, brownies, chocolatadas, granolas y recetas de reposteria.",
+    "presentaciones": [
+      {
+        "etiqueta": "50g",
+        "precio": 1200
+      },
+      {
+        "etiqueta": "100g",
+        "precio": 2200
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 4000
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 9000
+      }
+    ],
+    "imagen": "/productos/cacao-amargo-alcalino.png",
     "destacado": false
   },
   {
@@ -1073,6 +1271,68 @@
       }
     ],
     "imagen": "/productos/galletas-de-arroz-sin-sal.jpg",
+    "destacado": false
+  },
+  {
+    "id": "aceite-de-oliva-extra-virgen",
+    "nombre": "Aceite de oliva extra virgen",
+    "categoria": "Aceites",
+    "descripcion": "Aceite de oliva extra virgen, ideal para ensaladas, tostadas, marinados y cocina diaria.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 15000
+      }
+    ],
+    "imagen": "/productos/aceite-de-oliva-extra-virgen.png",
+    "destacado": false
+  },
+  {
+    "id": "mix-cervecero-tradicional",
+    "nombre": "Mix cervecero tradicional",
+    "categoria": "Frutos secos y snaks",
+    "descripcion": "Blend salado y bien crocante con mani tostado, mani cervecero, maiz frito y garbanzo frito, ideal para picadas y reuniones.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 3000
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5000
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 8500
+      }
+    ],
+    "imagen": "/productos/mix-cervecero-tradicional.png",
+    "destacado": false
+  },
+  {
+    "id": "pasas-de-uva",
+    "nombre": "Pasas de uva",
+    "categoria": "Frutos secos y snaks",
+    "descripcion": "Pasas de uva dulces y rendidoras, ideales para colaciones, granolas, reposteria o para sumar a mezclas caseras.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3800
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 6500
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 12000
+      }
+    ],
+    "imagen": "/productos/pasas-de-uva.png",
     "destacado": false
   }
 ]

@@ -166,14 +166,27 @@ function StorefrontContent({ products }: StorefrontProps) {
         <section className="container-shell pb-10">
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-olive-soft text-xl text-olive-dark">
-                🛒
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-olive-soft text-xl text-olive-dark">
+                  🛒
+                </div>
+                <span className="section-kicker">Como comprar</span>
               </div>
-              <span className="section-kicker mt-4">Pedido asistido</span>
-              <p className="mt-3 max-w-md text-sm leading-6 text-foreground/68">
-                Revisa tu carrito antes de enviar el pedido y confirmamos stock,
-                precios y retiro por WhatsApp.
+
+              <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
+                Armá tu pedido en 3 pasos
+              </h3>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
+                Elegís productos, revisás el carrito y nos lo enviás por
+                WhatsApp. Después confirmamos stock, total y entrega.
               </p>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                <StepPill number="1" text="Elegí productos y peso" />
+                <StepPill number="2" text="Revisá el carrito" />
+                <StepPill number="3" text="Enviá el pedido" />
+              </div>
+
               <button
                 type="button"
                 onClick={openCart}
@@ -183,20 +196,27 @@ function StorefrontContent({ products }: StorefrontProps) {
               </button>
             </div>
 
-            <div className="organic-outline rounded-[2rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.9)_0%,rgba(254,244,247,0.96)_30%,rgba(243,239,255,0.96)_100%)] px-5 py-6 sm:px-6">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,#fdf497_0%,#fd5949_38%,#d6249f_68%,#285AEB_100%)] text-white shadow-[0_12px_26px_rgba(214,36,159,0.18)]">
-                <InstagramMiniIcon />
+            <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,rgba(253,244,151,0.28)_0%,rgba(253,89,73,0.24)_35%,rgba(214,36,159,0.18)_68%,rgba(40,90,235,0.16)_100%)] text-[#d6249f]">
+                  <InstagramMiniIcon />
+                </div>
+                <span className="section-kicker">Instagram</span>
               </div>
-              <span className="section-kicker mt-4">Instagram</span>
-              <p className="mt-3 max-w-md text-sm leading-6 text-foreground/68">
-                Seguinos para ver ingresos, novedades y un poco del día a día de
-                Tierra Sana.
+
+              <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
+                Seguinos para ver novedades
+              </h3>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
+                Compartimos ingresos, productos nuevos y un poco del día a día
+                de Tierra Sana.
               </p>
+
               <a
                 href="https://www.instagram.com/tierrasana.dietetica/"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(135deg,#fd5949_0%,#d6249f_58%,#285AEB_100%)] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(214,36,159,0.2)] hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-[#d6249f]/30 sm:w-auto"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-[#d6249f]/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(214,36,159,0.06)] hover:border-[#d6249f]/24 hover:bg-[#fff7fb] focus:outline-none focus:ring-2 focus:ring-[#d6249f]/20 sm:w-auto"
               >
                 Ir a @tierrasana.dietetica
               </a>
@@ -332,5 +352,23 @@ function InstagramMiniIcon() {
       <circle cx="12" cy="12" r="3.75" />
       <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
     </svg>
+  );
+}
+
+type StepPillProps = {
+  number: string;
+  text: string;
+};
+
+function StepPill({ number, text }: StepPillProps) {
+  return (
+    <div className="rounded-[1.4rem] border border-olive/10 bg-white/72 p-3">
+      <div className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-olive text-xs font-bold text-white">
+        {number}
+      </div>
+      <p className="mt-2 text-sm font-medium leading-5 text-olive-dark">
+        {text}
+      </p>
+    </div>
   );
 }
