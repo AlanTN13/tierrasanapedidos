@@ -40,8 +40,8 @@ export function Header({
   }, [isMenuOpen]);
 
   return (
-    <header>
-      <div className="sticky top-0 z-30 border-b border-olive/10 bg-background/85 backdrop-blur-xl">
+    <header className="lg:sticky lg:top-0 lg:z-40">
+      <div className="sticky top-0 z-40 border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:static">
         <div className="container-shell py-4">
         <div className="hidden items-center justify-between gap-4 lg:flex">
           <a href="#inicio" className="min-w-0">
@@ -159,52 +159,54 @@ export function Header({
         </div>
         </div>
 
-        <div
-          id="mobile-category-menu"
-          className={`border-t border-olive/8 transition-[grid-template-rows,opacity] duration-300 lg:hidden ${
-            isMenuOpen ? "grid grid-rows-[1fr] opacity-100" : "grid grid-rows-[0fr] opacity-0"
-          }`}
-        >
-          <div className="overflow-hidden">
-            <div className="container-shell py-3">
-              <div className="organic-outline rounded-[1.5rem] bg-white/76 p-4 shadow-[0_14px_30px_rgba(111,127,79,0.08)]">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-bold tracking-[0.12em] text-earth uppercase">
-                      Categorias
-                    </p>
-                    <p className="mt-1 text-sm text-foreground/62">
-                      Elegi una seccion y bajamos directo al catalogo.
-                    </p>
+        <div className="container-shell py-3 lg:hidden">
+          <div
+            id="mobile-category-menu"
+            className={`border-t border-olive/8 transition-[grid-template-rows,opacity] duration-300 ${
+              isMenuOpen ? "grid grid-rows-[1fr] opacity-100" : "grid grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <div className="py-3">
+                <div className="organic-outline rounded-[1.5rem] bg-white/76 p-4 shadow-[0_14px_30px_rgba(111,127,79,0.08)]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[11px] font-bold tracking-[0.12em] text-earth uppercase">
+                        Categorias
+                      </p>
+                      <p className="mt-1 text-sm text-foreground/62">
+                        Elegi una seccion y bajamos directo al catalogo.
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-olive-soft px-3 py-1 text-xs font-semibold text-olive-dark">
+                      {activeCategory}
+                    </span>
                   </div>
-                  <span className="rounded-full bg-olive-soft px-3 py-1 text-xs font-semibold text-olive-dark">
-                    {activeCategory}
-                  </span>
-                </div>
 
-                <div className="mt-4 grid gap-2">
-                  {categories.map((category) => {
-                    const isActive = category === activeCategory;
+                  <div className="mt-4 grid gap-2">
+                    {categories.map((category) => {
+                      const isActive = category === activeCategory;
 
-                    return (
-                      <button
-                        key={category}
-                        type="button"
-                        onClick={() => {
-                          onChangeCategory(category);
-                          setIsMenuOpen(false);
-                        }}
-                        className={`flex items-center justify-between rounded-[1rem] border px-4 py-3 text-left text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-olive/35 ${
-                          isActive
-                            ? "border-olive bg-olive text-white"
-                            : "border-olive/12 bg-white/90 text-olive-dark"
-                        }`}
-                      >
-                        <span>{category}</span>
-                        <span aria-hidden="true">{isActive ? "•" : "→"}</span>
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={category}
+                          type="button"
+                          onClick={() => {
+                            onChangeCategory(category);
+                            setIsMenuOpen(false);
+                          }}
+                          className={`flex items-center justify-between rounded-[1rem] border px-4 py-3 text-left text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-olive/35 ${
+                            isActive
+                              ? "border-olive bg-olive text-white"
+                              : "border-olive/12 bg-white/90 text-olive-dark"
+                          }`}
+                        >
+                          <span>{category}</span>
+                          <span aria-hidden="true">{isActive ? "•" : "→"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -213,29 +215,29 @@ export function Header({
       </div>
 
       <div className="container-shell py-3 lg:hidden">
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => {
-              setIsMenuOpen(false);
-              onOpenShipping();
-            }}
-            className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
-            aria-label="Ver informacion de entregas"
-          >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/18 text-base">
-              📦
-            </span>
-            <span>Ver envios gratis</span>
-            <span
-              aria-hidden="true"
-              className="text-base leading-none text-white/88"
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(false);
+                onOpenShipping();
+              }}
+              className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+              aria-label="Ver informacion de entregas"
             >
-              →
-            </span>
-          </button>
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/18 text-base">
+                📦
+              </span>
+              <span>Ver envios gratis</span>
+              <span
+                aria-hidden="true"
+                className="text-base leading-none text-white/88"
+              >
+                →
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
 
     </header>
   );

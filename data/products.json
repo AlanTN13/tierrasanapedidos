@@ -330,10 +330,6 @@
     "descripcion": "Alubias secas seleccionadas, excelentes para guisos, ensaladas y platos de cuchara.",
     "presentaciones": [
       {
-        "etiqueta": "250g",
-        "precio": 1190
-      },
-      {
         "etiqueta": "500g",
         "precio": 2090
       },
@@ -351,10 +347,6 @@
     "categoria": "Legumbres",
     "descripcion": "Porotos negros rendidores, ideales para preparaciones sabrosas y nutritivas.",
     "presentaciones": [
-      {
-        "etiqueta": "250g",
-        "precio": 990
-      },
       {
         "etiqueta": "500g",
         "precio": 1890
@@ -374,10 +366,6 @@
     "descripcion": "Garbanzos de cocción noble, perfectos para hummus, ensaladas y platos calientes.",
     "presentaciones": [
       {
-        "etiqueta": "250g",
-        "precio": 890
-      },
-      {
         "etiqueta": "500g",
         "precio": 1690
       },
@@ -395,10 +383,6 @@
     "categoria": "Legumbres",
     "descripcion": "Lentejas prácticas y rendidoras para guisos, sopas y ensaladas completas.",
     "presentaciones": [
-      {
-        "etiqueta": "250g",
-        "precio": 1290
-      },
       {
         "etiqueta": "500g",
         "precio": 2290
@@ -418,10 +402,6 @@
     "descripcion": "Maíz pisingallo ideal para pochoclos caseros, crocantes y rendidores.",
     "presentaciones": [
       {
-        "etiqueta": "250g",
-        "precio": 690
-      },
-      {
         "etiqueta": "500g",
         "precio": 1290
       },
@@ -439,10 +419,6 @@
     "categoria": "Legumbres",
     "descripcion": "Proteína vegetal práctica y versátil para rellenos, salsas y comidas completas.",
     "presentaciones": [
-      {
-        "etiqueta": "250g",
-        "precio": 1290
-      },
       {
         "etiqueta": "500g",
         "precio": 2290
