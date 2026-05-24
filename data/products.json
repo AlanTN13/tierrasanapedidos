@@ -1112,6 +1112,7 @@
     "nombre": "Pasta maní Entrenuts Caramel",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de maní sabor caramelo, cremosa y muy rica para desayunos y colaciones.",
+    "tags": ["mantequilla de mani", "pasta de mani", "untable"],
     "presentaciones": [
       {
         "etiqueta": "unidad",
@@ -1126,6 +1127,7 @@
     "nombre": "Pasta Maní Entrenuts Cookie",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de mani protein ideal para recetas, snacks y desayunos con buen aporte proteico.",
+    "tags": ["mantequilla de mani", "pasta de mani", "untable"],
     "presentaciones": [
       {
         "etiqueta": "unidad",
@@ -1140,6 +1142,7 @@
     "nombre": "Pasta Maní Beepure",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de maní de textura cremosa, ideal para tostadas, smoothies y snacks.",
+    "tags": ["mantequilla de mani", "pasta de mani", "untable"],
     "presentaciones": [
       {
         "etiqueta": "unidad",

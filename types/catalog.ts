@@ -12,6 +12,7 @@ export type Product = {
   nombre: string;
   categoria: ProductCategory;
   descripcion: string;
+  tags?: string[];
   presentaciones: ProductPresentation[];
   imagen: string;
   destacado: boolean;

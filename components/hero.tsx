@@ -1,6 +1,10 @@
 import Image from "next/image";
 
-export function Hero() {
+type HeroProps = {
+  onOpenCart: () => void;
+};
+
+export function Hero({ onOpenCart }: HeroProps) {
   return (
     <section id="inicio" className="container-shell pt-7 pb-10 sm:pt-10 sm:pb-14">
       <div className="surface-panel organic-outline relative overflow-hidden rounded-[2.3rem] px-5 py-8 sm:px-8 sm:py-10 lg:px-12 lg:py-14">
@@ -17,13 +21,27 @@ export function Hero() {
         </div>
 
         <div className="relative max-w-3xl">
-          <span className="section-kicker">Tierra Sana</span>
-          <h1 className="mt-5 max-w-4xl font-display text-5xl leading-[0.94] font-semibold text-olive-dark sm:text-6xl lg:text-7xl">
-            Productos naturales para todos los días
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-olive-soft text-xl text-olive-dark">
+              🛒
+            </div>
+            <span className="section-kicker">Como comprar</span>
+          </div>
+
+          <h1 className="mt-5 max-w-3xl font-display text-4xl leading-[0.98] font-semibold text-olive-dark sm:text-5xl lg:text-6xl">
+            Armá tu pedido en 3 pasos
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-foreground/68 sm:text-lg">
-            Frutos secos, cereales, semillas y productos naturales para armar tus pedidos de forma simple.
+          <p className="mt-5 max-w-2xl text-base leading-7 text-foreground/68 sm:text-lg">
+            Elegís productos, revisás el carrito y nos lo enviás por WhatsApp.
+            Después confirmamos stock, total y entrega para que compres simple y
+            sin vueltas.
           </p>
+
+          <div className="mt-7 grid gap-3 sm:grid-cols-3">
+            <StepPill number="1" text="Elegí productos y peso" />
+            <StepPill number="2" text="Revisá el carrito" />
+            <StepPill number="3" text="Enviá el pedido" />
+          </div>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <a
@@ -32,12 +50,29 @@ export function Hero() {
             >
               Ver catalogo
             </a>
-            <p className="inline-flex items-center rounded-full bg-white/72 px-4 py-3 text-sm text-foreground/62">
-              Armá tu pedido por WhatsApp
-            </p>
+            <button
+              type="button"
+              onClick={onOpenCart}
+              className="inline-flex items-center justify-center rounded-full bg-white/78 px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(111,127,79,0.08)] hover:bg-olive-soft/45 focus:outline-none focus:ring-2 focus:ring-olive/35"
+            >
+              Revisar carrito
+            </button>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function StepPill({ number, text }: { number: string; text: string }) {
+  return (
+    <div className="organic-outline rounded-[1.45rem] bg-white/82 px-4 py-4 shadow-[0_12px_26px_rgba(111,127,79,0.08)]">
+      <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-sm font-bold text-white">
+        {number}
+      </div>
+      <p className="mt-3 text-sm font-medium text-olive-dark sm:text-[0.95rem]">
+        {text}
+      </p>
+    </div>
   );
 }

@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
-import { CategoryFilters } from "@/components/category-filters";
 import { FloatingCartButton } from "@/components/floating-cart-button";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
-import { filterProducts, getCategories } from "@/lib/catalog";
+import { filterProducts, getCategories, normalizeSearchText } from "@/lib/catalog";
 import type { FilterCategory, Product } from "@/types/catalog";
 
 type StorefrontProps = {
@@ -26,9 +25,12 @@ export function Storefront({ products }: StorefrontProps) {
 function StorefrontContent({ products }: StorefrontProps) {
   const availableCategories = getCategories(products);
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("Todos");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
-  const visibleProducts = filterProducts(products, activeCategory, "");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+  const normalizedSearchQuery = normalizeSearchText(deferredSearchQuery);
+  const visibleProducts = filterProducts(products, activeCategory, deferredSearchQuery);
   const activeCategoryLabel =
     activeCategory === "Todos" ? "Todas las categorias" : activeCategory;
 
@@ -99,37 +101,17 @@ function StorefrontContent({ products }: StorefrontProps) {
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
         onOpenShipping={() => setIsShippingOpen(true)}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onClearSearch={() => setSearchQuery("")}
         totalItems={totalItems}
         onOpenCart={openCart}
       />
       <main>
-        <Hero />
+        <Hero onOpenCart={openCart} />
 
         <section id="productos" className="container-shell pb-12">
-          <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <span className="section-kicker">Categorias</span>
-                <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
-                  Explora el catalogo por categoria
-                </h2>
-              </div>
-              <p className="max-w-xl text-sm leading-6 text-foreground/64">
-                Selecciona una familia de productos y te mostramos solo lo que
-                corresponde a esa seccion.
-              </p>
-            </div>
-
-            <div className="mt-6">
-              <CategoryFilters
-                categories={availableCategories}
-                activeCategory={activeCategory}
-                onChange={handleCategoryChange}
-              />
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <span className="section-kicker">Catalogo</span>
               <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
@@ -154,73 +136,44 @@ function StorefrontContent({ products }: StorefrontProps) {
           ) : (
             <div className="mt-6 rounded-[1.8rem] border border-dashed border-olive/18 bg-white/72 p-8 text-center">
               <p className="text-lg font-semibold text-olive-dark">
-                No encontramos productos para esa categoria.
+                {normalizedSearchQuery
+                  ? "No encontramos productos con esa busqueda."
+                  : "No encontramos productos para esa categoria."}
               </p>
               <p className="mt-2 text-sm leading-6 text-foreground/62">
-                Prueba con otro filtro para seguir armando tu pedido.
+                {normalizedSearchQuery
+                  ? "Probá con otro nombre o categoría."
+                  : "Prueba con otro filtro para seguir armando tu pedido."}
               </p>
             </div>
           )}
         </section>
 
         <section className="container-shell pb-10">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-olive-soft text-xl text-olive-dark">
-                  🛒
-                </div>
-                <span className="section-kicker">Como comprar</span>
+          <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,rgba(253,244,151,0.28)_0%,rgba(253,89,73,0.24)_35%,rgba(214,36,159,0.18)_68%,rgba(40,90,235,0.16)_100%)] text-[#d6249f]">
+                <InstagramMiniIcon />
               </div>
-
-              <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
-                Armá tu pedido en 3 pasos
-              </h3>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
-                Elegís productos, revisás el carrito y nos lo enviás por
-                WhatsApp. Después confirmamos stock, total y entrega.
-              </p>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                <StepPill number="1" text="Elegí productos y peso" />
-                <StepPill number="2" text="Revisá el carrito" />
-                <StepPill number="3" text="Enviá el pedido" />
-              </div>
-
-              <button
-                type="button"
-                onClick={openCart}
-                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(111,127,79,0.08)] hover:bg-olive-soft/45 focus:outline-none focus:ring-2 focus:ring-olive/35 sm:w-auto"
-              >
-                Revisar carrito
-              </button>
+              <span className="section-kicker">Instagram</span>
             </div>
 
-            <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,rgba(253,244,151,0.28)_0%,rgba(253,89,73,0.24)_35%,rgba(214,36,159,0.18)_68%,rgba(40,90,235,0.16)_100%)] text-[#d6249f]">
-                  <InstagramMiniIcon />
-                </div>
-                <span className="section-kicker">Instagram</span>
-              </div>
+            <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
+              Seguinos para ver novedades
+            </h3>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
+              Compartimos ingresos, productos nuevos y un poco del día a día de
+              Tierra Sana.
+            </p>
 
-              <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
-                Seguinos para ver novedades
-              </h3>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
-                Compartimos ingresos, productos nuevos y un poco del día a día
-                de Tierra Sana.
-              </p>
-
-              <a
-                href="https://www.instagram.com/tierrasana.dietetica/"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-[#d6249f]/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(214,36,159,0.06)] hover:border-[#d6249f]/24 hover:bg-[#fff7fb] focus:outline-none focus:ring-2 focus:ring-[#d6249f]/20 sm:w-auto"
-              >
-                Ir a @tierrasana.dietetica
-              </a>
-            </div>
+            <a
+              href="https://www.instagram.com/tierrasana.dietetica/"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-[#d6249f]/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(214,36,159,0.06)] hover:border-[#d6249f]/24 hover:bg-[#fff7fb] focus:outline-none focus:ring-2 focus:ring-[#d6249f]/20 sm:w-auto"
+            >
+              Ir a @tierrasana.dietetica
+            </a>
           </div>
         </section>
       </main>
@@ -352,23 +305,5 @@ function InstagramMiniIcon() {
       <circle cx="12" cy="12" r="3.75" />
       <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
     </svg>
-  );
-}
-
-type StepPillProps = {
-  number: string;
-  text: string;
-};
-
-function StepPill({ number, text }: StepPillProps) {
-  return (
-    <div className="rounded-[1.4rem] border border-olive/10 bg-white/72 p-3">
-      <div className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-olive text-xs font-bold text-white">
-        {number}
-      </div>
-      <p className="mt-2 text-sm font-medium leading-5 text-olive-dark">
-        {text}
-      </p>
-    </div>
   );
 }
