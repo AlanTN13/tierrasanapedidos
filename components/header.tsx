@@ -40,10 +40,10 @@ export function Header({
   }, [isMenuOpen]);
 
   return (
-    <header className="lg:sticky lg:top-0 lg:z-40">
-      <div className="sticky top-0 z-40 border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:static">
+    <header className="lg:sticky lg:top-0 lg:z-50">
+      <div className="hidden border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:block">
         <div className="container-shell py-4">
-        <div className="hidden items-center justify-between gap-4 lg:flex">
+          <div className="flex items-center justify-between gap-4">
           <a href="#inicio" className="min-w-0">
             <Image
               src="/logo-tierra-sana-header.png"
@@ -101,9 +101,12 @@ export function Header({
               </span>
             </button>
           </div>
+          </div>
         </div>
+      </div>
 
-        <div className="lg:hidden">
+      <div className="fixed inset-x-0 top-0 z-50 border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:hidden">
+        <div className="container-shell py-4">
           <div className="flex items-center justify-between gap-3">
             <button
               type="button"
@@ -155,8 +158,6 @@ export function Header({
               </button>
             </div>
           </div>
-
-        </div>
         </div>
 
         <div className="container-shell py-3 lg:hidden">
@@ -214,7 +215,7 @@ export function Header({
         </div>
       </div>
 
-      <div className="container-shell py-3 lg:hidden">
+      <div className="container-shell mt-[5.25rem] py-3 lg:hidden">
           <div className="flex justify-center">
             <button
               type="button"

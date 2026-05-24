@@ -2,7 +2,7 @@
   {
     "id": "almendra",
     "nombre": "Almendra",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Fruto seco crocante y versatil, ideal para snacks, desayunos y recetas caseras.",
     "presentaciones": [
       {
@@ -28,7 +28,7 @@
   {
     "id": "almendras-con-cascara",
     "nombre": "Almendras con cáscara",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Almendra entera con su cáscara, perfecta para quienes buscan un formato más natural.",
     "presentaciones": [
       {
@@ -54,7 +54,7 @@
   {
     "id": "nuez-mariposa",
     "nombre": "Nuez mariposa",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Nueces seleccionadas de sabor suave, muy rendidoras para consumir solas o en granolas.",
     "presentaciones": [
       {
@@ -80,7 +80,7 @@
   {
     "id": "nuez-con-cascara",
     "nombre": "Nuez con cáscara",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Nuez con cáscara para conservar mejor su frescura y disfrutarla recién abierta.",
     "presentaciones": [
       {
@@ -106,7 +106,7 @@
   {
     "id": "castanas-de-caju",
     "nombre": "Castañas de cajú",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Castañas de cajú tiernas y crocantes, ideales para picadas, ensaladas y snacks.",
     "presentaciones": [
       {
@@ -132,7 +132,7 @@
   {
     "id": "pistachos-pelados",
     "nombre": "Pistachos pelados",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Pistachos pelados listos para consumir, con sabor intenso y textura delicada.",
     "presentaciones": [
       {
@@ -154,7 +154,7 @@
   {
     "id": "pistachos-con-cascara",
     "nombre": "Pistachos con cáscara salados",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Pistachos con cáscara para una experiencia más natural y un snack para compartir.",
     "presentaciones": [
       {
@@ -176,7 +176,7 @@
   {
     "id": "mani-tostado-con-sal",
     "nombre": "Maní tostado con sal",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Maní tostado con un toque de sal, clásico para colaciones y picadas.",
     "presentaciones": [
       {
@@ -202,7 +202,7 @@
   {
     "id": "mix-con-avellanas",
     "nombre": "Mix con avellanas",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Combinacion de avellana, castaña de caju, almendra, nueces y mani, ideal para un snack rico, crocante y rendidor.",
     "presentaciones": [
       {
@@ -228,7 +228,7 @@
   {
     "id": "mix-con-pasas-y-banana",
     "nombre": "Mix con pasas y banana",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Blend dulce y equilibrado de pasas de uva, almendra, nueces, banana deshidratada y mani, perfecto para colaciones y desayunos.",
     "presentaciones": [
       {
@@ -1078,10 +1078,6 @@
     "descripcion": "Cacao amargo de sabor profundo, ideal para budines, brownies, chocolatadas, granolas y recetas de reposteria.",
     "presentaciones": [
       {
-        "etiqueta": "50g",
-        "precio": 1200
-      },
-      {
         "etiqueta": "100g",
         "precio": 2200
       },
@@ -1226,7 +1222,7 @@
   {
     "id": "mix-cervecero-tradicional",
     "nombre": "Mix cervecero tradicional",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Blend salado y bien crocante con mani tostado, mani cervecero, maiz frito y garbanzo frito, ideal para picadas y reuniones.",
     "presentaciones": [
       {
@@ -1248,7 +1244,7 @@
   {
     "id": "pasas-de-uva",
     "nombre": "Pasas de uva",
-    "categoria": "Frutos secos y snaks",
+    "categoria": "Frutos secos y snacks",
     "descripcion": "Pasas de uva dulces y rendidoras, ideales para colaciones, granolas, reposteria o para sumar a mezclas caseras.",
     "presentaciones": [
       {

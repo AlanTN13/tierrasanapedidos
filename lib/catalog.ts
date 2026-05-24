@@ -1,7 +1,7 @@
 import type { FilterCategory, Product } from "@/types/catalog";
 
 const CATEGORY_ORDER = [
-  "Frutos secos y snaks",
+  "Frutos secos y snacks",
   "Semillas",
   "Harinas",
   "Legumbres",
