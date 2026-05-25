@@ -6,10 +6,6 @@
     "descripcion": "Fruto seco crocante y versatil, ideal para snacks, desayunos y recetas caseras.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 3500
-      },
-      {
         "etiqueta": "250g",
         "precio": 7500
       },
@@ -31,10 +27,6 @@
     "categoria": "Frutos secos y snacks",
     "descripcion": "Almendra entera con su cáscara, perfecta para quienes buscan un formato más natural.",
     "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 1790
-      },
       {
         "etiqueta": "250g",
         "precio": 4090
@@ -58,10 +50,6 @@
     "descripcion": "Nueces seleccionadas de sabor suave, muy rendidoras para consumir solas o en granolas.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 3000
-      },
-      {
         "etiqueta": "250g",
         "precio": 6500
       },
@@ -84,10 +72,6 @@
     "descripcion": "Nuez con cáscara para conservar mejor su frescura y disfrutarla recién abierta.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 1590
-      },
-      {
         "etiqueta": "250g",
         "precio": 3590
       },
@@ -109,10 +93,6 @@
     "categoria": "Frutos secos y snacks",
     "descripcion": "Castañas de cajú tiernas y crocantes, ideales para picadas, ensaladas y snacks.",
     "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 2990
-      },
       {
         "etiqueta": "250g",
         "precio": 6890
@@ -180,10 +160,6 @@
     "descripcion": "Maní tostado con un toque de sal, clásico para colaciones y picadas.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 590
-      },
-      {
         "etiqueta": "250g",
         "precio": 1290
       },
@@ -206,10 +182,6 @@
     "descripcion": "Combinacion de avellana, castaña de caju, almendra, nueces y mani, ideal para un snack rico, crocante y rendidor.",
     "presentaciones": [
       {
-        "etiqueta": "100g",
-        "precio": 2590
-      },
-      {
         "etiqueta": "250g",
         "precio": 5890
       },
@@ -231,10 +203,6 @@
     "categoria": "Frutos secos y snacks",
     "descripcion": "Blend dulce y equilibrado de pasas de uva, almendra, nueces, banana deshidratada y mani, perfecto para colaciones y desayunos.",
     "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 1590
-      },
       {
         "etiqueta": "250g",
         "precio": 3590
@@ -1250,10 +1218,6 @@
     "categoria": "Frutos secos y snacks",
     "descripcion": "Pasas de uva dulces y rendidoras, ideales para colaciones, granolas, reposteria o para sumar a mezclas caseras.",
     "presentaciones": [
-      {
-        "etiqueta": "100g",
-        "precio": 1700
-      },
       {
         "etiqueta": "250g",
         "precio": 3800
