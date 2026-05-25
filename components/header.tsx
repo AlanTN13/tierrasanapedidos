@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { FilterCategory } from "@/types/catalog";
 
@@ -8,7 +8,6 @@ type HeaderProps = {
   categories: FilterCategory[];
   activeCategory: FilterCategory;
   onChangeCategory: (category: FilterCategory) => void;
-  onOpenShipping: () => void;
   searchQuery: string;
   onSearchChange: (value: string) => void;
   onClearSearch: () => void;
@@ -20,7 +19,6 @@ export function Header({
   categories,
   activeCategory,
   onChangeCategory,
-  onOpenShipping,
   searchQuery = "",
   onSearchChange,
   onClearSearch,
@@ -29,6 +27,7 @@ export function Header({
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const desktopCategoriesRef = useRef<HTMLDivElement | null>(null);
   const instagramUrl = "https://www.instagram.com/tierrasana.dietetica/";
   const safeSearchQuery = searchQuery ?? "";
 
@@ -47,6 +46,20 @@ export function Header({
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isMenuOpen, isSearchOpen]);
+
+  function scrollDesktopCategories(direction: "left" | "right") {
+    const container = desktopCategoriesRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const distance = Math.max(container.clientWidth * 0.42, 220);
+    container.scrollBy({
+      left: direction === "right" ? distance : -distance,
+      behavior: "smooth",
+    });
+  }
 
   return (
     <>
@@ -118,43 +131,69 @@ export function Header({
             </div>
           </div>
 
-          <div className="border-t border-b border-olive/10 bg-white/94 shadow-[0_10px_24px_rgba(111,127,79,0.05)]">
+          <div className="border-t border-b border-olive/10">
             <div className="container-shell">
-              <div className="flex gap-8 overflow-x-auto py-4 text-[1.04rem] whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {categories.map((category) => {
-                  const isActive = category === activeCategory;
+              <div className="relative flex items-center gap-3 py-3">
+                <button
+                  type="button"
+                  onClick={() => scrollDesktopCategories("left")}
+                  className="organic-outline hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/78 text-olive-dark shadow-[0_8px_20px_rgba(111,127,79,0.08)] transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/25 xl:inline-flex"
+                  aria-label="Ver categorias anteriores"
+                >
+                  <ChevronLeftIcon />
+                </button>
 
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => onChangeCategory(category)}
-                      className={`shrink-0 border-b-2 pb-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-olive/25 ${
-                        isActive
-                          ? "border-olive text-olive-dark"
-                          : "border-transparent text-foreground/72 hover:text-olive-dark"
-                      }`}
-                    >
-                      <span className="inline-flex items-center gap-2">
-                        <span className={isActive ? "font-semibold" : "font-medium"}>
-                          {category}
+                <div className="pointer-events-none absolute inset-y-3 left-12 z-10 hidden w-10 bg-gradient-to-r from-[#fffdf8] to-transparent xl:block" />
+                <div className="pointer-events-none absolute inset-y-3 right-12 z-10 hidden w-10 bg-gradient-to-l from-[#fffdf8] to-transparent xl:block" />
+
+                <div
+                  ref={desktopCategoriesRef}
+                  className="flex min-w-0 flex-1 gap-8 overflow-x-auto py-1 text-[1.04rem] whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                >
+                  {categories.map((category) => {
+                    const isActive = category === activeCategory;
+
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() => onChangeCategory(category)}
+                        className={`shrink-0 border-b-2 pb-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-olive/25 ${
+                          isActive
+                            ? "border-olive text-olive-dark"
+                            : "border-transparent text-foreground/72 hover:text-olive-dark"
+                        }`}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <span className={isActive ? "font-semibold" : "font-medium"}>
+                            {category}
+                          </span>
+                          {isActive ? (
+                            <span
+                              aria-hidden="true"
+                              className="h-1.5 w-1.5 rounded-full bg-olive"
+                            />
+                          ) : null}
                         </span>
-                        {isActive ? (
-                          <span
-                            aria-hidden="true"
-                            className="h-1.5 w-1.5 rounded-full bg-olive"
-                          />
-                        ) : null}
-                      </span>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => scrollDesktopCategories("right")}
+                  className="organic-outline hidden h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/78 text-olive-dark shadow-[0_8px_20px_rgba(111,127,79,0.08)] transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/25 xl:inline-flex"
+                  aria-label="Ver mas categorias"
+                >
+                  <ChevronRightIcon />
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="fixed inset-x-0 top-0 z-50 border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:hidden">
+        <div className="border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:hidden">
           <div className="container-shell py-4">
             <div className="flex items-center justify-between gap-3">
               <button
@@ -261,7 +300,7 @@ export function Header({
             </div>
           </div>
 
-          <div className="border-t border-b border-olive/10 bg-white/94 shadow-[0_10px_24px_rgba(111,127,79,0.05)]">
+          <div className="border-t border-b border-olive/10">
             <div className="flex gap-7 overflow-x-auto px-4 py-3 text-[0.98rem] whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {categories.map((category) => {
                 const isActive = category === activeCategory;
@@ -354,53 +393,6 @@ export function Header({
         </div>
       </header>
 
-      <div className="container-shell pt-[10.75rem] pb-3 lg:hidden">
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => {
-              setIsMenuOpen(false);
-              setIsSearchOpen(false);
-              onOpenShipping();
-            }}
-            className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
-            aria-label="Ver informacion de entregas"
-          >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/18 text-base">
-              📦
-            </span>
-            <span>Ver envios gratis</span>
-            <span
-              aria-hidden="true"
-              className="text-base leading-none text-white/88"
-            >
-              →
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div className="container-shell hidden py-3 lg:block">
-        <div className="organic-outline flex items-center gap-4 rounded-[2rem] bg-olive px-4 py-3 text-white shadow-[0_14px_30px_rgba(111,127,79,0.18)]">
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/18 text-lg">
-              📦
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold tracking-[0.12em] text-white uppercase">
-                Entregas en la zona sin costo
-              </p>
-              <p className="mt-0.5 text-sm leading-5 text-white/84">
-                Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y Don
-                Bosco. Coordinamos por WhatsApp.
-              </p>
-            </div>
-          </div>
-          <span className="shrink-0 rounded-full bg-white/16 px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-white uppercase">
-            Sin cargo
-          </span>
-        </div>
-      </div>
     </>
   );
 }
@@ -419,6 +411,40 @@ function HamburgerIcon() {
       <path d="M4 7h16" />
       <path d="M4 12h16" />
       <path d="M4 17h16" />
+    </svg>
+  );
+}
+
+function ChevronLeftIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4.5 w-4.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4.5 w-4.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6" />
     </svg>
   );
 }

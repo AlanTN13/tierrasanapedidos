@@ -262,3 +262,13 @@ input {
     right: 2.3rem;
   }
 }
+
+@keyframes shipping-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}

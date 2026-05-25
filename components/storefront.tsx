@@ -96,11 +96,11 @@ function StorefrontContent({ products }: StorefrontProps) {
 
   return (
     <div className="pb-28">
+      <ShippingTicker onOpenShipping={() => setIsShippingOpen(true)} />
       <Header
         categories={availableCategories}
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
-        onOpenShipping={() => setIsShippingOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onClearSearch={() => setSearchQuery("")}
@@ -305,5 +305,34 @@ function InstagramMiniIcon() {
       <circle cx="12" cy="12" r="3.75" />
       <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
     </svg>
+  );
+}
+
+function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
+  const shippingTickerText =
+    "Entregas sin costo en Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y Don Bosco";
+
+  return (
+    <div className="border-b border-olive/10 bg-olive">
+      <button
+        type="button"
+        onClick={onOpenShipping}
+        className="relative block w-full overflow-hidden py-1.5 text-left text-white focus:outline-none focus:ring-2 focus:ring-white/25"
+        aria-label="Ver zonas y condiciones de entrega"
+      >
+        <div className="pointer-events-none flex min-w-max animate-[shipping-marquee_28s_linear_infinite] items-center gap-8 whitespace-nowrap pr-8">
+          {[0, 1, 2].map((item) => (
+            <span
+              key={item}
+              className="inline-flex items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
+            >
+              <span className="inline-flex items-center gap-3">
+                <span className="ml-3 sm:ml-4">{shippingTickerText}</span>
+              </span>
+            </span>
+          ))}
+        </div>
+      </button>
+    </div>
   );
 }
