@@ -1,6 +1,6 @@
 export type ProductCategory = string;
 
-export type FilterCategory = "Todos" | ProductCategory;
+export type FilterCategory = "Destacados" | ProductCategory;
 
 export type ProductPresentation = {
   etiqueta: string;

@@ -5,6 +5,7 @@ const CATEGORY_ORDER = [
   "Semillas",
   "Harinas",
   "Legumbres",
+  "Arroces",
   "Cereales",
   "Especias",
   "Reposteria",
@@ -29,7 +30,7 @@ export function getCategories(products: Product[]): FilterCategory[] {
     return aIndex - bIndex;
   });
 
-  return ["Todos", ...sortedCategories];
+  return ["Destacados", ...sortedCategories];
 }
 
 export function filterProducts(
@@ -40,7 +41,9 @@ export function filterProducts(
   const query = normalizeSearchText(rawQuery);
 
   const categoryFilteredProducts = products.filter((product) => {
-    return activeCategory === "Todos" || product.categoria === activeCategory;
+    return activeCategory === "Destacados"
+      ? product.destacado
+      : product.categoria === activeCategory;
   });
 
   if (!query) {
@@ -134,6 +137,7 @@ function getProductSearchTags(product: Product) {
     Semillas: ["desayuno", "saludable", "topping"],
     Harinas: ["cocina", "recetas", "panificados"],
     Legumbres: ["saludable", "cocina", "almuerzo"],
+    Arroces: ["cocina", "guarnicion", "sushi"],
     Cereales: ["desayuno", "merienda", "saludable"],
     Especias: ["condimentos", "cocina", "sabor"],
     Reposteria: ["reposteria", "postres", "horneados"],

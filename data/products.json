@@ -19,7 +19,7 @@
       }
     ],
     "imagen": "/productos/almendras.png",
-    "destacado": true
+    "destacado": false
   },
   {
     "id": "almendras-con-cascara",
@@ -63,7 +63,7 @@
       }
     ],
     "imagen": "/productos/nueces.png",
-    "destacado": true
+    "destacado": false
   },
   {
     "id": "nuez-con-cascara",
@@ -107,7 +107,7 @@
       }
     ],
     "imagen": "/productos/castanas-de-caju.png",
-    "destacado": true
+    "destacado": false
   },
   {
     "id": "pistachos-pelados",
@@ -151,7 +151,7 @@
       }
     ],
     "imagen": "/productos/pistachos-con-cascara.png",
-    "destacado": false
+    "destacado": true
   },
   {
     "id": "mani-tostado-con-sal",
@@ -195,7 +195,7 @@
       }
     ],
     "imagen": "/productos/mix-con-avellanas.png",
-    "destacado": false
+    "destacado": true
   },
   {
     "id": "mix-con-pasas-y-banana",
@@ -217,7 +217,7 @@
       }
     ],
     "imagen": "/productos/mix-con-pasas-y-banana.png",
-    "destacado": false
+    "destacado": true
   },
   {
     "id": "harina-integral",
@@ -400,6 +400,48 @@
     "destacado": false
   },
   {
+    "id": "papel-de-arroz-star-lion",
+    "nombre": "Papel de arroz Star Lion",
+    "categoria": "Arroces",
+    "descripcion": "Láminas de arroz sin gluten, ideales para rolls frescos, arrollados y recetas orientales.",
+    "presentaciones": [
+      {
+        "etiqueta": "300g",
+        "precio": 9500
+      }
+    ],
+    "imagen": "/productos/papel-de-arroz-star-lion.webp",
+    "destacado": true
+  },
+  {
+    "id": "arroz-yamani-integral",
+    "nombre": "Arroz yamani integral",
+    "categoria": "Arroces",
+    "descripcion": "Arroz integral de grano corto, rendidor y sabroso para comidas caseras y guarniciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "1 kilo",
+        "precio": 2900
+      }
+    ],
+    "imagen": "/productos/arroz-yamani-integral.jpg",
+    "destacado": false
+  },
+  {
+    "id": "arroz-koshihikari-sushi",
+    "nombre": "Arroz Koshihikari para sushi",
+    "categoria": "Arroces",
+    "descripcion": "Arroz seleccionado para sushi, de grano corto y textura ideal para rolls y preparaciones japonesas.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 3200
+      }
+    ],
+    "imagen": "/productos/arroz-koshihikari-sushi.webp",
+    "destacado": false
+  },
+  {
     "id": "chia-premium",
     "nombre": "Chía premium",
     "categoria": "Semillas",
@@ -501,7 +543,7 @@
       }
     ],
     "imagen": "/productos/mix-de-semillas.png",
-    "destacado": true
+    "destacado": false
   },
   {
     "id": "granola-energetica",
@@ -523,7 +565,7 @@
       }
     ],
     "imagen": "/productos/granola-energetica.png",
-    "destacado": true
+    "destacado": false
   },
   {
     "id": "granola-tropical",
@@ -545,7 +587,7 @@
       }
     ],
     "imagen": "/productos/granola-tropical.png",
-    "destacado": false
+    "destacado": true
   },
   {
     "id": "granola-natural",
@@ -1073,14 +1115,18 @@
       }
     ],
     "imagen": "/productos/dulce-de-leche-con-stevia.png",
-    "destacado": false
+    "destacado": true
   },
   {
     "id": "pasta-mani-entrenuts-caramel",
     "nombre": "Pasta maní Entrenuts Caramel",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de maní sabor caramelo, cremosa y muy rica para desayunos y colaciones.",
-    "tags": ["mantequilla de mani", "pasta de mani", "untable"],
+    "tags": [
+      "mantequilla de mani",
+      "pasta de mani",
+      "untable"
+    ],
     "presentaciones": [
       {
         "etiqueta": "unidad",
@@ -1095,7 +1141,11 @@
     "nombre": "Pasta Maní Entrenuts Cookie",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de mani protein ideal para recetas, snacks y desayunos con buen aporte proteico.",
-    "tags": ["mantequilla de mani", "pasta de mani", "untable"],
+    "tags": [
+      "mantequilla de mani",
+      "pasta de mani",
+      "untable"
+    ],
     "presentaciones": [
       {
         "etiqueta": "unidad",
@@ -1110,7 +1160,11 @@
     "nombre": "Pasta Maní Beepure",
     "categoria": "Dulces & Untables",
     "descripcion": "Pasta de maní de textura cremosa, ideal para tostadas, smoothies y snacks.",
-    "tags": ["mantequilla de mani", "pasta de mani", "untable"],
+    "tags": [
+      "mantequilla de mani",
+      "pasta de mani",
+      "untable"
+    ],
     "presentaciones": [
       {
         "etiqueta": "unidad",
@@ -1210,7 +1264,7 @@
       }
     ],
     "imagen": "/productos/mix-cervecero-tradicional.png",
-    "destacado": false
+    "destacado": true
   },
   {
     "id": "pasas-de-uva",

@@ -24,15 +24,14 @@ export function Storefront({ products }: StorefrontProps) {
 
 function StorefrontContent({ products }: StorefrontProps) {
   const availableCategories = getCategories(products);
-  const [activeCategory, setActiveCategory] = useState<FilterCategory>("Todos");
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>("Destacados");
   const [searchQuery, setSearchQuery] = useState("");
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const normalizedSearchQuery = normalizeSearchText(deferredSearchQuery);
   const visibleProducts = filterProducts(products, activeCategory, deferredSearchQuery);
-  const activeCategoryLabel =
-    activeCategory === "Todos" ? "Todas las categorias" : activeCategory;
+  const activeCategoryLabel = activeCategory;
 
   const {
     items,
