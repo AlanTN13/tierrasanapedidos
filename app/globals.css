@@ -69,7 +69,19 @@ input {
 
 .container-shell {
   margin-inline: auto;
-  width: min(1180px, calc(100% - 1.5rem));
+  width: min(1320px, calc(100% - 1rem));
+}
+
+@media (min-width: 768px) {
+  .container-shell {
+    width: min(1320px, calc(100% - 2rem));
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-shell {
+    width: min(1360px, calc(100% - 2.5rem));
+  }
 }
 
 .surface-panel {

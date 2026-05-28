@@ -124,7 +124,7 @@ function StorefrontContent({ products }: StorefrontProps) {
           </div>
 
           {visibleProducts.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}

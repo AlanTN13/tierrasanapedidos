@@ -65,8 +65,8 @@ export function Header({
     <>
       <header className="sticky top-0 z-50">
         <div className="hidden border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:block">
-          <div className="container-shell py-4">
-            <div className="flex items-center justify-between gap-4">
+          <div className="container-shell py-3.5 xl:py-4">
+            <div className="flex items-center justify-between gap-3 xl:gap-4">
               <a href="#inicio" className="min-w-0">
                 <Image
                   src="/logo-tierra-sana-header.png"
@@ -74,18 +74,18 @@ export function Header({
                   width={320}
                   height={140}
                   priority
-                  className="h-auto w-[98px]"
+                  className="h-auto w-[88px] xl:w-[94px]"
                 />
               </a>
 
-              <div className="flex items-center gap-3">
-                <label className="organic-outline card-shadow relative hidden w-[24rem] xl:block">
+              <div className="flex items-center gap-2.5 xl:gap-3">
+                <label className="organic-outline card-shadow relative hidden w-[22rem] xl:block 2xl:w-[23rem]">
                   <input
                     type="search"
                     value={safeSearchQuery}
                     onChange={(event) => onSearchChange(event.target.value)}
                     placeholder="Buscar productos..."
-                    className="w-full rounded-full bg-card px-11 py-3 pr-10 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:bg-white focus:ring-2 focus:ring-olive/25"
+                    className="w-full rounded-full bg-card px-11 py-2.5 pr-10 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:bg-white focus:ring-2 focus:ring-olive/25"
                     aria-label="Buscar productos"
                   />
                   <span className="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58">
@@ -107,7 +107,7 @@ export function Header({
                   href={instagramUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="card-shadow inline-flex h-12 w-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#fdf497_0%,#fdf497_8%,#fd5949_38%,#d6249f_65%,#285AEB_100%)] text-white hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#d6249f]/30"
+                  className="card-shadow inline-flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#fdf497_0%,#fdf497_8%,#fd5949_38%,#d6249f_65%,#285AEB_100%)] text-white hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#d6249f]/30"
                   aria-label="Seguinos en Instagram"
                 >
                   <InstagramIcon />
@@ -116,10 +116,10 @@ export function Header({
                 <button
                   type="button"
                   onClick={onOpenCart}
-                  className="organic-outline card-shadow inline-flex items-center gap-3 rounded-full bg-card px-4 py-2.5 text-sm font-semibold text-olive-dark hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+                  className="organic-outline card-shadow inline-flex items-center gap-2.5 rounded-full bg-card px-3.5 py-2 text-sm font-semibold text-olive-dark hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
                   aria-label={`Abrir carrito con ${totalItems} productos`}
                 >
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-olive text-white">
+                  <span className="inline-flex h-8.5 w-8.5 items-center justify-center rounded-full bg-olive text-white">
                     <CartIcon />
                   </span>
                   <span className="hidden sm:inline">Carrito</span>
@@ -194,7 +194,7 @@ export function Header({
         </div>
 
         <div className="border-b border-olive/10 bg-background/85 backdrop-blur-xl lg:hidden">
-          <div className="container-shell py-4">
+          <div className="container-shell py-3">
             <div className="flex items-center justify-between gap-3">
               <button
                 type="button"
@@ -217,7 +217,7 @@ export function Header({
                   width={320}
                   height={140}
                   priority
-                  className="h-auto w-[58px]"
+                  className="h-auto w-[54px]"
                 />
               </a>
 
