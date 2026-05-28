@@ -5,7 +5,7 @@ const CATEGORY_ORDER = [
   "Semillas",
   "Harinas",
   "Legumbres",
-  "Arroces",
+  "Arroz y Gourmet",
   "Cereales",
   "Especias",
   "Reposteria",
@@ -46,11 +46,13 @@ export function filterProducts(
       : product.categoria === activeCategory;
   });
 
+  const searchableProducts = query ? products : categoryFilteredProducts;
+
   if (!query) {
     return categoryFilteredProducts;
   }
 
-  return categoryFilteredProducts
+  return searchableProducts
     .map((product) => ({
       product,
       score: getProductSearchScore(product, query),
@@ -137,7 +139,7 @@ function getProductSearchTags(product: Product) {
     Semillas: ["desayuno", "saludable", "topping"],
     Harinas: ["cocina", "recetas", "panificados"],
     Legumbres: ["saludable", "cocina", "almuerzo"],
-    Arroces: ["cocina", "guarnicion", "sushi"],
+    "Arroz y Gourmet": ["cocina", "guarnicion", "sushi"],
     Cereales: ["desayuno", "merienda", "saludable"],
     Especias: ["condimentos", "cocina", "sabor"],
     Reposteria: ["reposteria", "postres", "horneados"],

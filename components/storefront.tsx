@@ -1,37 +1,51 @@
 "use client";
 
-import { useDeferredValue, useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingCartButton } from "@/components/floating-cart-button";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
-import { filterProducts, getCategories, normalizeSearchText } from "@/lib/catalog";
+import {
+  filterProducts,
+  getCategories,
+  normalizeSearchText,
+} from "@/lib/catalog";
 import type { FilterCategory, Product } from "@/types/catalog";
 
 type StorefrontProps = {
   products: Product[];
+  initialSearchQuery?: string;
 };
 
-export function Storefront({ products }: StorefrontProps) {
+export function Storefront({ products, initialSearchQuery = "" }: StorefrontProps) {
   return (
     <CartProvider>
-      <StorefrontContent products={products} />
+      <StorefrontContent
+        key={initialSearchQuery}
+        products={products}
+        initialSearchQuery={initialSearchQuery}
+      />
     </CartProvider>
   );
 }
 
-function StorefrontContent({ products }: StorefrontProps) {
+function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const availableCategories = getCategories(products);
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("Destacados");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
+  const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
-  const deferredSearchQuery = useDeferredValue(searchQuery);
-  const normalizedSearchQuery = normalizeSearchText(deferredSearchQuery);
-  const visibleProducts = filterProducts(products, activeCategory, deferredSearchQuery);
-  const activeCategoryLabel = activeCategory;
+  const normalizedSearchQuery = normalizeSearchText(submittedSearchQuery);
+  const visibleProducts = filterProducts(products, activeCategory, submittedSearchQuery);
+  const activeCategoryLabel = normalizedSearchQuery
+    ? `Resultados para ${submittedSearchQuery.trim()}`
+    : activeCategory;
 
   const {
     items,
@@ -82,6 +96,30 @@ function StorefrontContent({ products }: StorefrontProps) {
     });
   }
 
+  function handleSubmitSearch() {
+    const nextQuery = draftSearchQuery.trim();
+    const params = new URLSearchParams();
+
+    if (nextQuery) {
+      params.set("q", nextQuery);
+    }
+
+    setSubmittedSearchQuery(nextQuery);
+
+    startTransition(() => {
+      router.replace(params.size > 0 ? `${pathname}?${params.toString()}` : pathname, {
+        scroll: false,
+      });
+    });
+
+    requestAnimationFrame(() => {
+      document.getElementById("productos")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }
+
   function handleAddItem(
     product: Product,
     presentation: Product["presentaciones"][number],
@@ -100,14 +138,21 @@ function StorefrontContent({ products }: StorefrontProps) {
         categories={availableCategories}
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onClearSearch={() => setSearchQuery("")}
+        searchQuery={draftSearchQuery}
+        onSearchChange={setDraftSearchQuery}
+        onSubmitSearch={handleSubmitSearch}
+        onClearSearch={() => {
+          setDraftSearchQuery("");
+          setSubmittedSearchQuery("");
+          startTransition(() => {
+            router.replace(pathname, { scroll: false });
+          });
+        }}
         totalItems={totalItems}
         onOpenCart={openCart}
       />
       <main>
-        <Hero onOpenCart={openCart} />
+        {!normalizedSearchQuery ? <Hero onOpenCart={openCart} /> : null}
 
         <section id="productos" className="container-shell pb-12">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -148,6 +193,7 @@ function StorefrontContent({ products }: StorefrontProps) {
           )}
         </section>
 
+        {!normalizedSearchQuery ? (
         <section className="container-shell pb-10">
           <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
             <div className="flex flex-wrap items-center gap-3">
@@ -175,6 +221,7 @@ function StorefrontContent({ products }: StorefrontProps) {
             </a>
           </div>
         </section>
+        ) : null}
       </main>
 
       <FloatingCartButton

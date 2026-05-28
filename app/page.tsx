@@ -4,6 +4,20 @@ import type { Product } from "@/types/catalog";
 
 const products = productsData as Product[];
 
-export default function Home() {
-  return <Storefront products={products} />;
+type HomeProps = {
+  searchParams?: Promise<{
+    q?: string;
+  }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const resolvedSearchParams = await searchParams;
+  const initialSearchQuery = resolvedSearchParams?.q?.trim() ?? "";
+
+  return (
+    <Storefront
+      products={products}
+      initialSearchQuery={initialSearchQuery}
+    />
+  );
 }

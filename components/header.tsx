@@ -10,6 +10,7 @@ type HeaderProps = {
   onChangeCategory: (category: FilterCategory) => void;
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  onSubmitSearch: () => void;
   onClearSearch: () => void;
   totalItems: number;
   onOpenCart: () => void;
@@ -21,6 +22,7 @@ export function Header({
   onChangeCategory,
   searchQuery = "",
   onSearchChange,
+  onSubmitSearch,
   onClearSearch,
   totalItems,
   onOpenCart,
@@ -79,29 +81,41 @@ export function Header({
               </a>
 
               <div className="flex items-center gap-2.5 xl:gap-3">
-                <label className="organic-outline card-shadow relative hidden w-[22rem] xl:block 2xl:w-[23rem]">
-                  <input
-                    type="search"
-                    value={safeSearchQuery}
-                    onChange={(event) => onSearchChange(event.target.value)}
-                    placeholder="Buscar productos..."
-                    className="w-full rounded-full bg-card px-11 py-2.5 pr-10 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:bg-white focus:ring-2 focus:ring-olive/25"
-                    aria-label="Buscar productos"
-                  />
-                  <span className="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58">
-                    <SearchIcon />
-                  </span>
-                  {safeSearchQuery ? (
+                <form
+                  className="relative hidden w-[22rem] xl:block 2xl:w-[23rem]"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    onSubmitSearch();
+                  }}
+                >
+                  <label className="organic-outline card-shadow relative block">
+                    <input
+                      type="search"
+                      value={safeSearchQuery}
+                      onChange={(event) => onSearchChange(event.target.value)}
+                      placeholder="Buscar productos..."
+                      className="w-full rounded-full bg-card px-11 py-2.5 pr-10 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:bg-white focus:ring-2 focus:ring-olive/25"
+                      aria-label="Buscar productos"
+                    />
                     <button
-                      type="button"
-                      onClick={onClearSearch}
-                      className="absolute inset-y-0 right-3 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
-                      aria-label="Limpiar busqueda"
+                      type="submit"
+                      className="absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58 focus:outline-none"
+                      aria-label="Buscar"
                     >
-                      ✕
+                      <SearchIcon />
                     </button>
-                  ) : null}
-                </label>
+                    {safeSearchQuery ? (
+                      <button
+                        type="button"
+                        onClick={onClearSearch}
+                        className="absolute inset-y-0 right-3 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
+                        aria-label="Limpiar busqueda"
+                      >
+                        ✕
+                      </button>
+                    ) : null}
+                  </label>
+                </form>
 
                 <a
                   href={instagramUrl}
@@ -273,29 +287,42 @@ export function Header({
               }`}
             >
               <div className="overflow-hidden">
-                <label className="organic-outline card-shadow relative block">
-                  <input
-                    type="search"
-                    value={safeSearchQuery}
-                    onChange={(event) => onSearchChange(event.target.value)}
-                    placeholder="Buscar productos..."
-                    className="w-full rounded-[1.3rem] bg-white px-11 py-3 pr-11 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:ring-2 focus:ring-olive/25"
-                    aria-label="Buscar productos"
-                  />
-                  <span className="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58">
-                    <SearchIcon />
-                  </span>
-                  {safeSearchQuery ? (
+                <form
+                  className="relative block"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    onSubmitSearch();
+                    setIsSearchOpen(false);
+                  }}
+                >
+                  <label className="organic-outline card-shadow relative block">
+                    <input
+                      type="search"
+                      value={safeSearchQuery}
+                      onChange={(event) => onSearchChange(event.target.value)}
+                      placeholder="Buscar productos..."
+                      className="w-full rounded-[1.3rem] bg-white px-11 py-3 pr-11 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:ring-2 focus:ring-olive/25"
+                      aria-label="Buscar productos"
+                    />
                     <button
-                      type="button"
-                      onClick={onClearSearch}
-                      className="absolute inset-y-0 right-4 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
-                      aria-label="Limpiar busqueda"
+                      type="submit"
+                      className="absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58 focus:outline-none"
+                      aria-label="Buscar"
                     >
-                      ✕
+                      <SearchIcon />
                     </button>
-                  ) : null}
-                </label>
+                    {safeSearchQuery ? (
+                      <button
+                        type="button"
+                        onClick={onClearSearch}
+                        className="absolute inset-y-0 right-4 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
+                        aria-label="Limpiar busqueda"
+                      >
+                        ✕
+                      </button>
+                    ) : null}
+                  </label>
+                </form>
               </div>
             </div>
           </div>

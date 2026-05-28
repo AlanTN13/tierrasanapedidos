@@ -402,7 +402,7 @@
   {
     "id": "papel-de-arroz-star-lion",
     "nombre": "Papel de arroz Star Lion",
-    "categoria": "Arroces",
+    "categoria": "Arroz y Gourmet",
     "descripcion": "Láminas de arroz sin gluten, ideales para rolls frescos, arrollados y recetas orientales.",
     "presentaciones": [
       {
@@ -416,7 +416,7 @@
   {
     "id": "arroz-yamani-integral",
     "nombre": "Arroz yamani integral",
-    "categoria": "Arroces",
+    "categoria": "Arroz y Gourmet",
     "descripcion": "Arroz integral de grano corto, rendidor y sabroso para comidas caseras y guarniciones.",
     "presentaciones": [
       {
@@ -430,7 +430,7 @@
   {
     "id": "arroz-koshihikari-sushi",
     "nombre": "Arroz Koshihikari para sushi",
-    "categoria": "Arroces",
+    "categoria": "Arroz y Gourmet",
     "descripcion": "Arroz seleccionado para sushi, de grano corto y textura ideal para rolls y preparaciones japonesas.",
     "presentaciones": [
       {
