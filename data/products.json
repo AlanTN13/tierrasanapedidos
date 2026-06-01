@@ -161,7 +161,7 @@
     "presentaciones": [
       {
         "etiqueta": "250g",
-        "precio": 1290
+        "precio": 1400
       },
       {
         "etiqueta": "500g",
@@ -1691,7 +1691,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-tomates-secos-y-albahaca.jpg",
+    "imagen": "/productos/hummus-con-tomates-secos-y-albahaca.png",
     "destacado": false
   },
   {
