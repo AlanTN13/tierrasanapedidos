@@ -1329,7 +1329,7 @@
         "precio": 5500
       }
     ],
-    "imagen": "/productos/copos-sin-azucar.png",
+    "imagen": "/productos/copos-sin-azucar.jpg",
     "destacado": false
   },
   {
@@ -1663,7 +1663,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-aji-picante.webp",
+    "imagen": "/productos/hummus-con-aji-picante.png",
     "destacado": false
   },
   {
@@ -1677,7 +1677,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-alcaparras.jpg",
+    "imagen": "/productos/hummus-con-alcaparras.png",
     "destacado": false
   },
   {
@@ -1705,7 +1705,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-ajo-negro.jpg",
+    "imagen": "/productos/hummus-con-ajo-negro.png",
     "destacado": false
   },
   {
@@ -1719,7 +1719,7 @@
         "precio": 7500
       }
     ],
-    "imagen": "/productos/hummus-con-pistacho.jpg",
+    "imagen": "/productos/hummus-con-pistacho.png",
     "destacado": false
   }
 ]
