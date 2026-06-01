@@ -144,7 +144,7 @@ function getProductSearchTags(product: Product) {
     Especias: ["condimentos", "cocina", "sabor"],
     Reposteria: ["reposteria", "postres", "horneados"],
     Aceites: ["cocina", "ensaladas", "saludable"],
-    "Dulces & Untables": ["desayuno", "merienda", "untables"],
+    "Dulces & Untables": ["desayuno", "merienda", "untables", "dip", "picada"],
   };
 
   const tags = new Set([

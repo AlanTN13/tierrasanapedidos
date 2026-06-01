@@ -1287,5 +1287,439 @@
     ],
     "imagen": "/productos/pasas-de-uva.png",
     "destacado": false
+  },
+  {
+    "id": "copos-con-azucar",
+    "nombre": "Copos con azúcar",
+    "categoria": "Cereales",
+    "descripcion": "Copos crocantes con un toque dulce, ideales para desayunos y meriendas rápidas.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 2100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 3900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 7000
+      }
+    ],
+    "imagen": "/productos/copos-con-azucar.jpg",
+    "destacado": false
+  },
+  {
+    "id": "copos-sin-azucar",
+    "nombre": "Copos sin azúcar",
+    "categoria": "Cereales",
+    "descripcion": "Copos de maíz sin azúcar agregada, versátiles para bowls, yogures y desayunos más livianos.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 3100
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 5500
+      }
+    ],
+    "imagen": "/productos/copos-sin-azucar.png",
+    "destacado": false
+  },
+  {
+    "id": "crocante-de-arroz-con-chocolate",
+    "nombre": "Crocante de arroz con chocolate",
+    "categoria": "Galletitas",
+    "descripcion": "Snack crocante de arroz con chocolate, práctico para colaciones y algo dulce entre horas.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 2800
+      }
+    ],
+    "imagen": "/productos/crocante-de-arroz-con-chocolate.webp",
+    "destacado": false
+  },
+  {
+    "id": "crocante-de-arroz-0-grasas-trans",
+    "nombre": "Crocante de arroz 0% grasas trans",
+    "categoria": "Galletitas",
+    "descripcion": "Crocante de arroz liviano y práctico, ideal para sumar una colación simple y rendidora.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 2300
+      }
+    ],
+    "imagen": "/productos/crocante-de-arroz-0-grasas-trans.jpg",
+    "destacado": false
+  },
+  {
+    "id": "datiles-sin-carozo-pakistan",
+    "nombre": "Dátiles sin carozo Pakistán",
+    "categoria": "Frutos secos y snacks",
+    "descripcion": "Dátiles carnosos y dulces, ideales para colaciones, tablas y recetas de repostería natural.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 3100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5800
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 9900
+      }
+    ],
+    "imagen": "/productos/datiles-sin-carozo.png",
+    "destacado": false
+  },
+  {
+    "id": "mani-sin-sal",
+    "nombre": "Maní sin sal",
+    "categoria": "Frutos secos y snacks",
+    "descripcion": "Maní pelado sin sal agregada, ideal para snacks, cocción y mezclas caseras.",
+    "presentaciones": [
+      {
+        "etiqueta": "250g",
+        "precio": 1400
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4390
+      }
+    ],
+    "imagen": "/productos/mani-sin-sal.png",
+    "destacado": false
+  },
+  {
+    "id": "chips-de-chocolate-negro",
+    "nombre": "Chips de chocolate negro",
+    "categoria": "Reposteria",
+    "descripcion": "Chips de chocolate negro para cookies, muffins, rellenos y repostería casera.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1350
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 2500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5750
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 11500
+      }
+    ],
+    "imagen": "/productos/chips-de-chocolate-negro.webp",
+    "destacado": false
+  },
+  {
+    "id": "chips-de-chocolate-blanco",
+    "nombre": "Chips de chocolate blanco",
+    "categoria": "Reposteria",
+    "descripcion": "Chips de chocolate blanco, ideales para decorar, hornear y sumar contraste dulce a recetas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1350
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 2500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5750
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 11500
+      }
+    ],
+    "imagen": "/productos/chips-de-chocolate-blanco.png",
+    "destacado": false
+  },
+  {
+    "id": "lentejas-de-chocolate",
+    "nombre": "Lentejas de chocolate",
+    "categoria": "Reposteria",
+    "descripcion": "Lentejas de chocolate coloridas para decorar tortas, cookies y mesas dulces.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2900
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 5500
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 12500
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 25000
+      }
+    ],
+    "imagen": "/productos/lentejas-de-chocolate.png",
+    "destacado": false
+  },
+  {
+    "id": "microcereal-negro",
+    "nombre": "Microcereal negro",
+    "categoria": "Reposteria",
+    "descripcion": "Microcereal bañado en chocolate negro para toppings, decoración y mezclas dulces.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 3300
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 6200
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 14000
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 28000
+      }
+    ],
+    "imagen": "/productos/microcereal-negro.jpeg",
+    "destacado": false
+  },
+  {
+    "id": "microcereal-blanco",
+    "nombre": "Microcereal blanco",
+    "categoria": "Reposteria",
+    "descripcion": "Microcereal blanco crocante, ideal para decorar, mezclar y sumar textura a postres.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 3300
+      },
+      {
+        "etiqueta": "200g",
+        "precio": 6200
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 14000
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 28000
+      }
+    ],
+    "imagen": "/productos/microcereal-blanco.jpeg",
+    "destacado": false
+  },
+  {
+    "id": "aceite-de-coco-beepure-350ml",
+    "nombre": "Aceite de coco BeePure 350ml",
+    "categoria": "Aceites",
+    "descripcion": "Aceite de coco de textura cremosa, ideal para cocina, repostería y recetas sin lácteos.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 7900
+      }
+    ],
+    "imagen": "/productos/aceite-de-coco-350ml.png",
+    "destacado": false
+  },
+  {
+    "id": "amapola",
+    "nombre": "Amapola",
+    "categoria": "Semillas",
+    "descripcion": "Semillas de amapola de sabor suave, muy usadas en panificados, crackers y repostería.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1800
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 4200
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 15000
+      }
+    ],
+    "imagen": "/productos/amapola.png",
+    "destacado": false
+  },
+  {
+    "id": "sesamo-negro",
+    "nombre": "Sésamo negro",
+    "categoria": "Semillas",
+    "descripcion": "Sésamo negro intenso y aromático para crackers, panificados, ensaladas y toppings.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 14000
+      }
+    ],
+    "imagen": "/productos/sesamo-negro.png",
+    "destacado": false
+  },
+  {
+    "id": "sesamo-blanco",
+    "nombre": "Sésamo blanco",
+    "categoria": "Semillas",
+    "descripcion": "Sésamo blanco clásico, ideal para panes, crackers, granolas y recetas saladas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1200
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 2900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 10000
+      }
+    ],
+    "imagen": "/productos/sesamo-blanco.png",
+    "destacado": false
+  },
+  {
+    "id": "mix-de-sesamo",
+    "nombre": "Mix de sésamo",
+    "categoria": "Semillas",
+    "descripcion": "Mezcla de sésamos para sumar color, textura y sabor a panes, ensaladas y bowls.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1700
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 7400
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 14000
+      }
+    ],
+    "imagen": "/productos/mix-de-sesamo.png",
+    "destacado": false
+  },
+  {
+    "id": "hummus-con-aji-picante",
+    "nombre": "Hummus con ají picante",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Hummus de garbanzo con ají picante, ideal para quienes buscan un dip con más carácter.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 5900
+      }
+    ],
+    "imagen": "/productos/hummus-con-aji-picante.webp",
+    "destacado": false
+  },
+  {
+    "id": "hummus-con-alcaparras",
+    "nombre": "Hummus con alcaparras",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Hummus con alcaparras, sabroso y distinto para tablas, tostadas y picadas.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 5900
+      }
+    ],
+    "imagen": "/productos/hummus-con-alcaparras.jpg",
+    "destacado": false
+  },
+  {
+    "id": "hummus-con-tomates-secos-y-albahaca",
+    "nombre": "Hummus con tomates secos y albahaca",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Hummus con tomates secos y albahaca, con perfil mediterráneo y mucho sabor.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 5900
+      }
+    ],
+    "imagen": "/productos/hummus-con-tomates-secos-y-albahaca.jpg",
+    "destacado": false
+  },
+  {
+    "id": "hummus-con-ajo-negro",
+    "nombre": "Hummus con ajo negro",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Hummus con ajo negro, de sabor profundo y cremoso para dips y acompañamientos.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 5900
+      }
+    ],
+    "imagen": "/productos/hummus-con-ajo-negro.jpg",
+    "destacado": false
+  },
+  {
+    "id": "hummus-con-pistacho",
+    "nombre": "Hummus con pistacho",
+    "categoria": "Dulces & Untables",
+    "descripcion": "Hummus con pistacho, más premium y untuoso, ideal para tablas y ocasiones especiales.",
+    "presentaciones": [
+      {
+        "etiqueta": "unidad",
+        "precio": 7500
+      }
+    ],
+    "imagen": "/productos/hummus-con-pistacho.jpg",
+    "destacado": false
   }
 ]
