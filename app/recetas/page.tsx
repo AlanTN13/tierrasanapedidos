@@ -23,10 +23,10 @@ export default function RecipesPage() {
         <div className="surface-panel organic-outline rounded-[2.1rem] px-5 py-6 sm:px-6 sm:py-7">
           <span className="section-kicker">Recetas Tierra Sana</span>
           <h1 className="mt-3 font-display text-4xl leading-[0.98] font-semibold text-olive-dark sm:text-5xl">
-            Tres ideas simples para cocinar con productos reales
+            Recetas para hacer en casa
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-foreground/68">
-            Una selección corta y bien visual para que explores recetas, entiendas cómo se hacen y pases directo a los ingredientes cuando te den ganas.
+            Recetas rápidas para inspirarte y descubrir nuevos ingredientes.
           </p>
         </div>
       </section>

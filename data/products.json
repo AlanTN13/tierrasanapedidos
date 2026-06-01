@@ -222,7 +222,7 @@
   {
     "id": "harina-integral",
     "nombre": "Harina integral",
-    "categoria": "Harinas",
+    "categoria": "Harinas y premezclas",
     "descripcion": "Harina de molienda integral, rendidora para panes, prepizzas y recetas caseras.",
     "presentaciones": [
       {
@@ -240,7 +240,7 @@
   {
     "id": "harina-de-almendras",
     "nombre": "Harina de almendras",
-    "categoria": "Harinas",
+    "categoria": "Harinas y premezclas",
     "descripcion": "Harina fina de almendras para pastelería saludable, repostería y recetas sin harinas comunes.",
     "presentaciones": [
       {
@@ -258,7 +258,7 @@
   {
     "id": "harina-de-centeno",
     "nombre": "Harina de centeno",
-    "categoria": "Harinas",
+    "categoria": "Harinas y premezclas",
     "descripcion": "Harina de centeno de sabor intenso, ideal para panes rústicos y masas con cuerpo.",
     "presentaciones": [
       {
@@ -276,7 +276,7 @@
   {
     "id": "fecula-de-mandioca",
     "nombre": "Fécula de mandioca",
-    "categoria": "Harinas",
+    "categoria": "Harinas y premezclas",
     "descripcion": "Fécula suave y versátil para panificados, ligantes y recetas sin gluten por naturaleza.",
     "presentaciones": [
       {
@@ -289,6 +289,84 @@
       }
     ],
     "imagen": "/productos/fecula-de-mandioca.png",
+    "destacado": false
+  },
+  {
+    "id": "harina-de-arroz",
+    "nombre": "Harina de arroz",
+    "categoria": "Harinas y premezclas",
+    "descripcion": "Harina de arroz suave y versátil, ideal para panificados, rebozados y recetas sin TACC.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 2200
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 3900
+      }
+    ],
+    "imagen": "/productos/harina-de-arroz.png",
+    "destacado": false
+  },
+  {
+    "id": "harina-de-coco",
+    "nombre": "Harina de coco",
+    "categoria": "Harinas y premezclas",
+    "descripcion": "Harina de coco aromática y rendidora, perfecta para repostería, pancakes y recetas bajas en gluten.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 4900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 8900
+      }
+    ],
+    "imagen": "/productos/harina-de-coco.png",
+    "destacado": false
+  },
+  {
+    "id": "premezcla-bizcochuelo-vainilla-dona-pacha",
+    "nombre": "Premezcla bizcochuelo vainilla Doña Pacha 350g",
+    "categoria": "Harinas y premezclas",
+    "descripcion": "Premezcla Doña Pacha para preparar bizcochuelo sabor vainilla, práctica y sin TACC.",
+    "presentaciones": [
+      {
+        "etiqueta": "350g",
+        "precio": 5900
+      }
+    ],
+    "imagen": "/productos/premezcla-bizcochuelo-vainilla-dona-pacha-350g.png",
+    "destacado": false
+  },
+  {
+    "id": "premezcla-brownie-dona-pacha",
+    "nombre": "Premezcla brownie Doña Pacha 500g",
+    "categoria": "Harinas y premezclas",
+    "descripcion": "Premezcla Doña Pacha para preparar brownie sabor chocolate, ideal para una salida rápida y rica.",
+    "presentaciones": [
+      {
+        "etiqueta": "500g",
+        "precio": 6200
+      }
+    ],
+    "imagen": "/productos/premezcla-brownie-dona-pacha-500g.png",
+    "destacado": false
+  },
+  {
+    "id": "premezcla-bizcochuelo-chocolate-dona-pacha",
+    "nombre": "Premezcla bizcochuelo chocolate Doña Pacha 350g",
+    "categoria": "Harinas y premezclas",
+    "descripcion": "Premezcla Doña Pacha para preparar bizcochuelo sabor chocolate, rendidora y sin TACC.",
+    "presentaciones": [
+      {
+        "etiqueta": "350g",
+        "precio": 6500
+      }
+    ],
+    "imagen": "/productos/premezcla-bizcochuelo-chocolate-dona-pacha-350g.png",
     "destacado": false
   },
   {
@@ -1010,7 +1088,7 @@
   {
     "id": "polvo-de-hornear",
     "nombre": "Polvo de hornear",
-    "categoria": "Reposteria",
+    "categoria": "Reposteria y endulzantes",
     "descripcion": "Leudante rendidor para budines, tortas, muffins y preparaciones dulces o saladas.",
     "presentaciones": [
       {
@@ -1032,7 +1110,7 @@
   {
     "id": "coco-rallado",
     "nombre": "Coco rallado",
-    "categoria": "Reposteria",
+    "categoria": "Reposteria y endulzantes",
     "descripcion": "Coco rallado suave y fragante para repostería, bowls y toppings.",
     "presentaciones": [
       {
@@ -1058,7 +1136,7 @@
   {
     "id": "azucar-impalpable",
     "nombre": "Azúcar impalpable",
-    "categoria": "Reposteria",
+    "categoria": "Reposteria y endulzantes",
     "descripcion": "Azúcar impalpable fina para glasé, rellenos, coberturas y terminaciones.",
     "presentaciones": [
       {
@@ -1084,7 +1162,7 @@
   {
     "id": "cacao-amargo-alcalino",
     "nombre": "Cacao amargo alcalino",
-    "categoria": "Reposteria",
+    "categoria": "Reposteria y endulzantes",
     "descripcion": "Cacao amargo de sabor profundo, ideal para budines, brownies, chocolatadas, granolas y recetas de reposteria.",
     "presentaciones": [
       {
@@ -1101,6 +1179,256 @@
       }
     ],
     "imagen": "/productos/cacao-amargo-alcalino.png",
+    "destacado": false
+  },
+  {
+    "id": "chips-de-chocolate-negro",
+    "nombre": "Chips de chocolate negro",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Chips de chocolate negro ideales para cookies, budines, muffins y toppings.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1350
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5750
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 11500
+      }
+    ],
+    "imagen": "/productos/chips-de-chocolate-negro.webp",
+    "destacado": false
+  },
+  {
+    "id": "chips-de-chocolate-blanco",
+    "nombre": "Chips de chocolate blanco",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Chips de chocolate blanco para sumar dulzor y textura a recetas y postres.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1350
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 3100
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 5750
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 11500
+      }
+    ],
+    "imagen": "/productos/chips-de-chocolate-blanco.png",
+    "destacado": false
+  },
+  {
+    "id": "lentejas-de-chocolate",
+    "nombre": "Lentejas de chocolate",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Lentejas de chocolate de colores, perfectas para decorar, picar o sumar a preparaciones.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 2900
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 6900
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 12500
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 25000
+      }
+    ],
+    "imagen": "/productos/lentejas-de-chocolate.png",
+    "destacado": false
+  },
+  {
+    "id": "microcereal-negro",
+    "nombre": "Microcereal negro",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Microcereal negro crocante, ideal para decorar tortas, helados, alfajores y postres.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 3300
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 7700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 14000
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 28000
+      }
+    ],
+    "imagen": "/productos/microcereal-negro.jpeg",
+    "destacado": false
+  },
+  {
+    "id": "microcereal-blanco",
+    "nombre": "Microcereal blanco",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Microcereal blanco crocante para decorar y aportar textura en repostería y postres.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 3300
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 7700
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 14000
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 28000
+      }
+    ],
+    "imagen": "/productos/microcereal-blanco.jpeg",
+    "destacado": false
+  },
+  {
+    "id": "stevia-hileret-50-sobres",
+    "nombre": "Stevia Hileret 50 sobres",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Endulzante con stevia en sobres, práctico para bebidas, cocina y uso diario.",
+    "presentaciones": [
+      {
+        "etiqueta": "50 sobres",
+        "precio": 3500
+      }
+    ],
+    "imagen": "/productos/stevia-hileret-50-sobres.webp",
+    "destacado": false
+  },
+  {
+    "id": "stevia-hileret-liquido-200cc",
+    "nombre": "Stevia Hileret líquido 200cc",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Endulzante líquido con stevia, rendidor y cómodo para bebidas frías, calientes y recetas.",
+    "presentaciones": [
+      {
+        "etiqueta": "200cc",
+        "precio": 5500
+      }
+    ],
+    "imagen": "/productos/stevia-hileret-liquido-200cc.webp",
+    "destacado": false
+  },
+  {
+    "id": "zucra-hileret-liquido-200cc",
+    "nombre": "Zucra Hileret líquido 200cc",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Endulzante líquido Hileret Zucra, ideal para bebidas, postres y preparaciones dulces.",
+    "presentaciones": [
+      {
+        "etiqueta": "200cc",
+        "precio": 4200
+      }
+    ],
+    "imagen": "/productos/zucra-hileret-liquido-200cc.webp",
+    "destacado": false
+  },
+  {
+    "id": "azucar-granulada",
+    "nombre": "Azúcar granulada",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Azúcar granulada clásica, versátil para infusiones, repostería y preparaciones de todos los días.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 1100
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 2600
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 4900
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 9500
+      }
+    ],
+    "imagen": "/productos/azucar-granulada.webp",
+    "destacado": false
+  },
+  {
+    "id": "azucar-mascabo",
+    "nombre": "Azúcar mascabo sin TACC",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Azúcar mascabo sin TACC, de sabor profundo y ideal para sumar dulzor con notas acarameladas.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 600
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 1400
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2700
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4900
+      }
+    ],
+    "imagen": "/productos/azucar-mascabo.webp",
+    "destacado": false
+  },
+  {
+    "id": "azucar-negra",
+    "nombre": "Azúcar negra",
+    "categoria": "Reposteria y endulzantes",
+    "descripcion": "Azúcar negra de sabor intenso, ideal para recetas especiadas, panes y preparaciones con carácter.",
+    "presentaciones": [
+      {
+        "etiqueta": "100g",
+        "precio": 550
+      },
+      {
+        "etiqueta": "250g",
+        "precio": 1300
+      },
+      {
+        "etiqueta": "500g",
+        "precio": 2500
+      },
+      {
+        "etiqueta": "1 kilo",
+        "precio": 4500
+      }
+    ],
+    "imagen": "/productos/azucar-negra.jpg",
     "destacado": false
   },
   {

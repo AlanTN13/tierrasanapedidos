@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { addItemToStoredCart } from "@/components/cart-provider";
+import { getPrimaryCategory } from "@/lib/catalog";
 import { formatARS } from "@/lib/format";
 import type { Product, ProductPresentation } from "@/types/catalog";
 
@@ -12,6 +13,7 @@ type RecipeProductCardProps = {
 };
 
 export function RecipeProductCard({ product }: RecipeProductCardProps) {
+  const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
   const [selectedPresentationLabel, setSelectedPresentationLabel] = useState(
     getDefaultPresentationLabel(product),
@@ -47,7 +49,7 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
 
       <div className="p-4">
         <p className="text-[0.7rem] font-bold tracking-[0.14em] text-earth uppercase">
-          {product.categoria}
+          {getPrimaryCategory(product)}
         </p>
         <h3 className="mt-2 text-xl font-semibold text-olive-dark">
           {product.nombre}
@@ -102,11 +104,33 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
           </div>
         ) : null}
 
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center rounded-full border border-olive/12 bg-white/80 p-1">
+            <QuantityButton
+              label={`Restar una unidad de ${product.nombre}`}
+              onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+            >
+              -
+            </QuantityButton>
+            <span
+              className="min-w-10 text-center text-sm font-semibold text-olive-dark"
+              aria-live="polite"
+            >
+              {quantity}
+            </span>
+            <QuantityButton
+              label={`Sumar una unidad de ${product.nombre}`}
+              onClick={() => setQuantity((current) => current + 1)}
+            >
+              +
+            </QuantityButton>
+          </div>
+
           <button
             type="button"
             onClick={() => {
-              addItemToStoredCart(product, selectedPresentation, 1);
+              addItemToStoredCart(product, selectedPresentation, quantity);
+              setQuantity(1);
               setJustAdded(true);
             }}
             className="inline-flex items-center justify-center rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white hover:bg-olive-dark"
@@ -131,12 +155,31 @@ function getDefaultPresentationLabel(product: Product) {
     Semillas: "250g",
   };
 
-  const preferredLabel = preferredLabelByCategory[product.categoria];
+  const preferredLabel = preferredLabelByCategory[getPrimaryCategory(product)];
   const matchingPresentation = product.presentaciones.find(
     (presentation) => presentation.etiqueta === preferredLabel,
   );
 
   return matchingPresentation?.etiqueta ?? product.presentaciones[0]?.etiqueta ?? "unidad";
+}
+
+type QuantityButtonProps = {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+};
+
+function QuantityButton({ label, onClick, children }: QuantityButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-olive-dark hover:bg-olive-soft focus:outline-none focus:ring-2 focus:ring-olive/25"
+    >
+      {children}
+    </button>
+  );
 }
 
 function ChevronIcon() {

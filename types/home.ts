@@ -32,6 +32,12 @@ export type HomeCategoryCard = {
   image: string;
 };
 
+export type HomeFeaturedShelf = {
+  title: string;
+  description: string;
+  products: Product[];
+};
+
 export type RecipeHighlight = {
   slug: string;
   title: string;
@@ -54,5 +60,6 @@ export type HomeContent = {
   sectionLinks: HomeSectionLink[];
   hero: ResolvedHomeHeroConfig;
   categoryCards: HomeCategoryCard[];
+  featuredShelf: HomeFeaturedShelf;
   recipeHighlights: ResolvedRecipeHighlight[];
 };

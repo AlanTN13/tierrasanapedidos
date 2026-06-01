@@ -39,7 +39,8 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
   const pathname = usePathname();
   const availableCategories = getCategories(products);
   const homeContent = getHomeContent(products);
-  const [activeCategory, setActiveCategory] = useState<FilterCategory>("Destacados");
+  const defaultCategory = availableCategories[0] ?? "Destacados";
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>(defaultCategory);
   const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
   const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
@@ -52,7 +53,6 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
   const activeCategoryLabel = normalizedSearchQuery
     ? `Resultados para ${submittedSearchQuery.trim()}`
     : activeCategory;
-  const isFeaturedView = !normalizedSearchQuery && activeCategory === "Destacados";
 
   const {
     items,
@@ -190,6 +190,7 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
           <HomeDiscovery
             content={homeContent}
             onSelectCategory={handleCategoryChange}
+            showIdeas={false}
           />
         ) : null}
 
@@ -197,14 +198,9 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <span className="section-kicker">Catalogo</span>
-              <h2 className={`mt-3 font-display font-semibold text-olive-dark ${isFeaturedView ? "text-[2rem] sm:text-[2.4rem]" : "text-3xl sm:text-4xl"}`}>
-                {isFeaturedView ? "Selección destacada" : activeCategoryLabel}
+              <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
+                {activeCategoryLabel}
               </h2>
-              {isFeaturedView ? (
-                <p className="mt-2 max-w-xl text-[13px] leading-5 text-foreground/62 sm:text-sm sm:leading-6">
-                  Una vidriera corta con algunos productos que representan mejor la tienda hoy, para entrar más rápido sin sentir que estás viendo otra categoría más.
-                </p>
-              ) : null}
             </div>
             <p className="text-sm leading-6 text-foreground/62">
               {visibleProducts.length} productos disponibles con el filtro actual.
@@ -212,13 +208,13 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
           </div>
 
           {visibleProducts.length > 0 ? (
-            <div className={`mt-6 grid ${isFeaturedView ? "gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-5" : "gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
+            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
-                  hideFeaturedBadge={isFeaturedView}
-                  compact={isFeaturedView}
+                  hideFeaturedBadge={false}
+                  compact
                   onAdd={handleAddItem}
                 />
               ))}
@@ -238,6 +234,14 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
             </div>
           )}
         </section>
+
+        {!normalizedSearchQuery ? (
+          <HomeDiscovery
+            content={homeContent}
+            onSelectCategory={handleCategoryChange}
+            showCategories={false}
+          />
+        ) : null}
 
       </main>
 
@@ -355,6 +359,7 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
 function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
   const shippingTickerText =
     "Entregas sin costo en Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y Don Bosco";
+  const tickerItems = Array.from({ length: 4 }, (_, index) => index);
 
   return (
     <div className="border-b border-olive/10 bg-olive">
@@ -365,13 +370,13 @@ function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
         aria-label="Ver zonas y condiciones de entrega"
       >
         <div className="pointer-events-none flex min-w-max animate-[shipping-marquee_28s_linear_infinite] items-center gap-8 whitespace-nowrap pr-8">
-          {[0, 1, 2].map((item) => (
+          {[...tickerItems, ...tickerItems].map((item, index) => (
             <span
-              key={item}
-              className="inline-flex items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
+              key={`${item}-${index}`}
+              className="inline-flex shrink-0 items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
             >
               <span className="inline-flex items-center gap-3">
-                <span className="ml-3 sm:ml-4">{shippingTickerText}</span>
+                <span>{shippingTickerText}</span>
               </span>
             </span>
           ))}

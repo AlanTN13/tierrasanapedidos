@@ -31,12 +31,20 @@ export default async function RecipePage({ params }: RecipePageProps) {
   return (
     <main className="pb-16">
       <section className="container-shell pt-6 sm:pt-8">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-full bg-white/78 px-4 py-2 text-sm font-semibold text-olive-dark shadow-[0_10px_22px_rgba(111,127,79,0.08)]"
-        >
-          ← Volver a la tienda
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full bg-white/78 px-4 py-2 text-sm font-semibold text-olive-dark shadow-[0_10px_22px_rgba(111,127,79,0.08)]"
+          >
+            ← Volver a la tienda
+          </Link>
+          <Link
+            href="/recetas"
+            className="inline-flex items-center gap-2 rounded-full bg-white/78 px-4 py-2 text-sm font-semibold text-olive-dark shadow-[0_10px_22px_rgba(111,127,79,0.08)]"
+          >
+            ← Ver recetas
+          </Link>
+        </div>
       </section>
 
       <section className="container-shell pt-4 pb-8 sm:pb-10">
@@ -48,6 +56,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 alt={recipe.title}
                 fill
                 priority
+                unoptimized
                 sizes="(max-width: 1024px) 100vw, 55vw"
                 className="object-cover"
               />

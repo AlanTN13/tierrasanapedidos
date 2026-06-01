@@ -1,17 +1,145 @@
 import type { FilterCategory, Product } from "@/types/catalog";
 
-const CATEGORY_ORDER = [
-  "Frutos secos y snacks",
-  "Semillas",
-  "Harinas",
-  "Legumbres",
-  "Arroz y Gourmet",
-  "Cereales",
-  "Especias",
-  "Reposteria",
-  "Aceites",
-  "Dulces & Untables",
+export const CATEGORY_CONFIG = [
+  {
+    category: "Frutos secos y snack",
+    title: "Frutos secos y snack",
+    image: "/categorias/frutos-secos-y-snack.png",
+    searchTags: ["frutos secos", "snack", "colacion", "mix"],
+  },
+  {
+    category: "Semillas",
+    title: "Semillas",
+    image: "/categorias/semillas.png",
+    searchTags: ["semillas", "topping", "desayuno"],
+  },
+  {
+    category: "Harinas y premezclas",
+    title: "Harinas y premezclas",
+    image: "/categorias/harinas-y-premezclas.png",
+    searchTags: ["harinas", "premezclas", "panificados"],
+  },
+  {
+    category: "Sin TACC",
+    title: "Sin TACC",
+    image: "/categorias/sin-tacc.png",
+    searchTags: ["sin tacc", "celiacos", "gluten free"],
+  },
+  {
+    category: "Cereales y granolas",
+    title: "Cereales y granolas",
+    image: "/categorias/cereales-y-granolas.png",
+    searchTags: ["cereales", "granolas", "desayuno", "merienda"],
+  },
+  {
+    category: "Sin azucar",
+    title: "Sin azucar",
+    image: "/categorias/sin-azucar.png",
+    searchTags: ["sin azucar", "light"],
+  },
+  {
+    category: "Dulces y untables",
+    title: "Dulces y untables",
+    image: "/categorias/dulces-y-untables.png",
+    searchTags: ["dulces", "untables", "mermeladas", "miel", "pasta de mani"],
+  },
+  {
+    category: "Legumbres",
+    title: "Legumbres",
+    image: "/categorias/legumbres.png",
+    searchTags: ["legumbres", "porotos", "garbanzos", "lentejas"],
+  },
+  {
+    category: "Arroces y oriental",
+    title: "Arroces y oriental",
+    image: "/categorias/arroces-y-oriental.png",
+    searchTags: ["arroz", "oriental", "sushi", "papel de arroz"],
+  },
+  {
+    category: "Condimentos y especias",
+    title: "Condimentos y especias",
+    image: "/categorias/condimentos-y-especias.png",
+    searchTags: ["condimentos", "especias", "sabor", "cocina"],
+  },
+  {
+    category: "Galletitas",
+    title: "Galletitas",
+    image: "/categorias/galletitas.png",
+    searchTags: ["galletitas", "cookies", "snack"],
+  },
+  {
+    category: "Reposteria y endulzantes",
+    title: "Reposteria y endulzantes",
+    image: "/categorias/reposteria.png",
+    searchTags: ["reposteria", "hornear", "postres", "dulce", "endulzantes", "azucar", "stevia"],
+  },
+  {
+    category: "Aceites y salsas de soja",
+    title: "Aceites y salsas de soja",
+    image: "/categorias/aceites-y-salsas-de-soja.png",
+    searchTags: ["aceites", "salsas", "soja", "cocina", "aderezos"],
+  },
 ] as const;
+
+const CATEGORY_ORDER = CATEGORY_CONFIG.map((entry) => entry.category);
+
+const LEGACY_TO_FINAL_CATEGORY_MAP: Record<string, string[]> = {
+  Aceites: ["Aceites y salsas de soja"],
+  "Arroz y Gourmet": ["Arroces y oriental"],
+  Cereales: ["Cereales y granolas"],
+  "Dulces & Untables": ["Dulces y untables"],
+  Especias: ["Condimentos y especias"],
+  "Frutos secos y snacks": ["Frutos secos y snack"],
+  Galletitas: ["Galletitas"],
+  Harinas: ["Harinas y premezclas"],
+  Legumbres: ["Legumbres"],
+  Reposteria: ["Reposteria y endulzantes"],
+  Semillas: ["Semillas"],
+};
+
+const PRODUCT_EXTRA_CATEGORIES: Record<string, string[]> = {
+  almendra: ["Sin azucar", "Sin TACC"],
+  "arroz-koshihikari-sushi": ["Sin TACC"],
+  "arroz-yamani-integral": ["Sin TACC"],
+  "avena-instantanea": ["Sin azucar"],
+  "avena-tradicional": ["Sin azucar"],
+  "arroz-inflado": ["Sin azucar", "Sin TACC"],
+  "cacao-amargo-alcalino": ["Sin azucar", "Sin TACC"],
+  "canela-en-polvo": ["Reposteria y endulzantes"],
+  "castanas-de-caju": ["Sin azucar", "Sin TACC"],
+  "chia-premium": ["Sin azucar", "Sin TACC"],
+  "coco-rallado": ["Frutos secos y snack", "Sin azucar", "Sin TACC"],
+  "fecula-de-mandioca": ["Sin TACC"],
+  "galletas-de-arroz-con-sal": ["Sin TACC"],
+  "galletas-de-arroz-dulces": ["Sin TACC"],
+  "galletas-de-arroz-sin-sal": ["Sin TACC"],
+  girasol: ["Sin azucar", "Sin TACC"],
+  garbanzos: ["Sin TACC"],
+  "harina-de-almendras": ["Reposteria y endulzantes", "Sin azucar", "Sin TACC"],
+  "harina-de-arroz": ["Sin azucar", "Sin TACC"],
+  "harina-de-coco": ["Sin azucar", "Sin TACC"],
+  "harina-integral": ["Sin azucar", "Sin TACC"],
+  lino: ["Sin azucar", "Sin TACC"],
+  lentejas: ["Sin TACC"],
+  "maiz-inflado": ["Sin azucar", "Sin TACC"],
+  "miel-liquida-beepure": ["Frutos secos y snack"],
+  "mix-con-avellanas": ["Sin azucar", "Sin TACC"],
+  "mix-de-semillas": ["Sin azucar", "Sin TACC"],
+  "nuez-mariposa": ["Sin azucar", "Sin TACC"],
+  "pasta-mani-beepure": ["Frutos secos y snack", "Sin azucar"],
+  "pasta-mani-entrenuts-caramel": ["Frutos secos y snack"],
+  "pasta-mani-entrenuts-cookie": ["Frutos secos y snack"],
+  "pistachos-pelados": ["Sin azucar", "Sin TACC"],
+  "porotos-de-alubia": ["Sin TACC"],
+  "porotos-negros": ["Sin TACC"],
+  "premezcla-bizcochuelo-chocolate-dona-pacha": ["Sin TACC"],
+  "premezcla-bizcochuelo-vainilla-dona-pacha": ["Sin TACC"],
+  "premezcla-brownie-dona-pacha": ["Sin TACC"],
+  "quinoa-inflada": ["Sin azucar", "Sin TACC"],
+  "stevia-hileret-50-sobres": ["Sin azucar"],
+  "stevia-hileret-liquido-200cc": ["Sin azucar"],
+  "zucra-hileret-liquido-200cc": ["Sin azucar"],
+};
 
 const FEATURED_PRODUCT_ORDER = [
   "mix-con-avellanas",
@@ -23,23 +151,24 @@ const FEATURED_PRODUCT_ORDER = [
 ] as const;
 
 export function getCategories(products: Product[]): FilterCategory[] {
-  const uniqueCategories = [...new Set(products.map((product) => product.categoria))];
+  void products;
+  return [...CATEGORY_ORDER];
+}
 
-  const sortedCategories = uniqueCategories.sort((a, b) => {
-    const aIndex = CATEGORY_ORDER.indexOf(a as (typeof CATEGORY_ORDER)[number]);
-    const bIndex = CATEGORY_ORDER.indexOf(b as (typeof CATEGORY_ORDER)[number]);
+export function getResolvedProductCategories(product: Product) {
+  const sourceCategories =
+    product.categorias && product.categorias.length > 0
+      ? product.categorias
+      : [
+          ...(LEGACY_TO_FINAL_CATEGORY_MAP[product.categoria] ?? [product.categoria]),
+          ...(PRODUCT_EXTRA_CATEGORIES[product.id] ?? []),
+        ];
 
-    if (aIndex === -1 && bIndex === -1) {
-      return a.localeCompare(b, "es");
-    }
+  return [...new Set(sourceCategories)].filter(Boolean);
+}
 
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
-
-    return aIndex - bIndex;
-  });
-
-  return ["Destacados", ...sortedCategories];
+export function getPrimaryCategory(product: Product) {
+  return getResolvedProductCategories(product)[0] ?? product.categoria;
 }
 
 export function filterProducts(
@@ -50,9 +179,9 @@ export function filterProducts(
   const query = normalizeSearchText(rawQuery);
 
   const categoryFilteredProducts =
-    activeCategory === "Destacados"
-      ? getFeaturedProducts(products)
-      : products.filter((product) => product.categoria === activeCategory);
+    products.filter((product) =>
+      getResolvedProductCategories(product).includes(activeCategory),
+    );
 
   const searchableProducts = query ? products : categoryFilteredProducts;
 
@@ -70,7 +199,7 @@ export function filterProducts(
     .map((entry) => entry.product);
 }
 
-function getFeaturedProducts(products: Product[]) {
+export function getFeaturedProducts(products: Product[]) {
   const featuredProducts = products.filter((product) => product.destacado);
 
   return featuredProducts.sort((a, b) => {
@@ -90,7 +219,7 @@ function getFeaturedProducts(products: Product[]) {
 
 function getProductSearchScore(product: Product, query: string) {
   const normalizedName = normalizeSearchText(product.nombre);
-  const normalizedCategory = normalizeSearchText(product.categoria);
+  const normalizedCategories = getResolvedProductCategories(product).map(normalizeSearchText);
   const normalizedDescription = normalizeSearchText(product.descripcion);
   const normalizedTags = getProductSearchTags(product);
   const normalizedPresentations = product.presentaciones.map((presentation) =>
@@ -98,7 +227,7 @@ function getProductSearchScore(product: Product, query: string) {
   );
   const searchableChunks = [
     normalizedName,
-    normalizedCategory,
+    ...normalizedCategories,
     normalizedDescription,
     ...normalizedTags,
     ...normalizedPresentations,
@@ -120,11 +249,11 @@ function getProductSearchScore(product: Product, query: string) {
     return 620;
   }
 
-  if (normalizedCategory === query) {
+  if (normalizedCategories.some((category) => category === query)) {
     return 540;
   }
 
-  if (normalizedCategory.includes(query)) {
+  if (normalizedCategories.some((category) => category.includes(query))) {
     return 460;
   }
 
@@ -160,23 +289,17 @@ function getProductSearchScore(product: Product, query: string) {
 }
 
 function getProductSearchTags(product: Product) {
-  const categoryTags: Partial<Record<Product["categoria"], string[]>> = {
-    "Frutos secos y snacks": ["snack", "colacion", "picada", "saludable"],
-    Semillas: ["desayuno", "saludable", "topping"],
-    Harinas: ["cocina", "recetas", "panificados"],
-    Legumbres: ["saludable", "cocina", "almuerzo"],
-    "Arroz y Gourmet": ["cocina", "guarnicion", "sushi"],
-    Cereales: ["desayuno", "merienda", "saludable"],
-    Especias: ["condimentos", "cocina", "sabor"],
-    Reposteria: ["reposteria", "postres", "horneados"],
-    Aceites: ["cocina", "ensaladas", "saludable"],
-    "Dulces & Untables": ["desayuno", "merienda", "untables"],
-  };
+  const categoryTags = new Set<string>();
 
-  const tags = new Set([
-    ...(product.tags ?? []),
-    ...(categoryTags[product.categoria] ?? []),
-  ]);
+  for (const category of getResolvedProductCategories(product)) {
+    const config = CATEGORY_CONFIG.find((entry) => entry.category === category);
+
+    for (const tag of config?.searchTags ?? []) {
+      categoryTags.add(tag);
+    }
+  }
+
+  const tags = new Set([...(product.tags ?? []), ...categoryTags]);
 
   return [...tags].map((tag) => normalizeSearchText(tag));
 }
@@ -206,4 +329,4 @@ function normalizeSearchText(value: string) {
     .trim();
 }
 
-export { normalizeSearchText };
+export { CATEGORY_ORDER, normalizeSearchText };
