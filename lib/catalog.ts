@@ -13,6 +13,15 @@ const CATEGORY_ORDER = [
   "Dulces & Untables",
 ] as const;
 
+const FEATURED_PRODUCT_ORDER = [
+  "mix-con-avellanas",
+  "chia-premium",
+  "granola-tropical",
+  "harina-de-almendras",
+  "pasta-mani-entrenuts-caramel",
+  "pistachos-con-cascara",
+] as const;
+
 export function getCategories(products: Product[]): FilterCategory[] {
   const uniqueCategories = [...new Set(products.map((product) => product.categoria))];
 
@@ -40,11 +49,10 @@ export function filterProducts(
 ) {
   const query = normalizeSearchText(rawQuery);
 
-  const categoryFilteredProducts = products.filter((product) => {
-    return activeCategory === "Destacados"
-      ? product.destacado
-      : product.categoria === activeCategory;
-  });
+  const categoryFilteredProducts =
+    activeCategory === "Destacados"
+      ? getFeaturedProducts(products)
+      : products.filter((product) => product.categoria === activeCategory);
 
   const searchableProducts = query ? products : categoryFilteredProducts;
 
@@ -60,6 +68,24 @@ export function filterProducts(
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score || a.product.nombre.localeCompare(b.product.nombre, "es"))
     .map((entry) => entry.product);
+}
+
+function getFeaturedProducts(products: Product[]) {
+  const featuredProducts = products.filter((product) => product.destacado);
+
+  return featuredProducts.sort((a, b) => {
+    const aIndex = FEATURED_PRODUCT_ORDER.indexOf(a.id as (typeof FEATURED_PRODUCT_ORDER)[number]);
+    const bIndex = FEATURED_PRODUCT_ORDER.indexOf(b.id as (typeof FEATURED_PRODUCT_ORDER)[number]);
+
+    if (aIndex === -1 && bIndex === -1) {
+      return a.nombre.localeCompare(b.nombre, "es");
+    }
+
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+
+    return aIndex - bIndex;
+  });
 }
 
 function getProductSearchScore(product: Product, query: string) {

@@ -6,6 +6,7 @@ import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingCartButton } from "@/components/floating-cart-button";
 import { Header } from "@/components/header";
+import { HomeDiscovery } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
 import {
@@ -13,6 +14,7 @@ import {
   getCategories,
   normalizeSearchText,
 } from "@/lib/catalog";
+import { getHomeContent } from "@/lib/home";
 import type { FilterCategory, Product } from "@/types/catalog";
 
 type StorefrontProps = {
@@ -36,16 +38,21 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
   const router = useRouter();
   const pathname = usePathname();
   const availableCategories = getCategories(products);
+  const homeContent = getHomeContent(products);
   const [activeCategory, setActiveCategory] = useState<FilterCategory>("Destacados");
   const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
   const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
   const normalizedSearchQuery = normalizeSearchText(submittedSearchQuery);
+  const visibleSectionLinks = normalizedSearchQuery
+    ? [{ id: "productos", label: "Resultados" }]
+    : homeContent.sectionLinks;
   const visibleProducts = filterProducts(products, activeCategory, submittedSearchQuery);
   const activeCategoryLabel = normalizedSearchQuery
     ? `Resultados para ${submittedSearchQuery.trim()}`
     : activeCategory;
+  const isFeaturedView = !normalizedSearchQuery && activeCategory === "Destacados";
 
   const {
     items,
@@ -87,6 +94,12 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
 
   function handleCategoryChange(category: FilterCategory) {
     setActiveCategory(category);
+    setDraftSearchQuery("");
+    setSubmittedSearchQuery("");
+
+    startTransition(() => {
+      router.replace(pathname, { scroll: false });
+    });
 
     requestAnimationFrame(() => {
       document.getElementById("productos")?.scrollIntoView({
@@ -96,14 +109,15 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
     });
   }
 
-  function handleSubmitSearch() {
-    const nextQuery = draftSearchQuery.trim();
+  function submitSearch(nextRawQuery: string) {
+    const nextQuery = nextRawQuery.trim();
     const params = new URLSearchParams();
 
     if (nextQuery) {
       params.set("q", nextQuery);
     }
 
+    setDraftSearchQuery(nextQuery);
     setSubmittedSearchQuery(nextQuery);
 
     startTransition(() => {
@@ -118,6 +132,10 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         block: "start",
       });
     });
+  }
+
+  function handleSubmitSearch() {
+    submitSearch(draftSearchQuery);
   }
 
   function handleAddItem(
@@ -135,6 +153,7 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
     <div className="pb-28">
       <ShippingTicker onOpenShipping={() => setIsShippingOpen(true)} />
       <Header
+        sectionLinks={visibleSectionLinks}
         categories={availableCategories}
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
@@ -152,15 +171,40 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         onOpenCart={openCart}
       />
       <main>
-        {!normalizedSearchQuery ? <Hero onOpenCart={openCart} /> : null}
+        {!normalizedSearchQuery ? (
+          <Hero
+            content={homeContent.hero}
+            searchQuery={draftSearchQuery}
+            onSearchChange={setDraftSearchQuery}
+            onSubmitSearch={handleSubmitSearch}
+            onClearSearch={() => {
+              setDraftSearchQuery("");
+              setSubmittedSearchQuery("");
+              startTransition(() => {
+                router.replace(pathname, { scroll: false });
+              });
+            }}
+          />
+        ) : null}
+        {!normalizedSearchQuery ? (
+          <HomeDiscovery
+            content={homeContent}
+            onSelectCategory={handleCategoryChange}
+          />
+        ) : null}
 
         <section id="productos" className="container-shell pb-12">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <span className="section-kicker">Catalogo</span>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
-                {activeCategoryLabel}
+              <h2 className={`mt-3 font-display font-semibold text-olive-dark ${isFeaturedView ? "text-[2rem] sm:text-[2.4rem]" : "text-3xl sm:text-4xl"}`}>
+                {isFeaturedView ? "Selección destacada" : activeCategoryLabel}
               </h2>
+              {isFeaturedView ? (
+                <p className="mt-2 max-w-xl text-[13px] leading-5 text-foreground/62 sm:text-sm sm:leading-6">
+                  Una vidriera corta con algunos productos que representan mejor la tienda hoy, para entrar más rápido sin sentir que estás viendo otra categoría más.
+                </p>
+              ) : null}
             </div>
             <p className="text-sm leading-6 text-foreground/62">
               {visibleProducts.length} productos disponibles con el filtro actual.
@@ -168,11 +212,13 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
           </div>
 
           {visibleProducts.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className={`mt-6 grid ${isFeaturedView ? "gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-5" : "gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"}`}>
               {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
+                  hideFeaturedBadge={isFeaturedView}
+                  compact={isFeaturedView}
                   onAdd={handleAddItem}
                 />
               ))}
@@ -193,35 +239,6 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
           )}
         </section>
 
-        {!normalizedSearchQuery ? (
-        <section className="container-shell pb-10">
-          <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,rgba(253,244,151,0.28)_0%,rgba(253,89,73,0.24)_35%,rgba(214,36,159,0.18)_68%,rgba(40,90,235,0.16)_100%)] text-[#d6249f]">
-                <InstagramMiniIcon />
-              </div>
-              <span className="section-kicker">Instagram</span>
-            </div>
-
-            <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
-              Seguinos para ver novedades
-            </h3>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
-              Compartimos ingresos, productos nuevos y un poco del día a día de
-              Tierra Sana.
-            </p>
-
-            <a
-              href="https://www.instagram.com/tierrasana.dietetica/"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-[#d6249f]/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(214,36,159,0.06)] hover:border-[#d6249f]/24 hover:bg-[#fff7fb] focus:outline-none focus:ring-2 focus:ring-[#d6249f]/20 sm:w-auto"
-            >
-              Ir a @tierrasana.dietetica
-            </a>
-          </div>
-        </section>
-        ) : null}
       </main>
 
       <FloatingCartButton
@@ -332,25 +349,6 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         </div>
       </div>
     </div>
-  );
-}
-
-function InstagramMiniIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.9"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-      <circle cx="12" cy="12" r="3.75" />
-      <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
   );
 }
 

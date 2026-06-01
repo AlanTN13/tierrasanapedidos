@@ -89,6 +89,37 @@ function writeCartSnapshot(items: CartItem[]) {
   window.dispatchEvent(new Event(STORAGE_EVENT));
 }
 
+export function addItemToStoredCart(
+  product: Product,
+  presentation: ProductPresentation,
+  quantity: number,
+) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const currentItems = readCartSnapshot();
+  const existingItem = currentItems.find(
+    (item) =>
+      item.product.id === product.id &&
+      item.presentation.etiqueta === presentation.etiqueta,
+  );
+
+  if (!existingItem) {
+    writeCartSnapshot([...currentItems, { product, presentation, quantity }]);
+    return;
+  }
+
+  writeCartSnapshot(
+    currentItems.map((item) =>
+      item.product.id === product.id &&
+      item.presentation.etiqueta === presentation.etiqueta
+        ? { ...item, quantity: item.quantity + quantity }
+        : item,
+    ),
+  );
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const items = useSyncExternalStore(
     subscribeToCart,
@@ -116,25 +147,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setIsOpen(false);
       },
       addItem: (product, presentation, quantity) => {
-        const currentItems = readCartSnapshot();
-        const existingItem = currentItems.find(
-          (item) =>
-            item.product.id === product.id &&
-            item.presentation.etiqueta === presentation.etiqueta,
-        );
-
-        if (!existingItem) {
-          writeCartSnapshot([...currentItems, { product, presentation, quantity }]);
-        } else {
-          writeCartSnapshot(
-            currentItems.map((item) =>
-              item.product.id === product.id &&
-              item.presentation.etiqueta === presentation.etiqueta
-                ? { ...item, quantity: item.quantity + quantity }
-                : item,
-            ),
-          );
-        }
+        addItemToStoredCart(product, presentation, quantity);
       },
       updateQuantity: (productId, presentationLabel, quantity) => {
         const currentItems = readCartSnapshot();

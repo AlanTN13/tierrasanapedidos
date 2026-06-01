@@ -267,6 +267,38 @@ input {
   transform: rotate(-42deg);
 }
 
+.hero-step-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  padding: 0.75rem 0.2rem 0;
+}
+
+.hero-scene-orbit {
+  position: absolute;
+  border-radius: 999px;
+  border: 1px dashed rgba(111, 127, 79, 0.18);
+  opacity: 0.65;
+}
+
+.hero-scene-orbit-left {
+  left: 10%;
+  top: 5%;
+  width: 9rem;
+  height: 9rem;
+}
+
+.hero-scene-orbit-right {
+  right: 6%;
+  bottom: 12%;
+  width: 7rem;
+  height: 7rem;
+}
+
+.hero-scene-note {
+  border: 1px solid rgba(111, 127, 79, 0.1);
+}
+
 @media (max-width: 900px) {
   .hero-leaf-right,
   .hero-seeds-right,
@@ -291,6 +323,16 @@ input {
   .hero-almond-top {
     top: 5.4rem;
     right: 2.3rem;
+  }
+
+  .hero-step-row {
+    gap: 0.45rem;
+    padding-top: 0.6rem;
+  }
+
+  .hero-scene-orbit-left,
+  .hero-scene-orbit-right {
+    display: none;
   }
 }
 
