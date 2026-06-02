@@ -1,9 +1,14 @@
 type SearchBarProps = {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
 };
 
-export function SearchBar({ value, onChange }: SearchBarProps) {
+export function SearchBar({
+  value,
+  onChange,
+  placeholder = "Buscar almendras, granola, harina...",
+}: SearchBarProps) {
   return (
     <label className="organic-outline card-shadow flex w-full items-center gap-3 rounded-full bg-white/90 px-4 py-3 text-sm text-foreground">
       <SearchIcon />
@@ -12,7 +17,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         value={value}
         onChange={(event) => onChange(event.target.value)}
         type="search"
-        placeholder="Buscar almendras, granola, harina..."
+        placeholder={placeholder}
         className="w-full bg-transparent text-[15px] outline-none placeholder:text-foreground/45"
       />
     </label>

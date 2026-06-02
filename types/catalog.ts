@@ -11,6 +11,7 @@ export type Product = {
   id: string;
   nombre: string;
   categoria: ProductCategory;
+  categorias?: ProductCategory[];
   descripcion: string;
   tags?: string[];
   presentaciones: ProductPresentation[];

@@ -6,6 +6,7 @@ import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingCartButton } from "@/components/floating-cart-button";
 import { Header } from "@/components/header";
+import { HomeDiscovery } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
 import {
@@ -13,6 +14,7 @@ import {
   getCategories,
   normalizeSearchText,
 } from "@/lib/catalog";
+import { getHomeContent } from "@/lib/home";
 import type { FilterCategory, Product } from "@/types/catalog";
 
 type StorefrontProps = {
@@ -36,12 +38,17 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
   const router = useRouter();
   const pathname = usePathname();
   const availableCategories = getCategories(products);
-  const [activeCategory, setActiveCategory] = useState<FilterCategory>("Destacados");
+  const homeContent = getHomeContent(products);
+  const defaultCategory = availableCategories[0] ?? "Destacados";
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>(defaultCategory);
   const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
   const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
   const normalizedSearchQuery = normalizeSearchText(submittedSearchQuery);
+  const visibleSectionLinks = normalizedSearchQuery
+    ? [{ id: "productos", label: "Resultados" }]
+    : homeContent.sectionLinks;
   const visibleProducts = filterProducts(products, activeCategory, submittedSearchQuery);
   const activeCategoryLabel = normalizedSearchQuery
     ? `Resultados para ${submittedSearchQuery.trim()}`
@@ -87,6 +94,12 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
 
   function handleCategoryChange(category: FilterCategory) {
     setActiveCategory(category);
+    setDraftSearchQuery("");
+    setSubmittedSearchQuery("");
+
+    startTransition(() => {
+      router.replace(pathname, { scroll: false });
+    });
 
     requestAnimationFrame(() => {
       document.getElementById("productos")?.scrollIntoView({
@@ -96,14 +109,15 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
     });
   }
 
-  function handleSubmitSearch() {
-    const nextQuery = draftSearchQuery.trim();
+  function submitSearch(nextRawQuery: string) {
+    const nextQuery = nextRawQuery.trim();
     const params = new URLSearchParams();
 
     if (nextQuery) {
       params.set("q", nextQuery);
     }
 
+    setDraftSearchQuery(nextQuery);
     setSubmittedSearchQuery(nextQuery);
 
     startTransition(() => {
@@ -118,6 +132,10 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         block: "start",
       });
     });
+  }
+
+  function handleSubmitSearch() {
+    submitSearch(draftSearchQuery);
   }
 
   function handleAddItem(
@@ -135,6 +153,7 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
     <div className="pb-28">
       <ShippingTicker onOpenShipping={() => setIsShippingOpen(true)} />
       <Header
+        sectionLinks={visibleSectionLinks}
         categories={availableCategories}
         activeCategory={activeCategory}
         onChangeCategory={handleCategoryChange}
@@ -152,7 +171,28 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         onOpenCart={openCart}
       />
       <main>
-        {!normalizedSearchQuery ? <Hero onOpenCart={openCart} /> : null}
+        {!normalizedSearchQuery ? (
+          <Hero
+            content={homeContent.hero}
+            searchQuery={draftSearchQuery}
+            onSearchChange={setDraftSearchQuery}
+            onSubmitSearch={handleSubmitSearch}
+            onClearSearch={() => {
+              setDraftSearchQuery("");
+              setSubmittedSearchQuery("");
+              startTransition(() => {
+                router.replace(pathname, { scroll: false });
+              });
+            }}
+          />
+        ) : null}
+        {!normalizedSearchQuery ? (
+          <HomeDiscovery
+            content={homeContent}
+            onSelectCategory={handleCategoryChange}
+            showIdeas={false}
+          />
+        ) : null}
 
         <section id="productos" className="container-shell pb-12">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -168,11 +208,13 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
           </div>
 
           {visibleProducts.length > 0 ? (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
+                  hideFeaturedBadge={false}
+                  compact
                   onAdd={handleAddItem}
                 />
               ))}
@@ -194,34 +236,13 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         </section>
 
         {!normalizedSearchQuery ? (
-        <section className="container-shell pb-10">
-          <div className="surface-panel organic-outline rounded-[2rem] px-5 py-6 sm:px-6">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] bg-[linear-gradient(135deg,rgba(253,244,151,0.28)_0%,rgba(253,89,73,0.24)_35%,rgba(214,36,159,0.18)_68%,rgba(40,90,235,0.16)_100%)] text-[#d6249f]">
-                <InstagramMiniIcon />
-              </div>
-              <span className="section-kicker">Instagram</span>
-            </div>
-
-            <h3 className="mt-4 text-2xl font-semibold text-olive-dark">
-              Seguinos para ver novedades
-            </h3>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-foreground/68">
-              Compartimos ingresos, productos nuevos y un poco del día a día de
-              Tierra Sana.
-            </p>
-
-            <a
-              href="https://www.instagram.com/tierrasana.dietetica/"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-[#d6249f]/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark shadow-[0_12px_26px_rgba(214,36,159,0.06)] hover:border-[#d6249f]/24 hover:bg-[#fff7fb] focus:outline-none focus:ring-2 focus:ring-[#d6249f]/20 sm:w-auto"
-            >
-              Ir a @tierrasana.dietetica
-            </a>
-          </div>
-        </section>
+          <HomeDiscovery
+            content={homeContent}
+            onSelectCategory={handleCategoryChange}
+            showCategories={false}
+          />
         ) : null}
+
       </main>
 
       <FloatingCartButton
@@ -335,28 +356,10 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
   );
 }
 
-function InstagramMiniIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.9"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-      <circle cx="12" cy="12" r="3.75" />
-      <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
 function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
   const shippingTickerText =
     "Entregas sin costo en Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y Don Bosco";
+  const tickerItems = Array.from({ length: 4 }, (_, index) => index);
 
   return (
     <div className="border-b border-olive/10 bg-olive">
@@ -367,13 +370,13 @@ function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
         aria-label="Ver zonas y condiciones de entrega"
       >
         <div className="pointer-events-none flex min-w-max animate-[shipping-marquee_28s_linear_infinite] items-center gap-8 whitespace-nowrap pr-8">
-          {[0, 1, 2].map((item) => (
+          {[...tickerItems, ...tickerItems].map((item, index) => (
             <span
-              key={item}
-              className="inline-flex items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
+              key={`${item}-${index}`}
+              className="inline-flex shrink-0 items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
             >
               <span className="inline-flex items-center gap-3">
-                <span className="ml-3 sm:ml-4">{shippingTickerText}</span>
+                <span>{shippingTickerText}</span>
               </span>
             </span>
           ))}
