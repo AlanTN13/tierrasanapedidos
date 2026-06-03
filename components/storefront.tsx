@@ -8,43 +8,56 @@ import { FloatingCartButton } from "@/components/floating-cart-button";
 import { Header } from "@/components/header";
 import { HomeDiscovery } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
-import { ProductCard } from "@/components/product-card";
-import {
-  filterProducts,
-  getCategories,
-  normalizeSearchText,
-} from "@/lib/catalog";
-import { getHomeContent } from "@/lib/home";
+import { ProductCard, ProductDetailDialog } from "@/components/product-card";
+import { filterProducts, normalizeSearchText } from "@/lib/catalog";
 import type { FilterCategory, Product } from "@/types/catalog";
+import type { HomeContent } from "@/types/home";
 
 type StorefrontProps = {
   products: Product[];
+  availableCategories: FilterCategory[];
+  homeContent: HomeContent;
   initialSearchQuery?: string;
 };
 
-export function Storefront({ products, initialSearchQuery = "" }: StorefrontProps) {
+export function Storefront({
+  products,
+  availableCategories,
+  homeContent,
+  initialSearchQuery = "",
+}: StorefrontProps) {
   return (
     <CartProvider>
       <StorefrontContent
         key={initialSearchQuery}
         products={products}
+        availableCategories={availableCategories}
+        homeContent={homeContent}
         initialSearchQuery={initialSearchQuery}
       />
     </CartProvider>
   );
 }
 
-function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProps) {
+function StorefrontContent({
+  products,
+  availableCategories,
+  homeContent,
+  initialSearchQuery = "",
+}: StorefrontProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const availableCategories = getCategories(products);
-  const homeContent = getHomeContent(products);
   const defaultCategory = availableCategories[0] ?? "Destacados";
   const [activeCategory, setActiveCategory] = useState<FilterCategory>(defaultCategory);
   const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
   const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
+  const [detailState, setDetailState] = useState<{
+    product: Product;
+    presentation: Product["presentaciones"][number];
+    primaryCategory: string;
+  } | null>(null);
   const normalizedSearchQuery = normalizeSearchText(submittedSearchQuery);
   const visibleSectionLinks = normalizedSearchQuery
     ? [{ id: "productos", label: "Resultados" }]
@@ -91,6 +104,28 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isShippingOpen]);
+
+  useEffect(() => {
+    if (!detailState) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setDetailState(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [detailState]);
 
   function handleCategoryChange(category: FilterCategory) {
     setActiveCategory(category);
@@ -147,6 +182,18 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
     setRecentlyAddedLabel(
       `${quantity} x ${product.nombre} · ${presentation.etiqueta}`,
     );
+  }
+
+  function handleOpenDetail(
+    product: Product,
+    presentation: Product["presentaciones"][number],
+    primaryCategory: string,
+  ) {
+    setDetailState({
+      product,
+      presentation,
+      primaryCategory,
+    });
   }
 
   return (
@@ -215,6 +262,7 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
                   product={product}
                   hideFeaturedBadge={false}
                   compact
+                  onOpenDetail={handleOpenDetail}
                   onAdd={handleAddItem}
                 />
               ))}
@@ -260,6 +308,16 @@ function StorefrontContent({ products, initialSearchQuery = "" }: StorefrontProp
         onRemove={removeItem}
         onUpdateQuantity={updateQuantity}
       />
+
+      {detailState ? (
+        <ProductDetailDialog
+          product={detailState.product}
+          selectedPresentation={detailState.presentation}
+          primaryCategory={detailState.primaryCategory}
+          isOpen
+          onClose={() => setDetailState(null)}
+        />
+      ) : null}
 
       <div
         className={`fixed inset-0 z-[60] transition lg:hidden ${

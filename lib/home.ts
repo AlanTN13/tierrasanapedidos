@@ -68,7 +68,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Galletitas simples, suaves y bien rendidoras con mantequilla de maní y chips de chocolate.",
     longDescription:
       "Una receta ideal para resolver una merienda casera con pocos ingredientes, buena textura, mucho sabor a maní y un plus de chocolate. Funciona perfecto como receta principal porque es simple, tentadora y conecta directo con productos del catálogo.",
-    heroImage: "/recetas/cookies-mantequilla-mani.png",
+    heroImage: "/recetas-optimized/cookies-mantequilla-mani.jpg",
     targetCategory: "Dulces y untables",
     prepLabel: "12 a 15 min de horno",
     servingsLabel: "Varias cookies",
@@ -96,7 +96,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Un pan simple, húmedo y sin amasado para desayunos, tostadas o para acompañar comidas.",
     longDescription:
       "Una receta rendidora para tener pan casero con ingredientes nobles y poca complicación. Va muy bien para quienes quieren sumar harinas integrales y semillas a la rutina sin pasar horas en la cocina.",
-    heroImage: "/recetas/pan-integral.png",
+    heroImage: "/recetas-optimized/pan-integral.jpg",
     targetCategory: "Harinas y premezclas",
     prepLabel: "40 min de horno",
     servingsLabel: "1 budinera",
@@ -157,7 +157,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Una opción dulce y casera con cacao, relleno cremoso y porciones chicas para tener a mano.",
     longDescription:
       "Estos alfajorcitos son ideales para una merienda distinta o para sumar una receta casera al mostrador de ideas. La masa sale rápido y el relleno les da ese toque postre sin volverse pesado.",
-    heroImage: "/recetas/alfajorcitos-fit.png",
+    heroImage: "/recetas-optimized/alfajorcitos-fit.jpg",
     targetCategory: "Reposteria y endulzantes",
     prepLabel: "10 min de horno",
     servingsLabel: "4 porciones",

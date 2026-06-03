@@ -10,6 +10,11 @@ type ProductCardProps = {
   product: Product;
   hideFeaturedBadge?: boolean;
   compact?: boolean;
+  onOpenDetail: (
+    product: Product,
+    presentation: Product["presentaciones"][number],
+    primaryCategory: string,
+  ) => void;
   onAdd: (
     product: Product,
     presentation: Product["presentaciones"][number],
@@ -21,13 +26,13 @@ export function ProductCard({
   product,
   hideFeaturedBadge = false,
   compact = false,
+  onOpenDetail,
   onAdd,
 }: ProductCardProps) {
   void compact;
 
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedPresentationLabel, setSelectedPresentationLabel] = useState(
     getDefaultPresentationLabel(product),
   );
@@ -50,145 +55,115 @@ export function ProductCard({
     return () => window.clearTimeout(timeoutId);
   }, [justAdded]);
 
-  useEffect(() => {
-    if (!isDetailOpen) {
-      return;
-    }
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsDetailOpen(false);
-      }
-    };
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [isDetailOpen]);
-
   return (
-    <>
-      <article className="card-shadow organic-outline flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-card">
-        <div className="relative aspect-square overflow-hidden bg-olive-soft/45">
-          <Image
-            src={product.imagen}
-            alt={product.nombre}
-            fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 20vw"
-            className="object-cover"
-          />
-          {product.destacado && !hideFeaturedBadge ? (
-            <span className="absolute top-3 left-3 rounded-full bg-white/92 px-2.5 py-1 text-[10px] font-bold tracking-[0.16em] text-earth uppercase">
-              Destacado
-            </span>
-          ) : null}
+    <article className="card-shadow organic-outline flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-card">
+      <div className="relative aspect-square overflow-hidden bg-olive-soft/45">
+        <Image
+          src={product.imagen}
+          alt={product.nombre}
+          fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 20vw"
+          className="object-cover"
+        />
+        {product.destacado && !hideFeaturedBadge ? (
+          <span className="absolute top-3 left-3 rounded-full bg-white/92 px-2.5 py-1 text-[10px] font-bold tracking-[0.16em] text-earth uppercase">
+            Destacado
+          </span>
+        ) : null}
+      </div>
+
+      <div className="flex flex-1 flex-col p-3">
+        <p className="text-[10px] font-bold tracking-[0.16em] text-earth uppercase">
+          {primaryCategory}
+        </p>
+        <h3 className="mt-1 text-[15px] leading-tight font-semibold text-olive-dark">
+          {product.nombre}
+        </h3>
+
+        <div className="mt-2 flex items-end justify-between gap-2">
+          <div>
+            <p className="text-base font-semibold text-olive-dark">
+              {formatARS(selectedPresentation.precio)}
+            </p>
+            <p className="mt-0.5 text-[11px] text-foreground/58">
+              por {selectedPresentation.etiqueta}
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-1 flex-col p-3">
-          <p className="text-[10px] font-bold tracking-[0.16em] text-earth uppercase">
-            {primaryCategory}
-          </p>
-          <h3 className="mt-1 text-[15px] leading-tight font-semibold text-olive-dark">
-            {product.nombre}
-          </h3>
-
-          <div className="mt-2 flex items-end justify-between gap-2">
-            <div>
-              <p className="text-base font-semibold text-olive-dark">
-                {formatARS(selectedPresentation.precio)}
-              </p>
-              <p className="mt-0.5 text-[11px] text-foreground/58">
-                por {selectedPresentation.etiqueta}
-              </p>
+        {hasMultiplePresentations ? (
+          <div className="mt-2.5">
+            <div className="relative">
+              <select
+                id={`presentation-${product.id}`}
+                value={selectedPresentationLabel}
+                onChange={(event) =>
+                  setSelectedPresentationLabel(
+                    event.target.value as ProductPresentation["etiqueta"],
+                  )
+                }
+                className="w-full appearance-none rounded-[0.95rem] border border-olive/12 bg-white/84 px-3 py-2 pr-9 text-[12px] font-medium text-olive-dark outline-none focus:border-olive/28 focus:ring-2 focus:ring-olive/20"
+                aria-label={`Elegir peso para ${product.nombre}`}
+              >
+                {product.presentaciones.map((presentation) => (
+                  <option key={presentation.etiqueta} value={presentation.etiqueta}>
+                    {presentation.etiqueta}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-olive-dark/70">
+                <ChevronIcon />
+              </span>
             </div>
           </div>
+        ) : null}
 
-          {hasMultiplePresentations ? (
-            <div className="mt-2.5">
-              <div className="relative">
-                <select
-                  id={`presentation-${product.id}`}
-                  value={selectedPresentationLabel}
-                  onChange={(event) =>
-                    setSelectedPresentationLabel(
-                      event.target.value as ProductPresentation["etiqueta"],
-                    )
-                  }
-                  className="w-full appearance-none rounded-[0.95rem] border border-olive/12 bg-white/84 px-3 py-2 pr-9 text-[12px] font-medium text-olive-dark outline-none focus:border-olive/28 focus:ring-2 focus:ring-olive/20"
-                  aria-label={`Elegir peso para ${product.nombre}`}
-                >
-                  {product.presentaciones.map((presentation) => (
-                    <option key={presentation.etiqueta} value={presentation.etiqueta}>
-                      {presentation.etiqueta}
-                    </option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-olive-dark/70">
-                  <ChevronIcon />
-                </span>
-              </div>
-            </div>
-          ) : null}
+        <button
+          type="button"
+          onClick={() => onOpenDetail(product, selectedPresentation, primaryCategory)}
+          className="mt-3 rounded-full border border-olive/14 bg-white px-3 py-2 text-[12px] font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25"
+        >
+          Ver detalle
+        </button>
+
+        <div className="mt-3 flex items-center gap-2">
+          <div className="inline-flex items-center rounded-full border border-olive/12 bg-white/80 p-0.5">
+            <QuantityButton
+              label={`Restar una unidad de ${product.nombre}`}
+              onClick={() => setQuantity((current) => Math.max(1, current - 1))}
+              compact
+            >
+              -
+            </QuantityButton>
+            <span
+              className="min-w-7 text-center text-[12px] font-semibold text-olive-dark"
+              aria-live="polite"
+            >
+              {quantity}
+            </span>
+            <QuantityButton
+              label={`Sumar una unidad de ${product.nombre}`}
+              onClick={() => setQuantity((current) => current + 1)}
+              compact
+            >
+              +
+            </QuantityButton>
+          </div>
 
           <button
             type="button"
-            onClick={() => setIsDetailOpen(true)}
-            className="mt-3 rounded-full border border-olive/14 bg-white px-3 py-2 text-[12px] font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25"
+            onClick={() => {
+              onAdd(product, selectedPresentation, quantity);
+              setQuantity(1);
+              setJustAdded(true);
+            }}
+            className="flex-1 rounded-full bg-olive px-3 py-2 text-[12px] font-semibold text-white hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
           >
-            Ver detalle
+            {justAdded ? "Agregado" : "Agregar"}
           </button>
-
-          <div className="mt-3 flex items-center gap-2">
-            <div className="inline-flex items-center rounded-full border border-olive/12 bg-white/80 p-0.5">
-              <QuantityButton
-                label={`Restar una unidad de ${product.nombre}`}
-                onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                compact
-              >
-                -
-              </QuantityButton>
-              <span
-                className="min-w-7 text-center text-[12px] font-semibold text-olive-dark"
-                aria-live="polite"
-              >
-                {quantity}
-              </span>
-              <QuantityButton
-                label={`Sumar una unidad de ${product.nombre}`}
-                onClick={() => setQuantity((current) => current + 1)}
-                compact
-              >
-                +
-              </QuantityButton>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                onAdd(product, selectedPresentation, quantity);
-                setQuantity(1);
-                setJustAdded(true);
-              }}
-              className="flex-1 rounded-full bg-olive px-3 py-2 text-[12px] font-semibold text-white hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
-            >
-              {justAdded ? "Agregado" : "Agregar"}
-            </button>
-          </div>
         </div>
-      </article>
-
-      <ProductDetailDialog
-        product={product}
-        selectedPresentation={selectedPresentation}
-        primaryCategory={primaryCategory}
-        isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
-      />
-    </>
+      </div>
+    </article>
   );
 }
 
@@ -200,7 +175,7 @@ type ProductDetailDialogProps = {
   onClose: () => void;
 };
 
-function ProductDetailDialog({
+export function ProductDetailDialog({
   product,
   selectedPresentation,
   primaryCategory,

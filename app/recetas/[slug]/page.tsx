@@ -56,7 +56,6 @@ export default async function RecipePage({ params }: RecipePageProps) {
                 alt={recipe.title}
                 fill
                 priority
-                unoptimized
                 sizes="(max-width: 1024px) 100vw, 55vw"
                 className="object-cover"
               />
