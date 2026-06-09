@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -14,41 +14,56 @@ import type { FilterCategory, Product } from "@/types/catalog";
 import type { HomeContent } from "@/types/home";
 
 type StorefrontProps = {
-  products: Product[];
+  initialProducts: Product[];
   availableCategories: FilterCategory[];
   homeContent: HomeContent;
+  initialCategory: FilterCategory;
   initialSearchQuery?: string;
+  catalogUrl?: string | null;
+  hasCompleteCatalog?: boolean;
 };
 
 export function Storefront({
-  products,
+  initialProducts,
   availableCategories,
   homeContent,
+  initialCategory,
   initialSearchQuery = "",
+  catalogUrl = null,
+  hasCompleteCatalog = false,
 }: StorefrontProps) {
   return (
     <CartProvider>
       <StorefrontContent
         key={initialSearchQuery}
-        products={products}
+        initialProducts={initialProducts}
         availableCategories={availableCategories}
         homeContent={homeContent}
+        initialCategory={initialCategory}
         initialSearchQuery={initialSearchQuery}
+        catalogUrl={catalogUrl}
+        hasCompleteCatalog={hasCompleteCatalog}
       />
     </CartProvider>
   );
 }
 
 function StorefrontContent({
-  products,
+  initialProducts,
   availableCategories,
   homeContent,
+  initialCategory,
   initialSearchQuery = "",
+  catalogUrl = null,
+  hasCompleteCatalog: initialHasCompleteCatalog = false,
 }: StorefrontProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const defaultCategory = availableCategories[0] ?? "Destacados";
-  const [activeCategory, setActiveCategory] = useState<FilterCategory>(defaultCategory);
+  const [products, setProducts] = useState(initialProducts);
+  const [hasCompleteCatalog, setHasCompleteCatalog] = useState(initialHasCompleteCatalog);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(false);
+  const catalogRequestRef = useRef<Promise<void> | null>(null);
+  const [activeCategory, setActiveCategory] = useState<FilterCategory>(initialCategory);
   const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
   const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
   const [isShippingOpen, setIsShippingOpen] = useState(false);
@@ -79,6 +94,44 @@ function StorefrontContent({
     removeItem,
     updateQuantity,
   } = useCart();
+
+  const ensureFullCatalog = useCallback(async () => {
+    if (hasCompleteCatalog || !catalogUrl) {
+      return;
+    }
+
+    if (catalogRequestRef.current) {
+      await catalogRequestRef.current;
+      return;
+    }
+
+    const request = (async () => {
+      setIsCatalogLoading(true);
+
+      try {
+        const response = await fetch(catalogUrl, { credentials: "same-origin" });
+
+        if (!response.ok) {
+          throw new Error(`Catalog request failed with ${response.status}`);
+        }
+
+        const data = (await response.json()) as { products?: Product[] };
+
+        if (Array.isArray(data.products)) {
+          setProducts(data.products);
+          setHasCompleteCatalog(true);
+        }
+      } catch (error) {
+        console.error("No se pudo completar la carga diferida del catálogo.", error);
+      } finally {
+        setIsCatalogLoading(false);
+        catalogRequestRef.current = null;
+      }
+    })();
+
+    catalogRequestRef.current = request;
+    await request;
+  }, [catalogUrl, hasCompleteCatalog]);
 
   useEffect(() => {
     if (!recentlyAddedLabel) {
@@ -127,10 +180,34 @@ function StorefrontContent({
     };
   }, [detailState]);
 
+  useEffect(() => {
+    if (hasCompleteCatalog || !catalogUrl) {
+      return;
+    }
+
+    if ("requestIdleCallback" in window) {
+      const idleHandle = window.requestIdleCallback(() => {
+        void ensureFullCatalog();
+      }, { timeout: 1600 });
+
+      return () => window.cancelIdleCallback(idleHandle);
+    }
+
+    const timeoutId = globalThis.setTimeout(() => {
+      void ensureFullCatalog();
+    }, 900);
+
+    return () => globalThis.clearTimeout(timeoutId);
+  }, [catalogUrl, ensureFullCatalog, hasCompleteCatalog]);
+
   function handleCategoryChange(category: FilterCategory) {
     setActiveCategory(category);
     setDraftSearchQuery("");
     setSubmittedSearchQuery("");
+
+    if (!hasCompleteCatalog && category !== initialCategory) {
+      void ensureFullCatalog();
+    }
 
     startTransition(() => {
       router.replace(pathname, { scroll: false });
@@ -150,6 +227,9 @@ function StorefrontContent({
 
     if (nextQuery) {
       params.set("q", nextQuery);
+      if (!hasCompleteCatalog) {
+        void ensureFullCatalog();
+      }
     }
 
     setDraftSearchQuery(nextQuery);
@@ -195,6 +275,10 @@ function StorefrontContent({
       primaryCategory,
     });
   }
+
+  const isAwaitingFullCatalog =
+    !hasCompleteCatalog &&
+    (Boolean(normalizedSearchQuery) || activeCategory !== initialCategory);
 
   return (
     <div className="pb-28">
@@ -250,11 +334,22 @@ function StorefrontContent({
               </h2>
             </div>
             <p className="text-sm leading-6 text-foreground/62">
-              {visibleProducts.length} productos disponibles con el filtro actual.
+              {isAwaitingFullCatalog || isCatalogLoading
+                ? "Actualizando catálogo completo..."
+                : `${visibleProducts.length} productos disponibles con el filtro actual.`}
             </p>
           </div>
 
-          {visibleProducts.length > 0 ? (
+          {isAwaitingFullCatalog ? (
+            <div className="mt-6 rounded-[1.8rem] border border-olive/14 bg-white/72 p-8 text-center">
+              <p className="text-lg font-semibold text-olive-dark">
+                Cargando catálogo completo
+              </p>
+              <p className="mt-2 text-sm leading-6 text-foreground/62">
+                Estamos trayendo todos los productos para mostrar resultados precisos.
+              </p>
+            </div>
+          ) : visibleProducts.length > 0 ? (
             <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {visibleProducts.map((product) => (
                 <ProductCard

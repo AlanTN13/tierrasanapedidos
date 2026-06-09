@@ -1,10 +1,9 @@
-import { getFeaturedProducts } from "@/lib/catalog";
 import type { Product } from "@/types/catalog";
 import type {
   HomeCategoryCard,
   HomeContent,
-  HomeFeaturedShelf,
   HomeHeroConfig,
+  HomeRecipeHighlight,
   ResolvedHomeHeroConfig,
   HomeSectionLink,
   RecipeHighlight,
@@ -225,25 +224,20 @@ function resolveHero(): ResolvedHomeHeroConfig {
   return hero;
 }
 
-function resolveFeaturedShelf(products: Product[]): HomeFeaturedShelf {
-  return {
-    title: "Elegidos para arrancar rápido",
-    description:
-      "Una selección corta para comprar algo rico sin tener que entrar de lleno al catálogo completo.",
-    products: getFeaturedProducts(products).slice(0, 5),
-  };
+function resolveHomeRecipes(): HomeRecipeHighlight[] {
+  return recipeHighlights.map((highlight) => {
+    const { productIds, ...homeRecipe } = highlight;
+    void productIds;
+    return homeRecipe;
+  });
 }
 
-export function getHomeContent(
-  products: Product[],
-  categoryCards: HomeCategoryCard[],
-): HomeContent {
+export function getHomeContent(categoryCards: HomeCategoryCard[]): HomeContent {
   return {
     sectionLinks,
     hero: resolveHero(),
     categoryCards,
-    featuredShelf: resolveFeaturedShelf(products),
-    recipeHighlights: resolveRecipes(products),
+    recipeHighlights: resolveHomeRecipes(),
   };
 }
 

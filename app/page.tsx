@@ -5,6 +5,7 @@ import {
   getCatalogProducts,
   getCategoryCards,
 } from "@/lib/catalog-data";
+import { filterProducts } from "@/lib/catalog";
 import { getHomeContent } from "@/lib/home";
 
 type HomeProps = {
@@ -29,14 +30,22 @@ async function HomeContent({ searchParams }: HomeProps) {
     getAvailableCategories(),
     getCategoryCards(),
   ]);
-  const homeContent = getHomeContent(products, categoryCards);
+  const initialCategory = availableCategories[0] ?? "Destacados";
+  const shouldDeferFullCatalog = initialSearchQuery.length === 0;
+  const initialProducts = shouldDeferFullCatalog
+    ? filterProducts(products, initialCategory, "")
+    : products;
+  const homeContent = getHomeContent(categoryCards);
 
   return (
     <Storefront
-      products={products}
+      initialProducts={initialProducts}
       availableCategories={availableCategories}
       homeContent={homeContent}
+      initialCategory={initialCategory}
       initialSearchQuery={initialSearchQuery}
+      catalogUrl={shouldDeferFullCatalog ? "/api/catalog" : null}
+      hasCompleteCatalog={!shouldDeferFullCatalog}
     />
   );
 }

@@ -56,10 +56,11 @@ export type ResolvedRecipeHighlight = Omit<RecipeHighlight, "productIds"> & {
   products: Product[];
 };
 
+export type HomeRecipeHighlight = Omit<RecipeHighlight, "productIds">;
+
 export type HomeContent = {
   sectionLinks: HomeSectionLink[];
   hero: ResolvedHomeHeroConfig;
   categoryCards: HomeCategoryCard[];
-  featuredShelf: HomeFeaturedShelf;
-  recipeHighlights: ResolvedRecipeHighlight[];
+  recipeHighlights: HomeRecipeHighlight[];
 };

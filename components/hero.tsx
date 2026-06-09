@@ -26,7 +26,7 @@ export function Hero(props: HeroProps) {
                 alt="Armá tu pedido en 3 pasos"
                 fill
                 priority
-                sizes="100vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 96vw, 1200px"
                 className="object-cover"
               />
             </div>

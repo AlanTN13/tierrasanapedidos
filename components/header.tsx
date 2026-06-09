@@ -60,7 +60,6 @@ export function Header({
               alt="Tierra Sana Dietetica & Bienestar"
               width={320}
               height={140}
-              priority
               className="h-auto w-[58px] sm:w-[88px]"
             />
           </a>
@@ -169,7 +168,6 @@ export function Header({
                 alt="Tierra Sana Dietetica & Bienestar"
                 width={420}
                 height={190}
-                priority
                 className="h-auto w-[132px] xl:w-[148px]"
               />
             </a>
