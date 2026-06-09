@@ -414,60 +414,53 @@ function StorefrontContent({
         />
       ) : null}
 
-      <div
-        className={`fixed inset-0 z-[60] transition lg:hidden ${
-          isShippingOpen ? "pointer-events-auto" : "pointer-events-none"
-        }`}
-        aria-hidden={!isShippingOpen}
-      >
-        <button
-          type="button"
-          onClick={() => setIsShippingOpen(false)}
-          className={`absolute inset-0 bg-[#2f3328]/22 backdrop-blur-[2px] transition-opacity ${
-            isShippingOpen ? "opacity-100" : "opacity-0"
-          }`}
-          aria-label="Cerrar informacion de entregas"
-        />
-
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="shipping-title"
-          className={`absolute right-0 bottom-0 left-0 rounded-t-[2rem] bg-[#fffdf9] p-5 shadow-[0_-24px_60px_rgba(63,74,47,0.18)] transition-transform duration-300 ${
-            isShippingOpen ? "translate-y-0" : "translate-y-full"
-          }`}
-        >
-          <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-olive/16" />
-          <div className="flex items-start gap-4">
-            <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-olive-soft text-2xl">
-              📦
-            </span>
-            <div>
-              <p
-                id="shipping-title"
-                className="text-sm font-bold tracking-[0.12em] text-earth uppercase"
-              >
-                Entregas en la zona sin costo
-              </p>
-              <p className="mt-2 text-sm leading-6 text-foreground/68">
-                Realizamos entregas en Avellaneda, Sarandi, Wilde, Villa
-                Dominico, Gerli, Bernal y Don Bosco.
-              </p>
-              <p className="mt-2 text-sm leading-6 text-foreground/68">
-                El dia y horario se coordina por WhatsApp.
-              </p>
-            </div>
-          </div>
-
+      {isShippingOpen ? (
+        <div className="fixed inset-0 z-[60] transition lg:hidden">
           <button
             type="button"
             onClick={() => setIsShippingOpen(false)}
-            className="mt-5 w-full rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+            className="absolute inset-0 bg-[#2f3328]/22 backdrop-blur-[2px] transition-opacity opacity-100"
+            aria-label="Cerrar informacion de entregas"
+          />
+
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="shipping-title"
+            className="absolute right-0 bottom-0 left-0 rounded-t-[2rem] bg-[#fffdf9] p-5 shadow-[0_-24px_60px_rgba(63,74,47,0.18)] transition-transform duration-300 translate-y-0"
           >
-            Entendido
-          </button>
+            <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-olive/16" />
+            <div className="flex items-start gap-4">
+              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-olive-soft text-2xl">
+                📦
+              </span>
+              <div>
+                <p
+                  id="shipping-title"
+                  className="text-sm font-bold tracking-[0.12em] text-earth uppercase"
+                >
+                  Entregas en la zona sin costo
+                </p>
+                <p className="mt-2 text-sm leading-6 text-foreground/68">
+                  Realizamos entregas en Avellaneda, Sarandi, Wilde, Villa
+                  Dominico, Gerli, Bernal y Don Bosco.
+                </p>
+                <p className="mt-2 text-sm leading-6 text-foreground/68">
+                  El dia y horario se coordina por WhatsApp.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsShippingOpen(false)}
+              className="mt-5 w-full rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+            >
+              Entendido
+            </button>
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div
         className={`fixed right-4 bottom-24 z-40 w-[min(92vw,26rem)] transition-all duration-300 sm:right-6 sm:bottom-28 ${

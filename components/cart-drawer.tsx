@@ -53,29 +53,24 @@ export function CartDrawer({
     onCheckout();
   }
 
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <div
-      className={`fixed inset-0 z-50 transition ${
-        isOpen ? "pointer-events-auto" : "pointer-events-none"
-      }`}
-      aria-hidden={!isOpen}
-    >
+    <div className="fixed inset-0 z-50 transition">
       <button
         type="button"
         aria-label="Cerrar carrito"
         onClick={onClose}
-        className={`absolute inset-0 bg-[#2f3328]/28 backdrop-blur-[2px] transition-opacity ${
-          isOpen ? "opacity-100" : "opacity-0"
-        }`}
+        className="absolute inset-0 bg-[#2f3328]/28 backdrop-blur-[2px] transition-opacity opacity-100"
       />
 
       <aside
         role="dialog"
         aria-modal="true"
         aria-labelledby="cart-title"
-        className={`absolute right-0 bottom-0 flex h-[88vh] w-full max-w-xl flex-col rounded-t-[2rem] border border-white/55 bg-[#fffdf9] shadow-[0_28px_80px_rgba(63,74,47,0.25)] transition-transform duration-300 sm:top-0 sm:h-full sm:rounded-none sm:rounded-l-[2rem] ${
-          isOpen ? "translate-y-0 sm:translate-x-0" : "translate-y-full sm:translate-x-full"
-        }`}
+        className="absolute right-0 bottom-0 flex h-[88vh] w-full max-w-xl flex-col rounded-t-[2rem] border border-white/55 bg-[#fffdf9] shadow-[0_28px_80px_rgba(63,74,47,0.25)] transition-transform duration-300 translate-y-0 sm:top-0 sm:h-full sm:translate-x-0 sm:rounded-none sm:rounded-l-[2rem]"
       >
         <div className="flex items-start justify-between gap-4 border-b border-olive/10 px-5 py-5 sm:px-6">
           <div>
