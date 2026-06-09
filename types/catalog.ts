@@ -3,8 +3,11 @@ export type ProductCategory = string;
 export type FilterCategory = "Destacados" | ProductCategory;
 
 export type ProductPresentation = {
+  id?: string;
   etiqueta: string;
   precio: number;
+  sortOrder?: number;
+  activa?: boolean;
 };
 
 export type Product = {
@@ -17,6 +20,17 @@ export type Product = {
   presentaciones: ProductPresentation[];
   imagen: string;
   destacado: boolean;
+  featuredOrder?: number | null;
+};
+
+export type CatalogCategory = {
+  id: string;
+  slug: string;
+  name: ProductCategory;
+  image: string;
+  searchTags: string[];
+  sortOrder: number;
+  isActive: boolean;
 };
 
 export type CartItem = {

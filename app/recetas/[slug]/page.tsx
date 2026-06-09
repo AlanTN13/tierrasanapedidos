@@ -2,11 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { RecipeProductCard } from "@/components/recipe-product-card";
-import productsData from "@/data/products.json";
+import { getCatalogProducts } from "@/lib/catalog-data";
 import { getRecipeBySlug, getRecipeHighlights } from "@/lib/home";
-import type { Product } from "@/types/catalog";
-
-const products = productsData as Product[];
 
 type RecipePageProps = {
   params: Promise<{
@@ -14,13 +11,16 @@ type RecipePageProps = {
   }>;
 };
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const products = await getCatalogProducts();
+
   return getRecipeHighlights(products).map((recipe) => ({
     slug: recipe.slug,
   }));
 }
 
 export default async function RecipePage({ params }: RecipePageProps) {
+  const products = await getCatalogProducts();
   const { slug } = await params;
   const recipe = getRecipeBySlug(products, slug);
 

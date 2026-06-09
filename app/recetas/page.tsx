@@ -1,13 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import productsData from "@/data/products.json";
+import { getCatalogProducts } from "@/lib/catalog-data";
 import { getRecipeHighlights } from "@/lib/home";
-import type { Product } from "@/types/catalog";
 
-const products = productsData as Product[];
-const recipes = getRecipeHighlights(products);
+export default async function RecipesPage() {
+  const products = await getCatalogProducts();
+  const recipes = getRecipeHighlights(products);
 
-export default function RecipesPage() {
   return (
     <main className="pb-16">
       <section className="container-shell pt-6 sm:pt-8">

@@ -1,4 +1,4 @@
-import { CATEGORY_CONFIG, getFeaturedProducts } from "@/lib/catalog";
+import { getFeaturedProducts } from "@/lib/catalog";
 import type { Product } from "@/types/catalog";
 import type {
   HomeCategoryCard,
@@ -54,12 +54,6 @@ const hero: HomeHeroConfig = {
     },
   ],
 };
-
-const categoryCards: HomeCategoryCard[] = CATEGORY_CONFIG.map((entry) => ({
-  category: entry.category,
-  title: entry.title,
-  image: entry.image,
-}));
 
 const recipeHighlights: RecipeHighlight[] = [
   {
@@ -240,7 +234,10 @@ function resolveFeaturedShelf(products: Product[]): HomeFeaturedShelf {
   };
 }
 
-export function getHomeContent(products: Product[]): HomeContent {
+export function getHomeContent(
+  products: Product[],
+  categoryCards: HomeCategoryCard[],
+): HomeContent {
   return {
     sectionLinks,
     hero: resolveHero(),

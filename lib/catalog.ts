@@ -200,6 +200,13 @@ export function getFeaturedProducts(products: Product[]) {
   const featuredProducts = products.filter((product) => product.destacado);
 
   return featuredProducts.sort((a, b) => {
+    const aOrder = a.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+    const bOrder = b.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+
+    if (aOrder !== bOrder) {
+      return aOrder - bOrder;
+    }
+
     const aIndex = FEATURED_PRODUCT_ORDER.indexOf(a.id as (typeof FEATURED_PRODUCT_ORDER)[number]);
     const bIndex = FEATURED_PRODUCT_ORDER.indexOf(b.id as (typeof FEATURED_PRODUCT_ORDER)[number]);
 
