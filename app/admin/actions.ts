@@ -1,13 +1,12 @@
 "use server";
 
-import fs from "node:fs/promises";
-import path from "node:path";
 import { redirect } from "next/navigation";
 import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { createServiceRoleClient } from "@/lib/supabase/service";
 
 type ParsedPresentation = {
   id: string | undefined;
@@ -19,6 +18,9 @@ type ParsedPresentation = {
 const PRODUCT_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "svg"] as const;
 const PRODUCT_IMAGE_MAX_DIMENSION = 1600;
 const PRODUCT_IMAGE_WEBP_QUALITY = 82;
+const PRODUCT_IMAGE_BUCKET = "product-images";
+const PRODUCT_IMAGE_PREFIX = "products";
+const PRODUCT_IMAGE_PLACEHOLDER = "/productos/frutos-secos-placeholder.svg";
 
 export async function signOutAdmin() {
   if (!isSupabaseConfigured()) {
@@ -254,25 +256,22 @@ async function resolveProductImagePath({
   existingImagePath: string;
 }) {
   if (!slug || !name) {
-    return existingImagePath;
+    return existingImagePath || PRODUCT_IMAGE_PLACEHOLDER;
   }
 
   if (!(imageFile instanceof File) || imageFile.size === 0) {
-    return existingImagePath;
+    return existingImagePath || PRODUCT_IMAGE_PLACEHOLDER;
   }
 
   const extension = getOutputImageExtension(imageFile);
   const normalizedBaseName = slugify(slug || name);
-  const fileName = `${normalizedBaseName}.${extension}`;
-  const relativePath = `/productos/${fileName}`;
-  const targetPath = path.join(process.cwd(), "public", "productos", fileName);
+  const filePath = `${PRODUCT_IMAGE_PREFIX}/${normalizedBaseName}.${extension}`;
+  const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
 
-  await fs.mkdir(path.dirname(targetPath), { recursive: true });
-  await removeProductImageVariants(normalizedBaseName);
+  await uploadProductImageToStorage(imageFile, filePath, extension);
   await removeProductImageAtPath(existingImagePath);
-  await writeOptimizedProductImage(imageFile, targetPath);
 
-  return relativePath;
+  return storagePath;
 }
 
 function getOutputImageExtension(file: File) {
@@ -294,15 +293,30 @@ function getOutputImageExtension(file: File) {
   }
 }
 
-async function writeOptimizedProductImage(file: File, targetPath: string) {
+async function uploadProductImageToStorage(
+  file: File,
+  filePath: string,
+) {
   const bytes = Buffer.from(await file.arrayBuffer());
+  const supabase = createServiceRoleClient();
+
+  await ensureProductImageBucket();
 
   if (isSvgFile(file)) {
-    await fs.writeFile(targetPath, bytes);
+    const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).upload(filePath, bytes, {
+      upsert: true,
+      contentType: "image/svg+xml",
+      cacheControl: "31536000",
+    });
+
+    if (error) {
+      throw new Error(`No se pudo subir la imagen SVG: ${error.message}`);
+    }
+
     return;
   }
 
-  await sharp(bytes)
+  const optimizedBuffer = await sharp(bytes)
     .rotate()
     .resize({
       width: PRODUCT_IMAGE_MAX_DIMENSION,
@@ -314,38 +328,77 @@ async function writeOptimizedProductImage(file: File, targetPath: string) {
       quality: PRODUCT_IMAGE_WEBP_QUALITY,
       effort: 4,
     })
-    .toFile(targetPath);
+    .toBuffer();
+
+  const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).upload(
+    filePath,
+    optimizedBuffer,
+    {
+      upsert: true,
+      contentType: "image/webp",
+      cacheControl: "31536000",
+    },
+  );
+
+  if (error) {
+    throw new Error(`No se pudo subir la imagen optimizada: ${error.message}`);
+  }
 }
 
 function isSvgFile(file: File) {
   return file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
 }
 
-async function removeProductImageVariants(baseName: string) {
-  await Promise.all(
-    PRODUCT_IMAGE_EXTENSIONS.map((extension) =>
-      removeFileIfExists(path.join(process.cwd(), "public", "productos", `${baseName}.${extension}`)),
-    ),
-  );
-}
-
 async function removeProductImageAtPath(relativePath: string) {
-  if (!relativePath.startsWith("/productos/")) {
+  const storageObjectPath = getStorageObjectPath(relativePath);
+
+  if (!storageObjectPath) {
     return;
   }
 
-  const absolutePath = path.join(process.cwd(), "public", relativePath.slice(1));
-  await removeFileIfExists(absolutePath);
+  const supabase = createServiceRoleClient();
+  const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).remove([storageObjectPath]);
+
+  if (error && !error.message.toLowerCase().includes("not found")) {
+    throw new Error(`No se pudo borrar la imagen anterior: ${error.message}`);
+  }
 }
 
-async function removeFileIfExists(filePath: string) {
-  try {
-    await fs.unlink(filePath);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
-      throw error;
-    }
+async function ensureProductImageBucket() {
+  const supabase = createServiceRoleClient();
+  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+
+  if (listError) {
+    throw new Error(`No se pudieron listar los buckets: ${listError.message}`);
   }
+
+  if (buckets.some((bucket) => bucket.name === PRODUCT_IMAGE_BUCKET)) {
+    return;
+  }
+
+  const { error: createError } = await supabase.storage.createBucket(PRODUCT_IMAGE_BUCKET, {
+    public: true,
+    fileSizeLimit: 10 * 1024 * 1024,
+    allowedMimeTypes: ["image/png", "image/jpeg", "image/webp", "image/svg+xml"],
+  });
+
+  if (createError && !createError.message.toLowerCase().includes("already exists")) {
+    throw new Error(`No se pudo crear el bucket de imágenes: ${createError.message}`);
+  }
+}
+
+function buildStorageProxyPath(bucket: string, objectPath: string) {
+  return `/storage/${bucket}/${objectPath}`;
+}
+
+function getStorageObjectPath(relativePath: string) {
+  const prefix = `/storage/${PRODUCT_IMAGE_BUCKET}/`;
+
+  if (!relativePath.startsWith(prefix)) {
+    return null;
+  }
+
+  return relativePath.slice(prefix.length);
 }
 
 function readString(value: FormDataEntryValue | null) {
