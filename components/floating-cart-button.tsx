@@ -16,7 +16,7 @@ export function FloatingCartButton({
       type="button"
       onClick={onOpenCart}
       className="card-shadow fixed right-4 bottom-4 z-40 inline-flex items-center gap-3 rounded-full bg-olive px-4 py-3 text-left text-white hover:-translate-y-1 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35 sm:right-6 sm:bottom-6"
-      aria-label={`Abrir carrito con ${totalItems} productos`}
+      aria-label={`Abrir carrito con ${totalItems} productos y subtotal de ${formatARS(subtotal)}`}
     >
       <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/18">
         <CartIcon />

@@ -42,8 +42,13 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (min-width: 1024px) {
+  html {
+    font-size: 80%;
+  }
+}
+
 body {
-  zoom: 1;
   min-height: 100vh;
   background:
     radial-gradient(circle at top left, rgba(221, 232, 207, 0.7), transparent 32%),
@@ -51,24 +56,6 @@ body {
     linear-gradient(180deg, #fffdf8 0%, #f7f1e5 48%, #fffdf8 100%);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
-}
-
-@media (max-width: 639px) {
-  body {
-    zoom: 0.8;
-  }
-}
-
-@media (min-width: 640px) and (max-width: 1023px) {
-  body {
-    zoom: 0.8;
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    zoom: 0.72;
-  }
 }
 
 ::selection {
@@ -99,7 +86,7 @@ input {
 
 @media (min-width: 1280px) {
   .container-shell {
-    width: min(1360px, calc(100% - 2.5rem));
+    width: min(1520px, calc(100% - 2.5rem));
   }
 }
 

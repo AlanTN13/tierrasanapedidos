@@ -44,7 +44,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <a
+          href="#main-content"
+          className="sr-only fixed top-4 left-4 z-[120] rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white/80"
+        >
+          Saltar al contenido principal
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

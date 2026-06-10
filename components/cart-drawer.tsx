@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 import { formatARS } from "@/lib/format";
 import type { CartItem, ProductPresentation } from "@/types/catalog";
@@ -31,6 +31,8 @@ export function CartDrawer({
   onRemove,
   onUpdateQuantity,
 }: CartDrawerProps) {
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -45,6 +47,14 @@ export function CartDrawer({
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    closeButtonRef.current?.focus();
+  }, [isOpen]);
 
   const whatsappUrl = createWhatsAppUrl(items, subtotal);
 
@@ -86,6 +96,7 @@ export function CartDrawer({
           <button
             type="button"
             onClick={onClose}
+            ref={closeButtonRef}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-olive-soft/75 text-olive-dark hover:bg-olive-soft focus:outline-none focus:ring-2 focus:ring-olive/25"
             aria-label="Cerrar carrito"
           >

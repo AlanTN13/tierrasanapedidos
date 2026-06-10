@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPrimaryCategory } from "@/lib/catalog";
 import { formatARS } from "@/lib/format";
 import type { Product, ProductPresentation } from "@/types/catalog";
@@ -122,6 +122,8 @@ export function ProductCard({
           type="button"
           onClick={() => onOpenDetail(product, selectedPresentation, primaryCategory)}
           className="mt-3 rounded-full border border-olive/14 bg-white px-3 py-2 text-[12px] font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25"
+          aria-haspopup="dialog"
+          aria-label={`Ver detalle de ${product.nombre}`}
         >
           Ver detalle
         </button>
@@ -158,6 +160,7 @@ export function ProductCard({
               setJustAdded(true);
             }}
             className="flex-1 rounded-full bg-olive px-3 py-2 text-[12px] font-semibold text-white hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
+            aria-label={`Agregar ${quantity} unidad${quantity === 1 ? "" : "es"} de ${product.nombre} (${selectedPresentation.etiqueta})`}
           >
             {justAdded ? "Agregado" : "Agregar"}
           </button>
@@ -182,6 +185,16 @@ export function ProductDetailDialog({
   isOpen,
   onClose,
 }: ProductDetailDialogProps) {
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    closeButtonRef.current?.focus();
+  }, [isOpen]);
+
   if (!isOpen) {
     return null;
   }
@@ -229,6 +242,7 @@ export function ProductDetailDialog({
               <button
                 type="button"
                 onClick={onClose}
+                ref={closeButtonRef}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark hover:bg-olive-soft/45 focus:outline-none focus:ring-2 focus:ring-olive/25"
                 aria-label={`Cerrar detalle de ${product.nombre}`}
               >

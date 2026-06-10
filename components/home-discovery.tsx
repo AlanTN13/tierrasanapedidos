@@ -32,11 +32,18 @@ export function HomeDiscovery({
   return (
     <>
       {showCategories ? (
-        <section id="categorias" className="container-shell pb-10">
+        <section
+          id="categorias"
+          aria-labelledby="categorias-title"
+          className="container-shell pb-10"
+        >
           <div className="flex items-end justify-between gap-4">
             <div>
               <span className="section-kicker">Nuestras categorias</span>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
+              <h2
+                id="categorias-title"
+                className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl"
+              >
                 Encontrá tus productos favoritos
               </h2>
             </div>
@@ -49,6 +56,7 @@ export function HomeDiscovery({
                 type="button"
                 onClick={() => onSelectCategory(card.category)}
                 className="group text-left"
+                aria-label={`Ver productos de ${card.title}`}
               >
                 <article className="organic-outline card-shadow relative overflow-hidden rounded-[1.35rem] bg-card sm:rounded-[1.9rem]">
                   <div className="relative aspect-[0.95/1] overflow-hidden sm:aspect-[1.28/1]">
@@ -78,12 +86,15 @@ export function HomeDiscovery({
       ) : null}
 
       {showIdeas ? (
-        <section id="ideas" className="container-shell pb-10">
+        <section id="ideas" aria-labelledby="ideas-title" className="container-shell pb-10">
           <div className="surface-panel organic-outline overflow-hidden rounded-[2rem] px-5 py-5 sm:px-6 sm:py-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <span className="section-kicker">Recetas e ideas</span>
-                <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
+                <h2
+                  id="ideas-title"
+                  className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl"
+                >
                   Recetas fáciles
                 </h2>
               </div>
@@ -142,6 +153,7 @@ export function HomeDiscovery({
                           type="button"
                           onClick={() => onSelectCategory(recipe.targetCategory)}
                           className="inline-flex items-center gap-1.5 rounded-full border border-olive/14 bg-white px-3 py-2 text-[13px] font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25 sm:gap-2 sm:px-3.5 sm:py-2.5 sm:text-sm"
+                          aria-label={`Comprar ingredientes para ${recipe.title}`}
                         >
                           Comprar ingredientes
                         </button>

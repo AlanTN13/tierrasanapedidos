@@ -1,6 +1,13 @@
 "use client";
 
-import { startTransition, useCallback, useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -94,6 +101,13 @@ function StorefrontContent({
     removeItem,
     updateQuantity,
   } = useCart();
+  const lastCartTriggerRef = useRef<HTMLElement | null>(null);
+  const lastShippingTriggerRef = useRef<HTMLElement | null>(null);
+  const lastDetailTriggerRef = useRef<HTMLElement | null>(null);
+  const shippingCloseButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousCartOpenRef = useRef(isOpen);
+  const previousShippingOpenRef = useRef(isShippingOpen);
+  const previousDetailOpenRef = useRef(false);
 
   const ensureFullCatalog = useCallback(async () => {
     if (hasCompleteCatalog || !catalogUrl) {
@@ -159,6 +173,12 @@ function StorefrontContent({
   }, [isShippingOpen]);
 
   useEffect(() => {
+    if (isShippingOpen) {
+      shippingCloseButtonRef.current?.focus();
+    }
+  }, [isShippingOpen]);
+
+  useEffect(() => {
     if (!detailState) {
       return;
     }
@@ -199,6 +219,48 @@ function StorefrontContent({
 
     return () => globalThis.clearTimeout(timeoutId);
   }, [catalogUrl, ensureFullCatalog, hasCompleteCatalog]);
+
+  useEffect(() => {
+    if (previousCartOpenRef.current && !isOpen) {
+      lastCartTriggerRef.current?.focus();
+    }
+
+    previousCartOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (previousShippingOpenRef.current && !isShippingOpen) {
+      lastShippingTriggerRef.current?.focus();
+    }
+
+    previousShippingOpenRef.current = isShippingOpen;
+  }, [isShippingOpen]);
+
+  useEffect(() => {
+    const isDetailOpen = Boolean(detailState);
+
+    if (previousDetailOpenRef.current && !isDetailOpen) {
+      lastDetailTriggerRef.current?.focus();
+    }
+
+    previousDetailOpenRef.current = isDetailOpen;
+  }, [detailState]);
+
+  function rememberActiveElement(targetRef: MutableRefObject<HTMLElement | null>) {
+    const activeElement = document.activeElement;
+
+    targetRef.current = activeElement instanceof HTMLElement ? activeElement : null;
+  }
+
+  function handleOpenCart() {
+    rememberActiveElement(lastCartTriggerRef);
+    openCart();
+  }
+
+  function handleOpenShipping() {
+    rememberActiveElement(lastShippingTriggerRef);
+    setIsShippingOpen(true);
+  }
 
   function handleCategoryChange(category: FilterCategory) {
     setActiveCategory(category);
@@ -269,6 +331,7 @@ function StorefrontContent({
     presentation: Product["presentaciones"][number],
     primaryCategory: string,
   ) {
+    rememberActiveElement(lastDetailTriggerRef);
     setDetailState({
       product,
       presentation,
@@ -282,7 +345,7 @@ function StorefrontContent({
 
   return (
     <div className="pb-28">
-      <ShippingTicker onOpenShipping={() => setIsShippingOpen(true)} />
+      <ShippingTicker onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={visibleSectionLinks}
         categories={availableCategories}
@@ -299,9 +362,9 @@ function StorefrontContent({
           });
         }}
         totalItems={totalItems}
-        onOpenCart={openCart}
+        onOpenCart={handleOpenCart}
       />
-      <main>
+      <main id="main-content">
         {!normalizedSearchQuery ? (
           <Hero
             content={homeContent.hero}
@@ -325,15 +388,22 @@ function StorefrontContent({
           />
         ) : null}
 
-        <section id="productos" className="container-shell pb-12">
+        <section
+          id="productos"
+          aria-labelledby="productos-title"
+          className="container-shell pb-12"
+        >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <span className="section-kicker">Catalogo</span>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl">
+              <h2
+                id="productos-title"
+                className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl"
+              >
                 {activeCategoryLabel}
               </h2>
             </div>
-            <p className="text-sm leading-6 text-foreground/62">
+            <p className="text-sm leading-6 text-foreground/62" role="status" aria-live="polite">
               {isAwaitingFullCatalog || isCatalogLoading
                 ? "Actualizando catálogo completo..."
                 : `${visibleProducts.length} productos disponibles con el filtro actual.`}
@@ -391,7 +461,7 @@ function StorefrontContent({
       <FloatingCartButton
         totalItems={totalItems}
         subtotal={subtotal}
-        onOpenCart={openCart}
+        onOpenCart={handleOpenCart}
       />
 
       <CartDrawer
@@ -454,6 +524,7 @@ function StorefrontContent({
             <button
               type="button"
               onClick={() => setIsShippingOpen(false)}
+              ref={shippingCloseButtonRef}
               className="mt-5 w-full rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-olive/35"
             >
               Entendido
@@ -462,42 +533,41 @@ function StorefrontContent({
         </div>
       ) : null}
 
-      <div
-        className={`fixed right-4 bottom-24 z-40 w-[min(92vw,26rem)] transition-all duration-300 sm:right-6 sm:bottom-28 ${
-          recentlyAddedLabel
-            ? "pointer-events-auto translate-y-0 opacity-100"
-            : "pointer-events-none translate-y-4 opacity-0"
-        }`}
-        aria-live="polite"
-      >
-        <div className="organic-outline card-shadow rounded-[1.6rem] bg-[#fffdf9]/96 p-4 backdrop-blur">
-          <p className="text-sm font-semibold text-olive-dark">
-            Producto agregado al carrito
-          </p>
-          <p className="mt-1 text-sm leading-6 text-foreground/66">
-            {recentlyAddedLabel}
-          </p>
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setRecentlyAddedLabel(null);
-                openCart();
-              }}
-              className="rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
-            >
-              Ver carrito
-            </button>
-            <button
-              type="button"
-              onClick={() => setRecentlyAddedLabel(null)}
-              className="rounded-full px-4 py-2 text-sm font-semibold text-olive-dark hover:bg-olive-soft/55 focus:outline-none focus:ring-2 focus:ring-olive/25"
-            >
-              Seguir comprando
-            </button>
+      {recentlyAddedLabel ? (
+        <div
+          className="fixed right-4 bottom-24 z-40 w-[min(92vw,26rem)] pointer-events-auto translate-y-0 opacity-100 transition-all duration-300 sm:right-6 sm:bottom-28"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="organic-outline card-shadow rounded-[1.6rem] bg-[#fffdf9]/96 p-4 backdrop-blur">
+            <p className="text-sm font-semibold text-olive-dark">
+              Producto agregado al carrito
+            </p>
+            <p className="mt-1 text-sm leading-6 text-foreground/66">
+              {recentlyAddedLabel}
+            </p>
+            <div className="mt-3 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setRecentlyAddedLabel(null);
+                  handleOpenCart();
+                }}
+                className="rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
+              >
+                Ver carrito
+              </button>
+              <button
+                type="button"
+                onClick={() => setRecentlyAddedLabel(null)}
+                className="rounded-full px-4 py-2 text-sm font-semibold text-olive-dark hover:bg-olive-soft/55 focus:outline-none focus:ring-2 focus:ring-olive/25"
+              >
+                Seguir comprando
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }

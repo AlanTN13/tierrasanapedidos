@@ -73,7 +73,7 @@ function HomeFallback() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content">
         <section className="container-shell pt-5 pb-8 sm:pt-7 sm:pb-10">
           <div className="surface-panel organic-outline hero-garden overflow-hidden rounded-[2.25rem] px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-5">
             <div className="rounded-[1.8rem] bg-white/55 p-4 shadow-[0_20px_36px_rgba(111,127,79,0.12)]">

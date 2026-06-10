@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import type { FilterCategory } from "@/types/catalog";
 import type { HomeSectionLink } from "@/types/home";
@@ -32,6 +32,10 @@ export function Header({
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const mobileSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const mobileCategoryHeadingRef = useRef<HTMLParagraphElement | null>(null);
+  const mobileSearchPanelId = useId();
+  const mobileCategoryPanelId = useId();
   const safeSearchQuery = searchQuery ?? "";
 
   useEffect(() => {
@@ -50,6 +54,18 @@ export function Header({
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isMenuOpen, isSearchOpen]);
 
+  useEffect(() => {
+    if (isSearchOpen) {
+      mobileSearchInputRef.current?.focus();
+    }
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      mobileCategoryHeadingRef.current?.focus();
+    }
+  }, [isMenuOpen]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-olive/10 bg-background/88 backdrop-blur-xl">
       <div className="container-shell py-3 sm:py-4">
@@ -65,7 +81,10 @@ export function Header({
           </a>
 
           <div className="hidden min-w-0 flex-1 items-center gap-6 lg:flex">
-            <nav className="flex items-center gap-6 text-sm font-medium text-foreground/72">
+            <nav
+              aria-label="Secciones principales"
+              className="flex items-center gap-6 text-sm font-medium text-foreground/72"
+            >
               {sectionLinks.map((section) => (
                 <a
                   key={section.id}
@@ -79,6 +98,7 @@ export function Header({
 
             <form
               className="relative ml-auto w-full max-w-[24rem]"
+              role="search"
               onSubmit={(event) => {
                 event.preventDefault();
                 onSubmitSearch();
@@ -124,7 +144,7 @@ export function Header({
               className="organic-outline inline-flex h-11 w-11 items-center justify-center rounded-full bg-card text-olive-dark lg:hidden"
               aria-label="Abrir buscador"
               aria-expanded={isSearchOpen}
-              aria-controls="mobile-search-panel"
+              aria-controls={mobileSearchPanelId}
             >
               <SearchIcon />
             </button>
@@ -134,6 +154,7 @@ export function Header({
               onClick={onOpenCart}
               className="organic-outline card-shadow inline-flex items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-semibold text-olive-dark hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
               aria-label={`Abrir carrito con ${totalItems} productos`}
+              aria-haspopup="dialog"
             >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
                 <CartIcon />
@@ -153,7 +174,7 @@ export function Header({
               className="organic-outline inline-flex h-11 w-11 items-center justify-center rounded-full bg-card text-olive-dark lg:hidden"
               aria-label="Abrir menu de categorias"
               aria-expanded={isMenuOpen}
-              aria-controls="mobile-category-menu"
+              aria-controls={mobileCategoryPanelId}
             >
               <HamburgerIcon />
             </button>
@@ -174,7 +195,10 @@ export function Header({
           </div>
 
           <div className="flex min-w-0 items-center gap-6 pb-3">
-            <nav className="flex items-center gap-6 text-sm font-medium text-foreground/72 xl:gap-7">
+            <nav
+              aria-label="Secciones principales"
+              className="flex items-center gap-6 text-sm font-medium text-foreground/72 xl:gap-7"
+            >
               {sectionLinks.map((section) => (
                 <a
                   key={section.id}
@@ -189,6 +213,7 @@ export function Header({
             <div className="ml-auto flex min-w-0 items-center gap-3 xl:gap-4">
               <form
                 className="relative w-full min-w-[18rem] max-w-[26rem] xl:min-w-[24rem] xl:max-w-[30rem]"
+                role="search"
                 onSubmit={(event) => {
                   event.preventDefault();
                   onSubmitSearch();
@@ -228,6 +253,7 @@ export function Header({
                 onClick={onOpenCart}
                 className="organic-outline card-shadow inline-flex shrink-0 items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-semibold text-olive-dark hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
                 aria-label={`Abrir carrito con ${totalItems} productos`}
+                aria-haspopup="dialog"
               >
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
                   <CartIcon />
@@ -252,6 +278,7 @@ export function Header({
                       type="button"
                       onClick={() => onChangeCategory(category)}
                       className={`shrink-0 transition-colors ${isActive ? "text-olive-dark" : "hover:text-olive-dark"}`}
+                      aria-pressed={isActive}
                     >
                       {category}
                     </button>
@@ -266,15 +293,11 @@ export function Header({
           </div>
         </div>
 
-        <div
-          id="mobile-search-panel"
-          className={`overflow-hidden transition-[grid-template-rows,opacity,margin] duration-300 lg:hidden ${
-            isSearchOpen ? "mt-3 grid grid-rows-[1fr] opacity-100" : "grid grid-rows-[0fr] opacity-0"
-          }`}
-        >
-          <div className="overflow-hidden">
+        {isSearchOpen ? (
+          <div id={mobileSearchPanelId} className="mt-3 lg:hidden">
             <form
               className="relative"
+              role="search"
               onSubmit={(event) => {
                 event.preventDefault();
                 onSubmitSearch();
@@ -283,6 +306,7 @@ export function Header({
             >
               <label className="organic-outline card-shadow relative block">
                 <input
+                  ref={mobileSearchInputRef}
                   type="search"
                   value={safeSearchQuery}
                   onChange={(event) => onSearchChange(event.target.value)}
@@ -293,7 +317,7 @@ export function Header({
                 <button
                   type="submit"
                   className="absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58 focus:outline-none"
-                  aria-label="Buscar"
+                  aria-label="Buscar productos"
                 >
                   <SearchIcon />
                 </button>
@@ -302,7 +326,7 @@ export function Header({
                     type="button"
                     onClick={onClearSearch}
                     className="absolute inset-y-0 right-4 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
-                    aria-label="Limpiar busqueda"
+                    aria-label="Limpiar búsqueda"
                   >
                     ✕
                   </button>
@@ -310,18 +334,17 @@ export function Header({
               </label>
             </form>
           </div>
-        </div>
+        ) : null}
 
-        <div
-          id="mobile-category-menu"
-          className={`overflow-hidden transition-[grid-template-rows,opacity,margin] duration-300 lg:hidden ${
-            isMenuOpen ? "mt-3 grid grid-rows-[1fr] opacity-100" : "grid grid-rows-[0fr] opacity-0"
-          }`}
-        >
-          <div className="overflow-hidden">
+        {isMenuOpen ? (
+          <div id={mobileCategoryPanelId} className="mt-3 lg:hidden">
             <div className="organic-outline rounded-[1.5rem] bg-white/76 p-4 shadow-[0_14px_30px_rgba(111,127,79,0.08)]">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-bold tracking-[0.12em] text-earth uppercase">
+                <p
+                  ref={mobileCategoryHeadingRef}
+                  tabIndex={-1}
+                  className="text-[11px] font-bold tracking-[0.12em] text-earth uppercase focus:outline-none"
+                >
                   Nuestras categorias
                 </p>
                 <span className="rounded-full bg-olive-soft px-3 py-1 text-xs font-semibold text-olive-dark">
@@ -346,6 +369,7 @@ export function Header({
                           ? "border-olive bg-olive text-white"
                           : "border-olive/12 bg-white/90 text-olive-dark"
                       }`}
+                      aria-pressed={isActive}
                     >
                       <span>{category}</span>
                       <span aria-hidden="true">{isActive ? "•" : "→"}</span>
@@ -355,7 +379,7 @@ export function Header({
               </div>
             </div>
           </div>
-        </div>
+        ) : null}
       </div>
     </header>
   );
