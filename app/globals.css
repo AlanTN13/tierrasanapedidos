@@ -44,7 +44,7 @@ html {
 
 @media (min-width: 1024px) {
   html {
-    font-size: 80%;
+    font-size: 90%;
   }
 }
 
@@ -86,7 +86,7 @@ input {
 
 @media (min-width: 1280px) {
   .container-shell {
-    width: min(1520px, calc(100% - 2.5rem));
+    width: min(1440px, calc(100% - 2.5rem));
   }
 }
 
