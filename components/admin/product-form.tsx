@@ -86,8 +86,9 @@ export function ProductForm({
                 className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
               />
               <p className="text-xs leading-5 text-foreground/58">
-                Formatos sugeridos: PNG, JPG, WEBP o SVG. Si no elegís una nueva imagen
-                al editar, se conserva la actual.
+                Acepta PNG, JPG, WEBP o SVG. Las imágenes raster se convierten
+                automáticamente a WEBP optimizado; los SVG se conservan tal cual.
+                Si no elegís una nueva imagen al editar, se conserva la actual.
               </p>
             </div>
           </label>

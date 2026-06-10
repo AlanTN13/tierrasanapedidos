@@ -22,7 +22,7 @@ export function Hero(props: HeroProps) {
           <article className="organic-outline relative overflow-hidden rounded-[1.8rem] bg-white/55 shadow-[0_20px_36px_rgba(111,127,79,0.12)]">
             <div className="relative aspect-[1.9/1] sm:aspect-[2.2/1] lg:aspect-[2.55/1]">
               <Image
-                src="/hero-optimized/banner-home.jpg"
+                src="/hero-optimized/banner-home.webp"
                 alt="Armá tu pedido en 3 pasos"
                 fill
                 priority

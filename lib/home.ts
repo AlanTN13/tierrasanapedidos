@@ -31,21 +31,21 @@ const hero: HomeHeroConfig = {
   ],
   heroVisualItems: [
     {
-      image: "/productos/mix-con-pasas-y-banana.png",
+      image: "/productos/mix-con-pasas-y-banana.webp",
       title: "Desayunos con textura",
       detail: "Granolas, mixes y semillas para empezar por algo rico.",
       tone: "cream",
       size: "feature",
     },
     {
-      image: "/productos/chia-premium.png",
+      image: "/productos/chia-premium.webp",
       title: "Sumá un básico",
       detail: "Ingredientes simples que entran fácil en cualquier receta.",
       tone: "olive",
       size: "portrait",
     },
     {
-      image: "/productos/arroz-yamani-integral.jpg",
+      image: "/productos/arroz-yamani-integral.webp",
       title: "Cocina simple",
       detail: "Bases nobles para almuerzos, snacks y meriendas.",
       tone: "sand",
@@ -61,7 +61,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Galletitas simples, suaves y bien rendidoras con mantequilla de maní y chips de chocolate.",
     longDescription:
       "Una receta ideal para resolver una merienda casera con pocos ingredientes, buena textura, mucho sabor a maní y un plus de chocolate. Funciona perfecto como receta principal porque es simple, tentadora y conecta directo con productos del catálogo.",
-    heroImage: "/recetas-optimized/cookies-mantequilla-mani.jpg",
+    heroImage: "/recetas-optimized/cookies-mantequilla-mani.webp",
     targetCategory: "Dulces y untables",
     prepLabel: "12 a 15 min de horno",
     servingsLabel: "Varias cookies",
@@ -89,7 +89,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Un pan simple, húmedo y sin amasado para desayunos, tostadas o para acompañar comidas.",
     longDescription:
       "Una receta rendidora para tener pan casero con ingredientes nobles y poca complicación. Va muy bien para quienes quieren sumar harinas integrales y semillas a la rutina sin pasar horas en la cocina.",
-    heroImage: "/recetas-optimized/pan-integral.jpg",
+    heroImage: "/recetas-optimized/pan-integral.webp",
     targetCategory: "Harinas y premezclas",
     prepLabel: "40 min de horno",
     servingsLabel: "1 budinera",
@@ -150,7 +150,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Una opción dulce y casera con cacao, relleno cremoso y porciones chicas para tener a mano.",
     longDescription:
       "Estos alfajorcitos son ideales para una merienda distinta o para sumar una receta casera al mostrador de ideas. La masa sale rápido y el relleno les da ese toque postre sin volverse pesado.",
-    heroImage: "/recetas-optimized/alfajorcitos-fit.jpg",
+    heroImage: "/recetas-optimized/alfajorcitos-fit.webp",
     targetCategory: "Reposteria y endulzantes",
     prepLabel: "10 min de horno",
     servingsLabel: "4 porciones",
@@ -190,7 +190,7 @@ const recipeHighlights: RecipeHighlight[] = [
     shortDescription: "Bocaditos crocantes de chocolate para una colación rápida o un antojo dulce.",
     longDescription:
       "Una receta muy simple para transformar dos ingredientes en un snack vistoso y rendidor. Funciona perfecto para sumar una idea dulce que tenga mucha relación con los productos del catálogo.",
-    heroImage: "/recetas/quinoa-con-chocolate.jpg",
+    heroImage: "/recetas/quinoa-con-chocolate.webp",
     targetCategory: "Cereales y granolas",
     prepLabel: "30-60 min de frío",
     servingsLabel: "Varios bocaditos",

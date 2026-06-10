@@ -27,19 +27,19 @@ if (fs.existsSync(envPath)) {
 }
 
 const CATEGORY_CONFIG = [
-  ["Frutos secos y snack", "/categorias-optimized/frutos-secos-y-snack.jpg", ["frutos secos", "snack", "colacion", "mix"]],
-  ["Semillas", "/categorias-optimized/semillas.jpg", ["semillas", "topping", "desayuno"]],
-  ["Harinas y premezclas", "/categorias-optimized/harinas-y-premezclas.jpg", ["harinas", "premezclas", "panificados"]],
-  ["Sin TACC", "/categorias-optimized/sin-tacc.jpg", ["sin tacc", "celiacos", "gluten free"]],
-  ["Cereales y granolas", "/categorias-optimized/cereales-y-granolas.jpg", ["cereales", "granolas", "desayuno", "merienda"]],
-  ["Sin azucar", "/categorias-optimized/sin-azucar.jpg", ["sin azucar", "light"]],
-  ["Dulces y untables", "/categorias-optimized/dulces-y-untables.jpg", ["dulces", "untables", "mermeladas", "miel", "pasta de mani"]],
-  ["Legumbres", "/categorias-optimized/legumbres.jpg", ["legumbres", "porotos", "garbanzos", "lentejas"]],
-  ["Arroces y oriental", "/categorias-optimized/arroces-y-oriental.jpg", ["arroz", "oriental", "sushi", "papel de arroz"]],
-  ["Condimentos y especias", "/categorias-optimized/condimentos-y-especias.jpg", ["condimentos", "especias", "sabor", "cocina"]],
-  ["Galletitas", "/categorias-optimized/galletitas.jpg", ["galletitas", "cookies", "snack"]],
-  ["Reposteria y endulzantes", "/categorias-optimized/reposteria.jpg", ["reposteria", "hornear", "postres", "dulce", "endulzantes", "azucar", "stevia"]],
-  ["Aceites y salsas de soja", "/categorias-optimized/aceites-y-salsas-de-soja.jpg", ["aceites", "salsas", "soja", "cocina", "aderezos"]],
+  ["Frutos secos y snack", "/categorias-optimized/frutos-secos-y-snack.webp", ["frutos secos", "snack", "colacion", "mix"]],
+  ["Semillas", "/categorias-optimized/semillas.webp", ["semillas", "topping", "desayuno"]],
+  ["Harinas y premezclas", "/categorias-optimized/harinas-y-premezclas.webp", ["harinas", "premezclas", "panificados"]],
+  ["Sin TACC", "/categorias-optimized/sin-tacc.webp", ["sin tacc", "celiacos", "gluten free"]],
+  ["Cereales y granolas", "/categorias-optimized/cereales-y-granolas.webp", ["cereales", "granolas", "desayuno", "merienda"]],
+  ["Sin azucar", "/categorias-optimized/sin-azucar.webp", ["sin azucar", "light"]],
+  ["Dulces y untables", "/categorias-optimized/dulces-y-untables.webp", ["dulces", "untables", "mermeladas", "miel", "pasta de mani"]],
+  ["Legumbres", "/categorias-optimized/legumbres.webp", ["legumbres", "porotos", "garbanzos", "lentejas"]],
+  ["Arroces y oriental", "/categorias-optimized/arroces-y-oriental.webp", ["arroz", "oriental", "sushi", "papel de arroz"]],
+  ["Condimentos y especias", "/categorias-optimized/condimentos-y-especias.webp", ["condimentos", "especias", "sabor", "cocina"]],
+  ["Galletitas", "/categorias-optimized/galletitas.webp", ["galletitas", "cookies", "snack"]],
+  ["Reposteria y endulzantes", "/categorias-optimized/reposteria.webp", ["reposteria", "hornear", "postres", "dulce", "endulzantes", "azucar", "stevia"]],
+  ["Aceites y salsas de soja", "/categorias-optimized/aceites-y-salsas-de-soja.webp", ["aceites", "salsas", "soja", "cocina", "aderezos"]],
 ];
 
 const LEGACY_TO_FINAL_CATEGORY_MAP = {

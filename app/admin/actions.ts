@@ -3,6 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { redirect } from "next/navigation";
+import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
@@ -14,6 +15,10 @@ type ParsedPresentation = {
   priceCents: number;
   sortOrder: number;
 };
+
+const PRODUCT_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "svg"] as const;
+const PRODUCT_IMAGE_MAX_DIMENSION = 1600;
+const PRODUCT_IMAGE_WEBP_QUALITY = 82;
 
 export async function signOutAdmin() {
   if (!isSupabaseConfigured()) {
@@ -256,37 +261,90 @@ async function resolveProductImagePath({
     return existingImagePath;
   }
 
-  const extension = getImageExtension(imageFile);
+  const extension = getOutputImageExtension(imageFile);
   const normalizedBaseName = slugify(slug || name);
   const fileName = `${normalizedBaseName}.${extension}`;
   const relativePath = `/productos/${fileName}`;
   const targetPath = path.join(process.cwd(), "public", "productos", fileName);
 
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
-  const bytes = await imageFile.arrayBuffer();
-  await fs.writeFile(targetPath, Buffer.from(bytes));
+  await removeProductImageVariants(normalizedBaseName);
+  await removeProductImageAtPath(existingImagePath);
+  await writeOptimizedProductImage(imageFile, targetPath);
 
   return relativePath;
 }
 
-function getImageExtension(file: File) {
+function getOutputImageExtension(file: File) {
   const fromName = file.name.split(".").pop()?.toLowerCase();
 
-  if (fromName && ["png", "jpg", "jpeg", "webp", "svg"].includes(fromName)) {
-    return fromName === "jpeg" ? "jpg" : fromName;
+  if (fromName && PRODUCT_IMAGE_EXTENSIONS.includes(fromName as (typeof PRODUCT_IMAGE_EXTENSIONS)[number])) {
+    return fromName === "svg" ? "svg" : "webp";
   }
 
   switch (file.type) {
     case "image/png":
-      return "png";
     case "image/jpeg":
-      return "jpg";
     case "image/webp":
       return "webp";
     case "image/svg+xml":
       return "svg";
     default:
       throw new Error("Formato de imagen no soportado. Usá PNG, JPG, WEBP o SVG.");
+  }
+}
+
+async function writeOptimizedProductImage(file: File, targetPath: string) {
+  const bytes = Buffer.from(await file.arrayBuffer());
+
+  if (isSvgFile(file)) {
+    await fs.writeFile(targetPath, bytes);
+    return;
+  }
+
+  await sharp(bytes)
+    .rotate()
+    .resize({
+      width: PRODUCT_IMAGE_MAX_DIMENSION,
+      height: PRODUCT_IMAGE_MAX_DIMENSION,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({
+      quality: PRODUCT_IMAGE_WEBP_QUALITY,
+      effort: 4,
+    })
+    .toFile(targetPath);
+}
+
+function isSvgFile(file: File) {
+  return file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
+}
+
+async function removeProductImageVariants(baseName: string) {
+  await Promise.all(
+    PRODUCT_IMAGE_EXTENSIONS.map((extension) =>
+      removeFileIfExists(path.join(process.cwd(), "public", "productos", `${baseName}.${extension}`)),
+    ),
+  );
+}
+
+async function removeProductImageAtPath(relativePath: string) {
+  if (!relativePath.startsWith("/productos/")) {
+    return;
+  }
+
+  const absolutePath = path.join(process.cwd(), "public", relativePath.slice(1));
+  await removeFileIfExists(absolutePath);
+}
+
+async function removeFileIfExists(filePath: string) {
+  try {
+    await fs.unlink(filePath);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw error;
+    }
   }
 }
 

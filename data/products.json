@@ -18,7 +18,7 @@
         "precio": 28000
       }
     ],
-    "imagen": "/productos/almendras.png",
+    "imagen": "/productos/almendras.webp",
     "destacado": false
   },
   {
@@ -40,7 +40,7 @@
         "precio": 13990
       }
     ],
-    "imagen": "/productos/almendras-con-cascara.png",
+    "imagen": "/productos/almendras-con-cascara.webp",
     "destacado": false
   },
   {
@@ -62,7 +62,7 @@
         "precio": 24000
       }
     ],
-    "imagen": "/productos/nueces.png",
+    "imagen": "/productos/nueces.webp",
     "destacado": false
   },
   {
@@ -84,7 +84,7 @@
         "precio": 12290
       }
     ],
-    "imagen": "/productos/nueces-con-cascara.png",
+    "imagen": "/productos/nueces-con-cascara.webp",
     "destacado": false
   },
   {
@@ -106,7 +106,7 @@
         "precio": 23990
       }
     ],
-    "imagen": "/productos/castanas-de-caju.png",
+    "imagen": "/productos/castanas-de-caju.webp",
     "destacado": false
   },
   {
@@ -128,7 +128,7 @@
         "precio": 85000
       }
     ],
-    "imagen": "/productos/pistachos-pelados.png",
+    "imagen": "/productos/pistachos-pelados.webp",
     "destacado": false
   },
   {
@@ -150,7 +150,7 @@
         "precio": 49000
       }
     ],
-    "imagen": "/productos/pistachos-con-cascara.png",
+    "imagen": "/productos/pistachos-con-cascara.webp",
     "destacado": true
   },
   {
@@ -172,7 +172,7 @@
         "precio": 4390
       }
     ],
-    "imagen": "/productos/mani-tostado-con-sal.png",
+    "imagen": "/productos/mani-tostado-con-sal.webp",
     "destacado": false
   },
   {
@@ -194,7 +194,7 @@
         "precio": 20190
       }
     ],
-    "imagen": "/productos/mix-con-avellanas.png",
+    "imagen": "/productos/mix-con-avellanas.webp",
     "destacado": true
   },
   {
@@ -216,7 +216,7 @@
         "precio": 12590
       }
     ],
-    "imagen": "/productos/mix-con-pasas-y-banana.png",
+    "imagen": "/productos/mix-con-pasas-y-banana.webp",
     "destacado": true
   },
   {
@@ -234,7 +234,7 @@
         "precio": 1190
       }
     ],
-    "imagen": "/productos/harina-integral.png",
+    "imagen": "/productos/harina-integral.webp",
     "destacado": false
   },
   {
@@ -252,7 +252,7 @@
         "precio": 5190
       }
     ],
-    "imagen": "/productos/harina-de-almendras.png",
+    "imagen": "/productos/harina-de-almendras.webp",
     "destacado": true
   },
   {
@@ -270,7 +270,7 @@
         "precio": 2090
       }
     ],
-    "imagen": "/productos/harina-de-centeno.png",
+    "imagen": "/productos/harina-de-centeno.webp",
     "destacado": false
   },
   {
@@ -288,7 +288,7 @@
         "precio": 5290
       }
     ],
-    "imagen": "/productos/fecula-de-mandioca.png",
+    "imagen": "/productos/fecula-de-mandioca.webp",
     "destacado": false
   },
   {
@@ -306,7 +306,7 @@
         "precio": 3900
       }
     ],
-    "imagen": "/productos/harina-de-arroz.png",
+    "imagen": "/productos/harina-de-arroz.webp",
     "destacado": false
   },
   {
@@ -324,7 +324,7 @@
         "precio": 8900
       }
     ],
-    "imagen": "/productos/harina-de-coco.png",
+    "imagen": "/productos/harina-de-coco.webp",
     "destacado": false
   },
   {
@@ -338,7 +338,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/premezcla-bizcochuelo-vainilla-dona-pacha-350g.png",
+    "imagen": "/productos/premezcla-bizcochuelo-vainilla-dona-pacha-350g.webp",
     "destacado": false
   },
   {
@@ -352,7 +352,7 @@
         "precio": 6200
       }
     ],
-    "imagen": "/productos/premezcla-brownie-dona-pacha-500g.png",
+    "imagen": "/productos/premezcla-brownie-dona-pacha-500g.webp",
     "destacado": false
   },
   {
@@ -366,7 +366,7 @@
         "precio": 6500
       }
     ],
-    "imagen": "/productos/premezcla-bizcochuelo-chocolate-dona-pacha-350g.png",
+    "imagen": "/productos/premezcla-bizcochuelo-chocolate-dona-pacha-350g.webp",
     "destacado": false
   },
   {
@@ -384,7 +384,7 @@
         "precio": 3890
       }
     ],
-    "imagen": "/productos/porotos-de-alubia.png",
+    "imagen": "/productos/porotos-de-alubia.webp",
     "destacado": false
   },
   {
@@ -402,7 +402,7 @@
         "precio": 3490
       }
     ],
-    "imagen": "/productos/porotos-negros.png",
+    "imagen": "/productos/porotos-negros.webp",
     "destacado": false
   },
   {
@@ -420,7 +420,7 @@
         "precio": 3190
       }
     ],
-    "imagen": "/productos/garbanzos.png",
+    "imagen": "/productos/garbanzos.webp",
     "destacado": false
   },
   {
@@ -438,7 +438,7 @@
         "precio": 4190
       }
     ],
-    "imagen": "/productos/lentejas.png",
+    "imagen": "/productos/lentejas.webp",
     "destacado": false
   },
   {
@@ -456,7 +456,7 @@
         "precio": 2290
       }
     ],
-    "imagen": "/productos/maiz-pisingallo.png",
+    "imagen": "/productos/maiz-pisingallo.webp",
     "destacado": false
   },
   {
@@ -474,7 +474,7 @@
         "precio": 4190
       }
     ],
-    "imagen": "/productos/soja-texturizada.png",
+    "imagen": "/productos/soja-texturizada.webp",
     "destacado": false
   },
   {
@@ -502,7 +502,7 @@
         "precio": 2900
       }
     ],
-    "imagen": "/productos/arroz-yamani-integral.jpg",
+    "imagen": "/productos/arroz-yamani-integral.webp",
     "destacado": false
   },
   {
@@ -542,7 +542,7 @@
         "precio": 11690
       }
     ],
-    "imagen": "/productos/chia-premium.png",
+    "imagen": "/productos/chia-premium.webp",
     "destacado": true
   },
   {
@@ -568,7 +568,7 @@
         "precio": 4290
       }
     ],
-    "imagen": "/productos/lino.png",
+    "imagen": "/productos/lino.webp",
     "destacado": false
   },
   {
@@ -594,7 +594,7 @@
         "precio": 6390
       }
     ],
-    "imagen": "/productos/girasol.png",
+    "imagen": "/productos/girasol.webp",
     "destacado": false
   },
   {
@@ -620,7 +620,7 @@
         "precio": 6690
       }
     ],
-    "imagen": "/productos/mix-de-semillas.png",
+    "imagen": "/productos/mix-de-semillas.webp",
     "destacado": false
   },
   {
@@ -642,7 +642,7 @@
         "precio": 11690
       }
     ],
-    "imagen": "/productos/granola-energetica.png",
+    "imagen": "/productos/granola-energetica.webp",
     "destacado": false
   },
   {
@@ -664,7 +664,7 @@
         "precio": 11690
       }
     ],
-    "imagen": "/productos/granola-tropical.png",
+    "imagen": "/productos/granola-tropical.webp",
     "destacado": true
   },
   {
@@ -686,7 +686,7 @@
         "precio": 11690
       }
     ],
-    "imagen": "/productos/granola-natural.png",
+    "imagen": "/productos/granola-natural.webp",
     "destacado": false
   },
   {
@@ -708,7 +708,7 @@
         "precio": 2900
       }
     ],
-    "imagen": "/productos/avena-tradicional.png",
+    "imagen": "/productos/avena-tradicional.webp",
     "destacado": false
   },
   {
@@ -730,7 +730,7 @@
         "precio": 2900
       }
     ],
-    "imagen": "/productos/avena-instantanea.png",
+    "imagen": "/productos/avena-instantanea.webp",
     "destacado": false
   },
   {
@@ -752,7 +752,7 @@
         "precio": 7590
       }
     ],
-    "imagen": "/productos/aros-frutales.png",
+    "imagen": "/productos/aros-frutales.webp",
     "destacado": false
   },
   {
@@ -774,7 +774,7 @@
         "precio": 8190
       }
     ],
-    "imagen": "/productos/bolitas-de-chocolate.png",
+    "imagen": "/productos/bolitas-de-chocolate.webp",
     "destacado": false
   },
   {
@@ -796,7 +796,7 @@
         "precio": 9890
       }
     ],
-    "imagen": "/productos/almohaditas-de-frutilla.png",
+    "imagen": "/productos/almohaditas-de-frutilla.webp",
     "destacado": false
   },
   {
@@ -818,7 +818,7 @@
         "precio": 8390
       }
     ],
-    "imagen": "/productos/quinoa-inflada.png",
+    "imagen": "/productos/quinoa-inflada.webp",
     "destacado": false
   },
   {
@@ -840,7 +840,7 @@
         "precio": 8790
       }
     ],
-    "imagen": "/productos/maiz-inflado.png",
+    "imagen": "/productos/maiz-inflado.webp",
     "destacado": false
   },
   {
@@ -862,7 +862,7 @@
         "precio": 10790
       }
     ],
-    "imagen": "/productos/arroz-inflado.png",
+    "imagen": "/productos/arroz-inflado.webp",
     "destacado": false
   },
   {
@@ -884,7 +884,7 @@
         "precio": 10500
       }
     ],
-    "imagen": "/productos/oregano.png",
+    "imagen": "/productos/oregano.webp",
     "destacado": false
   },
   {
@@ -906,7 +906,7 @@
         "precio": 6000
       }
     ],
-    "imagen": "/productos/adobo-para-pizza.png",
+    "imagen": "/productos/adobo-para-pizza.webp",
     "destacado": false
   },
   {
@@ -928,7 +928,7 @@
         "precio": 5500
       }
     ],
-    "imagen": "/productos/pimenton.png",
+    "imagen": "/productos/pimenton.webp",
     "destacado": false
   },
   {
@@ -950,7 +950,7 @@
         "precio": 7500
       }
     ],
-    "imagen": "/productos/ajo-en-polvo.png",
+    "imagen": "/productos/ajo-en-polvo.webp",
     "destacado": false
   },
   {
@@ -972,7 +972,7 @@
         "precio": 8000
       }
     ],
-    "imagen": "/productos/romero.png",
+    "imagen": "/productos/romero.webp",
     "destacado": false
   },
   {
@@ -994,7 +994,7 @@
         "precio": 7000
       }
     ],
-    "imagen": "/productos/pimenton-ahumado.png",
+    "imagen": "/productos/pimenton-ahumado.webp",
     "destacado": false
   },
   {
@@ -1016,7 +1016,7 @@
         "precio": 6500
       }
     ],
-    "imagen": "/productos/aji-molido.png",
+    "imagen": "/productos/aji-molido.webp",
     "destacado": false
   },
   {
@@ -1038,7 +1038,7 @@
         "precio": 6500
       }
     ],
-    "imagen": "/productos/chimichurri.png",
+    "imagen": "/productos/chimichurri.webp",
     "destacado": false
   },
   {
@@ -1060,7 +1060,7 @@
         "precio": 6000
       }
     ],
-    "imagen": "/productos/provenzal.png",
+    "imagen": "/productos/provenzal.webp",
     "destacado": false
   },
   {
@@ -1082,7 +1082,7 @@
         "precio": 9000
       }
     ],
-    "imagen": "/productos/canela-en-polvo.png",
+    "imagen": "/productos/canela-en-polvo.webp",
     "destacado": false
   },
   {
@@ -1104,7 +1104,7 @@
         "precio": 4290
       }
     ],
-    "imagen": "/productos/polvo-de-hornear.png",
+    "imagen": "/productos/polvo-de-hornear.webp",
     "destacado": false
   },
   {
@@ -1130,7 +1130,7 @@
         "precio": 8990
       }
     ],
-    "imagen": "/productos/coco-rallado.png",
+    "imagen": "/productos/coco-rallado.webp",
     "destacado": false
   },
   {
@@ -1156,7 +1156,7 @@
         "precio": 3590
       }
     ],
-    "imagen": "/productos/azucar-impalpable.png",
+    "imagen": "/productos/azucar-impalpable.webp",
     "destacado": false
   },
   {
@@ -1178,7 +1178,7 @@
         "precio": 9000
       }
     ],
-    "imagen": "/productos/cacao-amargo-alcalino.png",
+    "imagen": "/productos/cacao-amargo-alcalino.webp",
     "destacado": false
   },
   {
@@ -1230,7 +1230,7 @@
         "precio": 11500
       }
     ],
-    "imagen": "/productos/chips-de-chocolate-blanco.png",
+    "imagen": "/productos/chips-de-chocolate-blanco.webp",
     "destacado": false
   },
   {
@@ -1256,7 +1256,7 @@
         "precio": 25000
       }
     ],
-    "imagen": "/productos/lentejas-de-chocolate.png",
+    "imagen": "/productos/lentejas-de-chocolate.webp",
     "destacado": false
   },
   {
@@ -1282,7 +1282,7 @@
         "precio": 28000
       }
     ],
-    "imagen": "/productos/microcereal-negro.jpeg",
+    "imagen": "/productos/microcereal-negro.webp",
     "destacado": false
   },
   {
@@ -1308,7 +1308,7 @@
         "precio": 28000
       }
     ],
-    "imagen": "/productos/microcereal-blanco.jpeg",
+    "imagen": "/productos/microcereal-blanco.webp",
     "destacado": false
   },
   {
@@ -1428,7 +1428,7 @@
         "precio": 4500
       }
     ],
-    "imagen": "/productos/azucar-negra.jpg",
+    "imagen": "/productos/azucar-negra.webp",
     "destacado": false
   },
   {
@@ -1442,7 +1442,7 @@
         "precio": 7990
       }
     ],
-    "imagen": "/productos/dulce-de-leche-con-stevia.png",
+    "imagen": "/productos/dulce-de-leche-con-stevia.webp",
     "destacado": true
   },
   {
@@ -1461,7 +1461,7 @@
         "precio": 5390
       }
     ],
-    "imagen": "/productos/pasta-mani-entrenuts-caramel-v2.png",
+    "imagen": "/productos/pasta-mani-entrenuts-caramel-v2.webp",
     "destacado": true
   },
   {
@@ -1480,7 +1480,7 @@
         "precio": 5390
       }
     ],
-    "imagen": "/productos/pasta-mani-entrenuts-cookie-v2.png",
+    "imagen": "/productos/pasta-mani-entrenuts-cookie-v2.webp",
     "destacado": false
   },
   {
@@ -1499,7 +1499,7 @@
         "precio": 4990
       }
     ],
-    "imagen": "/productos/pasta-mani-beepure.png",
+    "imagen": "/productos/pasta-mani-beepure.webp",
     "destacado": false
   },
   {
@@ -1513,7 +1513,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/miel-liquida-beepure.png",
+    "imagen": "/productos/miel-liquida-beepure.webp",
     "destacado": false
   },
   {
@@ -1527,7 +1527,7 @@
         "precio": 1700
       }
     ],
-    "imagen": "/productos/galletas-de-arroz-con-sal.jpg",
+    "imagen": "/productos/galletas-de-arroz-con-sal.webp",
     "destacado": false
   },
   {
@@ -1555,7 +1555,7 @@
         "precio": 1700
       }
     ],
-    "imagen": "/productos/galletas-de-arroz-sin-sal.jpg",
+    "imagen": "/productos/galletas-de-arroz-sin-sal.webp",
     "destacado": false
   },
   {
@@ -1569,7 +1569,7 @@
         "precio": 15000
       }
     ],
-    "imagen": "/productos/aceite-de-oliva-extra-virgen.png",
+    "imagen": "/productos/aceite-de-oliva-extra-virgen.webp",
     "destacado": false
   },
   {
@@ -1591,7 +1591,7 @@
         "precio": 8500
       }
     ],
-    "imagen": "/productos/mix-cervecero-tradicional.png",
+    "imagen": "/productos/mix-cervecero-tradicional.webp",
     "destacado": true
   },
   {
@@ -1613,7 +1613,7 @@
         "precio": 12000
       }
     ],
-    "imagen": "/productos/pasas-de-uva.png",
+    "imagen": "/productos/pasas-de-uva.webp",
     "destacado": false
   },
   {
@@ -1635,7 +1635,7 @@
         "precio": 7000
       }
     ],
-    "imagen": "/productos/copos-con-azucar.jpg",
+    "imagen": "/productos/copos-con-azucar.webp",
     "destacado": false
   },
   {
@@ -1657,7 +1657,7 @@
         "precio": 5500
       }
     ],
-    "imagen": "/productos/copos-sin-azucar.jpg",
+    "imagen": "/productos/copos-sin-azucar.webp",
     "destacado": false
   },
   {
@@ -1685,7 +1685,7 @@
         "precio": 2300
       }
     ],
-    "imagen": "/productos/crocante-de-arroz-0-grasas-trans.jpg",
+    "imagen": "/productos/crocante-de-arroz-0-grasas-trans.webp",
     "destacado": false
   },
   {
@@ -1707,7 +1707,7 @@
         "precio": 9900
       }
     ],
-    "imagen": "/productos/datiles-sin-carozo.png",
+    "imagen": "/productos/datiles-sin-carozo.webp",
     "destacado": false
   },
   {
@@ -1729,7 +1729,7 @@
         "precio": 4390
       }
     ],
-    "imagen": "/productos/mani-sin-sal.png",
+    "imagen": "/productos/mani-sin-sal.webp",
     "destacado": false
   },
   {
@@ -1743,7 +1743,7 @@
         "precio": 7900
       }
     ],
-    "imagen": "/productos/aceite-de-coco-350ml.png",
+    "imagen": "/productos/aceite-de-coco-350ml.webp",
     "destacado": false
   },
   {
@@ -1769,7 +1769,7 @@
         "precio": 15000
       }
     ],
-    "imagen": "/productos/amapola.png",
+    "imagen": "/productos/amapola.webp",
     "destacado": false
   },
   {
@@ -1795,7 +1795,7 @@
         "precio": 14000
       }
     ],
-    "imagen": "/productos/sesamo-negro.png",
+    "imagen": "/productos/sesamo-negro.webp",
     "destacado": false
   },
   {
@@ -1821,7 +1821,7 @@
         "precio": 10000
       }
     ],
-    "imagen": "/productos/sesamo-blanco.png",
+    "imagen": "/productos/sesamo-blanco.webp",
     "destacado": false
   },
   {
@@ -1847,7 +1847,7 @@
         "precio": 14000
       }
     ],
-    "imagen": "/productos/mix-de-sesamo.png",
+    "imagen": "/productos/mix-de-sesamo.webp",
     "destacado": false
   },
   {
@@ -1861,7 +1861,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-aji-picante.png",
+    "imagen": "/productos/hummus-con-aji-picante.webp",
     "destacado": false
   },
   {
@@ -1875,7 +1875,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-alcaparras.png",
+    "imagen": "/productos/hummus-con-alcaparras.webp",
     "destacado": false
   },
   {
@@ -1889,7 +1889,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-tomates-secos-y-albahaca.png",
+    "imagen": "/productos/hummus-con-tomates-secos-y-albahaca.webp",
     "destacado": false
   },
   {
@@ -1903,7 +1903,7 @@
         "precio": 5900
       }
     ],
-    "imagen": "/productos/hummus-con-ajo-negro.png",
+    "imagen": "/productos/hummus-con-ajo-negro.webp",
     "destacado": false
   },
   {
@@ -1917,7 +1917,7 @@
         "precio": 7500
       }
     ],
-    "imagen": "/productos/hummus-con-pistacho.png",
+    "imagen": "/productos/hummus-con-pistacho.webp",
     "destacado": false
   }
 ]

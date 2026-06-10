@@ -139,7 +139,7 @@ function mapCatalogCategory(row: CategoryRow): CatalogCategory {
     id: row.id,
     slug: row.slug,
     name: row.name,
-    image: row.image_path ?? fallback?.image ?? "/categorias-optimized/semillas.jpg",
+    image: row.image_path ?? fallback?.image ?? "/categorias-optimized/semillas.webp",
     searchTags: row.search_tags ?? [...(fallback?.searchTags ?? [])],
     sortOrder: row.sort_order,
     isActive: row.is_active,
