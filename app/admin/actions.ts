@@ -1,12 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { createServiceRoleClient } from "@/lib/supabase/service";
 
 type ParsedPresentation = {
   id: string | undefined;
@@ -268,7 +266,7 @@ async function resolveProductImagePath({
   const filePath = `${PRODUCT_IMAGE_PREFIX}/${normalizedBaseName}.${extension}`;
   const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
 
-  await uploadProductImageToStorage(imageFile, filePath, extension);
+  await uploadProductImageToStorage(imageFile, filePath);
   await removeProductImageAtPath(existingImagePath);
 
   return storagePath;
@@ -298,7 +296,7 @@ async function uploadProductImageToStorage(
   filePath: string,
 ) {
   const bytes = Buffer.from(await file.arrayBuffer());
-  const supabase = createServiceRoleClient();
+  const supabase = await getServiceRoleClient();
 
   await ensureProductImageBucket();
 
@@ -316,7 +314,8 @@ async function uploadProductImageToStorage(
     return;
   }
 
-  const optimizedBuffer = await sharp(bytes)
+  const sharpModule = await import("sharp");
+  const optimizedBuffer = await sharpModule.default(bytes)
     .rotate()
     .resize({
       width: PRODUCT_IMAGE_MAX_DIMENSION,
@@ -356,7 +355,7 @@ async function removeProductImageAtPath(relativePath: string) {
     return;
   }
 
-  const supabase = createServiceRoleClient();
+  const supabase = await getServiceRoleClient();
   const { error } = await supabase.storage.from(PRODUCT_IMAGE_BUCKET).remove([storageObjectPath]);
 
   if (error && !error.message.toLowerCase().includes("not found")) {
@@ -365,7 +364,7 @@ async function removeProductImageAtPath(relativePath: string) {
 }
 
 async function ensureProductImageBucket() {
-  const supabase = createServiceRoleClient();
+  const supabase = await getServiceRoleClient();
   const { data: buckets, error: listError } = await supabase.storage.listBuckets();
 
   if (listError) {
@@ -385,6 +384,11 @@ async function ensureProductImageBucket() {
   if (createError && !createError.message.toLowerCase().includes("already exists")) {
     throw new Error(`No se pudo crear el bucket de imágenes: ${createError.message}`);
   }
+}
+
+async function getServiceRoleClient() {
+  const { createServiceRoleClient } = await import("@/lib/supabase/service");
+  return createServiceRoleClient();
 }
 
 function buildStorageProxyPath(bucket: string, objectPath: string) {
