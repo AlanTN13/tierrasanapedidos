@@ -76,7 +76,7 @@ export function ProductCard({
         <p className="text-[10px] font-bold tracking-[0.16em] text-earth uppercase">
           {primaryCategory}
         </p>
-        <h3 className="mt-1 text-[15px] leading-tight font-semibold text-olive-dark">
+        <h3 className="mt-1 min-h-[2.5rem] line-clamp-2 text-[15px] leading-tight font-semibold text-olive-dark">
           {product.nombre}
         </h3>
 
