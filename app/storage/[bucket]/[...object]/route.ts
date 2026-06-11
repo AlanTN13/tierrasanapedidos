@@ -18,7 +18,20 @@ export async function GET(
   }
 
   const supabase = createServiceRoleClient();
-  const { data } = supabase.storage.from(bucket).getPublicUrl(objectPath);
+  const { data, error } = await supabase.storage.from(bucket).download(objectPath);
 
-  return NextResponse.redirect(data.publicUrl, 307);
+  if (error || !data) {
+    return NextResponse.json(
+      { error: error?.message ?? "No se pudo descargar la imagen." },
+      { status: 404 },
+    );
+  }
+
+  return new Response(data, {
+    status: 200,
+    headers: {
+      "Content-Type": data.type || "application/octet-stream",
+      "Cache-Control": "public, max-age=31536000, immutable",
+    },
+  });
 }
