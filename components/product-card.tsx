@@ -128,8 +128,8 @@ export function ProductCard({
           Ver detalle
         </button>
 
-        <div className="mt-3 flex items-center gap-2">
-          <div className="inline-flex items-center rounded-full border border-olive/12 bg-white/80 p-0.5">
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="inline-flex w-full items-center justify-center rounded-full border border-olive/12 bg-white/80 p-0.5 sm:w-auto">
             <QuantityButton
               label={`Restar una unidad de ${product.nombre}`}
               onClick={() => setQuantity((current) => Math.max(1, current - 1))}
@@ -159,7 +159,7 @@ export function ProductCard({
               setQuantity(1);
               setJustAdded(true);
             }}
-            className="flex-1 rounded-full bg-olive px-3 py-2 text-[12px] font-semibold text-white hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35"
+            className="w-full min-w-0 rounded-full bg-olive px-3 py-2 text-[12px] font-semibold text-white hover:-translate-y-0.5 hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35 sm:flex-1 sm:w-auto"
             aria-label={`Agregar ${quantity} unidad${quantity === 1 ? "" : "es"} de ${product.nombre} (${selectedPresentation.etiqueta})`}
           >
             {justAdded ? "Agregado" : "Agregar"}
