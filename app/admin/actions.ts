@@ -18,7 +18,9 @@ const PRODUCT_IMAGE_MAX_DIMENSION = 1600;
 const PRODUCT_IMAGE_WEBP_QUALITY = 82;
 const PRODUCT_IMAGE_BUCKET = "product-images";
 const PRODUCT_IMAGE_PREFIX = "products";
+const CATEGORY_IMAGE_PREFIX = "categories";
 const PRODUCT_IMAGE_PLACEHOLDER = "/productos/frutos-secos-placeholder.svg";
+const CATEGORY_IMAGE_PLACEHOLDER = "/categorias-optimized/semillas.webp";
 
 export async function signOutAdmin() {
   if (!isSupabaseConfigured()) {
@@ -39,8 +41,9 @@ export async function saveProduct(formData: FormData) {
 
   const supabase = await createClient();
   const productId = readString(formData.get("productId"));
-  const slug = readString(formData.get("slug"));
   const name = readString(formData.get("name"));
+  const submittedSlug = readString(formData.get("slug"));
+  const slug = slugify(submittedSlug || name);
   const description = readString(formData.get("description"));
   const existingImagePath = readString(formData.get("existingImagePath"));
   const imageFile = formData.get("imageFile");
@@ -203,6 +206,82 @@ export async function saveProduct(formData: FormData) {
   redirect(`/admin/products/${slug}?saved=1`);
 }
 
+export async function saveCategory(formData: FormData) {
+  await requireAdminUser();
+
+  if (!isSupabaseConfigured()) {
+    throw new Error("Supabase no está configurado.");
+  }
+
+  const supabase = await createClient();
+  const categoryId = readString(formData.get("categoryId"));
+  const name = readString(formData.get("name"));
+  const submittedSlug = readString(formData.get("slug"));
+  const slug = slugify(submittedSlug || name);
+  const existingImagePath = readString(formData.get("existingImagePath"));
+  const imagePathOverride = readString(formData.get("imagePath"));
+  const imageFile = formData.get("imageFile");
+  const searchTags = readString(formData.get("searchTags"))
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+  const sortOrder = readNumberOrDefault(formData.get("sortOrder"), 0);
+  const isActive = formData.get("isActive") === "on";
+  const imagePath = await resolveCategoryImagePath({
+    slug,
+    name,
+    imageFile,
+    existingImagePath,
+    imagePathOverride,
+  });
+
+  if (!name || !slug) {
+    throw new Error("La categoría necesita nombre y slug.");
+  }
+
+  let resolvedCategoryId = categoryId;
+
+  if (resolvedCategoryId) {
+    const { error } = await supabase
+      .from("categories")
+      .update({
+        slug,
+        name,
+        image_path: imagePath,
+        search_tags: searchTags,
+        sort_order: sortOrder,
+        is_active: isActive,
+      })
+      .eq("id", resolvedCategoryId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  } else {
+    const { data, error } = await supabase
+      .from("categories")
+      .insert({
+        slug,
+        name,
+        image_path: imagePath,
+        search_tags: searchTags,
+        sort_order: sortOrder,
+        is_active: isActive,
+      })
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message ?? "No se pudo crear la categoría.");
+    }
+
+    resolvedCategoryId = data.id;
+  }
+
+  await refreshCatalogCache();
+  redirect(`/admin/categories/${resolvedCategoryId}?saved=1`);
+}
+
 function parsePresentations(formData: FormData): ParsedPresentation[] {
   const ids = formData.getAll("presentationId").map((value) => readString(value));
   const labels = formData.getAll("presentationLabel").map((value) => readString(value));
@@ -266,8 +345,46 @@ async function resolveProductImagePath({
   const filePath = `${PRODUCT_IMAGE_PREFIX}/${normalizedBaseName}.${extension}`;
   const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
 
-  await uploadProductImageToStorage(imageFile, filePath);
-  await removeProductImageAtPath(existingImagePath);
+  await uploadImageToStorage(imageFile, filePath);
+  await removeStoredImageAtPath(existingImagePath);
+
+  return storagePath;
+}
+
+async function resolveCategoryImagePath({
+  slug,
+  name,
+  imageFile,
+  existingImagePath,
+  imagePathOverride,
+}: {
+  slug: string;
+  name: string;
+  imageFile: FormDataEntryValue | null;
+  existingImagePath: string;
+  imagePathOverride: string;
+}) {
+  const normalizedManualPath = imagePathOverride || "";
+
+  if (!slug || !name) {
+    return normalizedManualPath || existingImagePath || CATEGORY_IMAGE_PLACEHOLDER;
+  }
+
+  if (!(imageFile instanceof File) || imageFile.size === 0) {
+    if (normalizedManualPath && normalizedManualPath !== existingImagePath) {
+      await removeStoredImageAtPath(existingImagePath);
+    }
+
+    return normalizedManualPath || existingImagePath || CATEGORY_IMAGE_PLACEHOLDER;
+  }
+
+  const extension = getOutputImageExtension(imageFile);
+  const normalizedBaseName = slugify(slug || name);
+  const filePath = `${CATEGORY_IMAGE_PREFIX}/${normalizedBaseName}.${extension}`;
+  const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
+
+  await uploadImageToStorage(imageFile, filePath);
+  await removeStoredImageAtPath(existingImagePath);
 
   return storagePath;
 }
@@ -291,10 +408,7 @@ function getOutputImageExtension(file: File) {
   }
 }
 
-async function uploadProductImageToStorage(
-  file: File,
-  filePath: string,
-) {
+async function uploadImageToStorage(file: File, filePath: string) {
   const bytes = Buffer.from(await file.arrayBuffer());
   const supabase = await getServiceRoleClient();
 
@@ -348,7 +462,7 @@ function isSvgFile(file: File) {
   return file.type === "image/svg+xml" || file.name.toLowerCase().endsWith(".svg");
 }
 
-async function removeProductImageAtPath(relativePath: string) {
+async function removeStoredImageAtPath(relativePath: string) {
   const storageObjectPath = getStorageObjectPath(relativePath);
 
   if (!storageObjectPath) {
@@ -418,6 +532,11 @@ function readNullableNumber(value: FormDataEntryValue | null) {
 
   const parsed = Number.parseInt(stringValue, 10);
   return Number.isNaN(parsed) ? null : parsed;
+}
+
+function readNumberOrDefault(value: FormDataEntryValue | null, fallback: number) {
+  const parsed = readNullableNumber(value);
+  return parsed ?? fallback;
 }
 
 function slugify(value: string) {

@@ -37,6 +37,12 @@ async function AdminPageContent() {
 
         <div className="flex flex-wrap gap-3">
           <Link
+            href="/admin/categories"
+            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
+          >
+            Gestionar categorías
+          </Link>
+          <Link
             href="/admin/export"
             className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
           >
@@ -58,6 +64,45 @@ async function AdminPageContent() {
           </form>
         </div>
       </div>
+
+      <section className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
+          <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+            Productos
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-olive-dark">{products.length}</p>
+          <p className="mt-2 text-sm text-foreground/64">
+            Incluye activos e inactivos del catálogo.
+          </p>
+        </div>
+
+        <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
+          <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+            Categorías
+          </p>
+          <p className="mt-2 text-3xl font-semibold text-olive-dark">{categories.length}</p>
+          <p className="mt-2 text-sm text-foreground/64">
+            Ya podés crearlas y editarlas desde el backoffice.
+          </p>
+        </div>
+
+        <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
+          <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+            Acceso rápido
+          </p>
+          <div className="mt-3">
+            <Link
+              href="/admin/categories/new"
+              className="inline-flex items-center justify-center rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive-dark"
+            >
+              Alta de categoría
+            </Link>
+          </div>
+          <p className="mt-3 text-sm text-foreground/64">
+            Ideal para sumar nuevas líneas sin tocar código.
+          </p>
+        </div>
+      </section>
 
       <section className="mt-6 surface-panel organic-outline overflow-hidden rounded-[2rem]">
         <div className="grid gap-px bg-olive/8">

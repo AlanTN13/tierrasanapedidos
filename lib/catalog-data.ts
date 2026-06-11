@@ -52,6 +52,16 @@ export type AdminCatalogProduct = {
   presentations: ProductPresentation[];
 };
 
+export type AdminCatalogCategory = {
+  id: string;
+  slug: string;
+  name: string;
+  imagePath: string;
+  searchTags: string[];
+  sortOrder: number;
+  isActive: boolean;
+};
+
 type CatalogSnapshot = {
   categories: CatalogCategory[];
   products: Product[];
@@ -310,6 +320,25 @@ export async function getAdminCategories() {
   return (data ?? []).map(mapCatalogCategory).sort(bySortOrder);
 }
 
+export async function getAdminCategoryRecords() {
+  const categories = await getAdminCategories();
+
+  return categories.map((category) => ({
+    id: category.id,
+    slug: category.slug,
+    name: category.name,
+    imagePath: category.image,
+    searchTags: category.searchTags,
+    sortOrder: category.sortOrder,
+    isActive: category.isActive,
+  })) satisfies AdminCatalogCategory[];
+}
+
+export async function getAdminCategoryById(id: string) {
+  const categories = await getAdminCategoryRecords();
+  return categories.find((category) => category.id === id) ?? null;
+}
+
 export async function getAdminProducts() {
   if (!isSupabaseConfigured()) {
     return fallbackProducts.map((product) => ({
@@ -395,7 +424,13 @@ export async function getAdminProducts() {
 
 export async function getAdminProductBySlug(slug: string) {
   const products = await getAdminProducts();
-  return products.find((product) => product.slug === slug) ?? null;
+  const normalizedSlug = slugify(slug);
+
+  return (
+    products.find(
+      (product) => product.slug === slug || slugify(product.slug) === normalizedSlug,
+    ) ?? null
+  );
 }
 
 export async function refreshCatalogCache() {
