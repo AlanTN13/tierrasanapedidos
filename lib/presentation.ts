@@ -17,13 +17,15 @@ export function formatPresentationLabel({
   amountValue,
   amountUnit,
 }: PresentationMeasurement) {
-  const normalizedAmount = formatAmountValue(amountValue);
-
   if (measurementKind === "unit") {
-    return `${normalizedAmount} ${amountValue === 1 ? "unidad" : "unidades"}`;
+    if (amountValue === 1) {
+      return "unidad";
+    }
+
+    return `${formatAmountValue(amountValue)} unidades`;
   }
 
-  return `${normalizedAmount}${amountUnit}`;
+  return `${formatAmountValue(amountValue)}${amountUnit}`;
 }
 
 export function calculateAmountInBaseUnits({
