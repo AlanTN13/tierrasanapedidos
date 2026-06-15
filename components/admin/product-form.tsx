@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { AdminCatalogProduct } from "@/lib/catalog-data";
+import { formatPresentationLabel } from "@/lib/presentation";
 import type { CatalogCategory } from "@/types/catalog";
 
 type ProductFormProps = {
@@ -22,6 +23,10 @@ export function ProductForm({
       id: undefined,
       etiqueta: "",
       precio: 0,
+      measurementKind: "unit" as const,
+      amountValue: 1,
+      amountUnit: "unit" as const,
+      amountInBaseUnits: 1,
       sortOrder: undefined,
     })),
   ];
@@ -183,7 +188,7 @@ export function ProductForm({
         <div>
           <h2 className="text-xl font-semibold text-olive-dark">Presentaciones</h2>
           <p className="text-sm text-foreground/64">
-            Dejá filas vacías si no las necesitás. El precio se edita en pesos.
+            Cargá la medida real de cada presentación. La etiqueta visible se genera sola.
           </p>
         </div>
 
@@ -191,7 +196,7 @@ export function ProductForm({
           {presentationRows.map((presentation, index) => (
             <div
               key={`${presentation.id ?? "new"}-${index}`}
-              className="grid gap-3 rounded-2xl border border-olive/12 bg-white/90 p-4 md:grid-cols-[1.2fr_1fr_140px]"
+              className="grid gap-3 rounded-2xl border border-olive/12 bg-white/90 p-4 md:grid-cols-[1fr_150px_1fr_110px]"
             >
               <input
                 type="hidden"
@@ -200,26 +205,50 @@ export function ProductForm({
               />
               <label className="space-y-2">
                 <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-                  Etiqueta
+                  Contenido
                 </span>
                 <input
-                  name="presentationLabel"
-                  defaultValue={presentation.etiqueta}
-                  placeholder="250g"
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
-                />
-              </label>
-              <label className="space-y-2">
-                <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-                  Precio (ARS)
-                </span>
-                <input
-                  name="presentationPrice"
-                  defaultValue={presentation.precio > 0 ? presentation.precio : ""}
-                  placeholder="7500"
+                  name="presentationAmountValue"
+                  defaultValue={presentation.amountValue > 0 ? presentation.amountValue : ""}
+                  placeholder="500"
                   inputMode="decimal"
                   className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
+                <p className="text-xs leading-5 text-foreground/58">
+                  {presentation.etiqueta
+                    ? `Actual: ${presentation.etiqueta}`
+                    : "Ejemplos: 500g, 350ml, 1 unidad, 6 unidades."}
+                </p>
+              </label>
+              <label className="space-y-2">
+                <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+                  Tipo
+                </span>
+                <select
+                  name="presentationMeasurementKind"
+                  defaultValue={presentation.measurementKind}
+                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                >
+                  <option value="unit">Unidades</option>
+                  <option value="weight">Peso</option>
+                  <option value="volume">Volumen</option>
+                </select>
+              </label>
+              <label className="space-y-2">
+                <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+                  Unidad
+                </span>
+                <select
+                  name="presentationAmountUnit"
+                  defaultValue={presentation.amountUnit}
+                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                >
+                  <option value="unit">unidad</option>
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="l">l</option>
+                </select>
               </label>
               <label className="space-y-2">
                 <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
@@ -234,6 +263,31 @@ export function ProductForm({
                   className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
+              <label className="space-y-2 md:col-span-2">
+                <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+                  Precio (ARS)
+                </span>
+                <input
+                  name="presentationPrice"
+                  defaultValue={presentation.precio > 0 ? presentation.precio : ""}
+                  placeholder="7500"
+                  inputMode="decimal"
+                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                />
+              </label>
+              <div className="rounded-2xl border border-olive/10 bg-olive-soft/24 px-4 py-3 md:col-span-2">
+                <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+                  Etiqueta visible
+                </p>
+                <p className="mt-1 text-sm font-semibold text-olive-dark">
+                  {presentation.etiqueta ||
+                    formatPresentationLabel({
+                      measurementKind: presentation.measurementKind,
+                      amountValue: presentation.amountValue,
+                      amountUnit: presentation.amountUnit,
+                    })}
+                </p>
+              </div>
             </div>
           ))}
         </div>

@@ -6,6 +6,10 @@ export type ProductPresentation = {
   id?: string;
   etiqueta: string;
   precio: number;
+  measurementKind: "unit" | "weight" | "volume";
+  amountValue: number;
+  amountUnit: "unit" | "g" | "kg" | "ml" | "l";
+  amountInBaseUnits: number;
   sortOrder?: number;
   activa?: boolean;
 };

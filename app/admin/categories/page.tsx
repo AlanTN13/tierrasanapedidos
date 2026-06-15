@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
+import { PageHeader } from "@/components/admin/page-header";
 import { getAdminCategoryRecords } from "@/lib/catalog-data";
 import { requireAdminUser } from "@/lib/supabase/admin";
 
@@ -18,35 +19,21 @@ async function CategoriesPageContent() {
   const categories = await getAdminCategoryRecords();
 
   return (
-    <main className="container-shell py-8 sm:py-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <span className="section-kicker">Backoffice</span>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">
-            Categorías
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-foreground/66">
-            Gestioná nombres, orden, imagen y estado de cada categoría.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/admin"
-            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
-          >
-            Volver al catálogo
-          </Link>
+    <div className="space-y-6">
+      <PageHeader
+        title="Categorías"
+        description="Gestioná nombres, orden, imagen y estado de cada categoría."
+        actions={
           <Link
             href="/admin/categories/new"
             className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
           >
             Nueva categoría
           </Link>
-        </div>
-      </div>
+        }
+      />
 
-      <section className="mt-6 surface-panel organic-outline overflow-hidden rounded-[2rem]">
+      <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
         <div className="grid gap-px bg-olive/8">
           {categories.map((category) => (
             <article
@@ -93,22 +80,16 @@ async function CategoriesPageContent() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 
 function CategoriesPageFallback() {
   return (
-    <main className="container-shell py-8 sm:py-10">
-      <div>
-        <span className="section-kicker">Backoffice</span>
-        <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">
-          Categorías
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-foreground/66">
-          Cargando categorías...
-        </p>
-      </div>
-    </main>
+    <div>
+      <span className="section-kicker">Backoffice</span>
+      <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">Categorías</h1>
+      <p className="mt-2 text-sm leading-6 text-foreground/66">Cargando categorías...</p>
+    </div>
   );
 }

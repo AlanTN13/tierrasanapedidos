@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { signOutAdmin } from "@/app/admin/actions";
+import { PageHeader } from "@/components/admin/page-header";
+import { getAdminDashboardMetrics, getInventorySummary } from "@/lib/admin-operations";
 import { getAdminCategories, getAdminProducts } from "@/lib/catalog-data";
+import { formatARS, formatQuantity } from "@/lib/format";
 import { requireAdminUser } from "@/lib/supabase/admin";
 
 export default function AdminPage() {
@@ -16,171 +18,262 @@ export default function AdminPage() {
 async function AdminPageContent() {
   await connection();
   const admin = await requireAdminUser();
-  const [products, categories] = await Promise.all([
+  const [products, categories, metrics, inventorySummary] = await Promise.all([
     getAdminProducts(),
     getAdminCategories(),
+    getAdminDashboardMetrics(),
+    getInventorySummary(),
   ]);
-  const categoryNameById = new Map(categories.map((category) => [category.id, category.name]));
+  const stockAlerts = inventorySummary.slice(0, 5);
 
   return (
-    <main className="container-shell py-8 sm:py-10">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <span className="section-kicker">Backoffice</span>
-          <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">
-            Catálogo
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-foreground/66">
-            Sesión iniciada como {admin.email}.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/admin/categories"
-            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
-          >
-            Gestionar categorías
-          </Link>
-          <Link
-            href="/admin/export"
-            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
-          >
-            Descargar CSV
-          </Link>
-          <Link
-            href="/admin/products/new"
-            className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
-          >
-            Nuevo producto
-          </Link>
-          <form action={signOutAdmin}>
-            <button
-              type="submit"
+    <div className="space-y-6">
+      <PageHeader
+        title="Resumen operativo"
+        description={`Sesión iniciada como ${admin.email}. Este panel separa catálogo, compras y ventas para que el backoffice sea más claro y más fácil de operar.`}
+        actions={
+          <>
+            <Link
+              href="/admin/purchases/new"
               className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
             >
-              Cerrar sesión
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <section className="mt-6 grid gap-4 md:grid-cols-3">
-        <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-            Productos
-          </p>
-          <p className="mt-2 text-3xl font-semibold text-olive-dark">{products.length}</p>
-          <p className="mt-2 text-sm text-foreground/64">
-            Incluye activos e inactivos del catálogo.
-          </p>
-        </div>
-
-        <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-            Categorías
-          </p>
-          <p className="mt-2 text-3xl font-semibold text-olive-dark">{categories.length}</p>
-          <p className="mt-2 text-sm text-foreground/64">
-            Ya podés crearlas y editarlas desde el backoffice.
-          </p>
-        </div>
-
-        <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
-          <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-            Acceso rápido
-          </p>
-          <div className="mt-3">
+              Nueva compra
+            </Link>
             <Link
-              href="/admin/categories/new"
+              href="/admin/sales/new"
+              className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
+            >
+              Nueva venta
+            </Link>
+          </>
+        }
+      />
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <MetricCard label="Productos" value={String(products.length)} description="Catálogo activo e inactivo." />
+        <MetricCard label="Categorías" value={String(categories.length)} description="Rutas de organización del surtido." />
+        <MetricCard
+          label={`Compras (${metrics.periodDays} días)`}
+          value={formatARS(metrics.purchasesTotalCents / 100)}
+          description="Total registrado en órdenes de compra."
+        />
+        <MetricCard
+          label={`Ventas (${metrics.periodDays} días)`}
+          value={formatARS(metrics.salesTotalCents / 100)}
+          description={`Margen estimado: ${formatARS(metrics.salesMarginCents / 100)}.`}
+        />
+        <MetricCard
+          label="Stock bajo"
+          value={String(metrics.stockLowCount)}
+          description="Presentaciones con stock menor o igual a 3."
+        />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        <div className="surface-panel organic-outline rounded-[2rem] p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-olive-dark">Ventas recientes</h2>
+              <p className="text-sm text-foreground/64">
+                Tickets guardados con total y margen.
+              </p>
+            </div>
+            <Link
+              href="/admin/sales/new"
               className="inline-flex items-center justify-center rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive-dark"
             >
-              Alta de categoría
+              Nueva venta
             </Link>
           </div>
-          <p className="mt-3 text-sm text-foreground/64">
-            Ideal para sumar nuevas líneas sin tocar código.
-          </p>
-        </div>
-      </section>
 
-      <section className="mt-6 surface-panel organic-outline overflow-hidden rounded-[2rem]">
-        <div className="grid gap-px bg-olive/8">
-          {products.map((product) => (
-            <article
-              key={product.uuid}
-              className="grid gap-4 bg-white/92 px-5 py-4 md:grid-cols-[minmax(0,1fr)_220px_150px]"
-            >
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-lg font-semibold text-olive-dark">{product.name}</h2>
-                  {product.isFeatured ? (
-                    <span className="rounded-full bg-earth/10 px-2.5 py-1 text-[11px] font-semibold text-earth">
-                      Destacado
-                    </span>
-                  ) : null}
-                  {!product.isActive ? (
-                    <span className="rounded-full bg-foreground/8 px-2.5 py-1 text-[11px] font-semibold text-foreground/72">
-                      Inactivo
-                    </span>
-                  ) : null}
-                </div>
-                <p className="mt-1 text-sm text-foreground/62">/{product.slug}</p>
-                <p className="mt-3 text-sm leading-6 text-foreground/68">
-                  {product.description}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {product.categoryIds.map((categoryId) => (
-                    <span
-                      key={categoryId}
-                      className="rounded-full bg-olive-soft/48 px-2.5 py-1 text-[11px] font-semibold text-olive-dark"
-                    >
-                      {categoryNameById.get(categoryId) ?? categoryId}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-2 text-sm text-olive-dark">
-                {product.presentations.map((presentation) => (
-                  <div
-                    key={`${product.uuid}-${presentation.id ?? presentation.etiqueta}`}
-                    className="rounded-2xl border border-olive/10 bg-olive-soft/26 px-3 py-2"
-                  >
-                    <strong>{presentation.etiqueta}</strong>
-                    <div>${presentation.precio.toLocaleString("es-AR")}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-start justify-start md:justify-end">
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {metrics.recentSales.length > 0 ? (
+              metrics.recentSales.map((sale) => (
                 <Link
-                  href={`/admin/products/${product.slug}`}
-                  className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-4 py-2 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
+                  key={sale.id}
+                  href={`/admin/sales/${sale.id}`}
+                  className="block rounded-2xl border border-olive/10 bg-white/92 px-4 py-3"
                 >
-                  Editar
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <div className="text-sm font-semibold text-olive-dark">
+                        Ticket {sale.id.slice(0, 8)}
+                      </div>
+                      <div className="text-sm text-foreground/68">{formatDateLabel(sale.soldAt)}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm font-semibold text-olive-dark">
+                        {formatARS(sale.totalCents / 100)}
+                      </div>
+                      <div className="text-sm text-foreground/68">
+                        Margen {formatARS(sale.totalMarginCents / 100)}
+                      </div>
+                    </div>
+                  </div>
                 </Link>
-              </div>
-            </article>
-          ))}
+              ))
+            ) : (
+              <EmptyCard text="Todavía no hay tickets cargados." />
+            )}
+          </div>
+        </div>
+
+        <div className="surface-panel organic-outline rounded-[2rem] p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-olive-dark">Mayor rotación</h2>
+              <p className="text-sm text-foreground/64">
+                Presentaciones más vendidas en los últimos {metrics.periodDays} días.
+              </p>
+            </div>
+            <Link
+              href="/admin/sales"
+              className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-4 py-2 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
+            >
+              Ver módulo
+            </Link>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {metrics.topRotationProducts.length > 0 ? (
+              metrics.topRotationProducts.map((item) => (
+                <div
+                  key={item.productPresentationId}
+                  className="flex items-center justify-between rounded-2xl border border-olive/10 bg-white/92 px-4 py-3"
+                >
+                  <div className="text-sm font-semibold text-olive-dark">{item.name}</div>
+                  <div className="text-sm text-foreground/68">
+                    {formatQuantity(item.quantitySold)} presentaciones
+                  </div>
+                </div>
+              ))
+            ) : (
+              <EmptyCard text="Todavía no hay ventas cargadas en el período." />
+            )}
+          </div>
         </div>
       </section>
-    </main>
+
+      <section className="grid gap-4 xl:grid-cols-2">
+        <div className="surface-panel organic-outline rounded-[2rem] p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-olive-dark">Alertas de stock</h2>
+              <p className="text-sm text-foreground/64">
+                Reposición sugerida según movimientos cargados.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {stockAlerts.length > 0 ? (
+              stockAlerts.map((item) => (
+                <div
+                  key={item.productPresentationId}
+                  className="rounded-2xl border border-olive/10 bg-white/92 px-4 py-3"
+                >
+                  <div className="text-sm font-semibold text-olive-dark">
+                    {item.productName} - {item.presentationLabel}
+                  </div>
+                  <div className="mt-1 text-sm text-foreground/68">
+                    Stock: {formatQuantity(item.stockCurrent)}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <EmptyCard text="Cuando empieces a cargar compras y ventas, acá vas a ver alertas reales." />
+            )}
+          </div>
+        </div>
+
+        <div className="surface-panel organic-outline rounded-[2rem] p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-olive-dark">Compras recientes</h2>
+              <p className="text-sm text-foreground/64">
+                Últimas órdenes registradas en el backoffice.
+              </p>
+            </div>
+            <Link
+              href="/admin/purchases/new"
+              className="inline-flex items-center justify-center rounded-full bg-olive px-4 py-2 text-sm font-semibold text-white hover:bg-olive-dark"
+            >
+              Nueva compra
+            </Link>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            {metrics.recentPurchases.length > 0 ? (
+              metrics.recentPurchases.map((order) => (
+                <Link
+                  key={order.id}
+                  href={`/admin/purchases/${order.id}`}
+                  className="block rounded-2xl border border-olive/10 bg-white/92 px-4 py-3"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <div className="text-sm font-semibold text-olive-dark">{order.supplierName}</div>
+                      <div className="text-sm text-foreground/68">
+                        {formatDateLabel(order.purchasedAt)}
+                      </div>
+                    </div>
+                    <div className="text-sm font-semibold text-olive-dark">
+                      {formatARS(order.totalCents / 100)}
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <EmptyCard text="Todavía no hay órdenes de compra cargadas." />
+            )}
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}
+
+function formatDateLabel(value: string) {
+  return new Intl.DateTimeFormat("es-AR", {
+    dateStyle: "medium",
+  }).format(new Date(value));
+}
+
+function MetricCard({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
+      <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
+      <p className="mt-2 text-3xl font-semibold text-olive-dark">{value}</p>
+      <p className="mt-2 text-sm text-foreground/64">{description}</p>
+    </div>
+  );
+}
+
+function EmptyCard({ text }: { text: string }) {
+  return (
+    <p className="rounded-2xl border border-dashed border-olive/16 bg-white/82 px-4 py-5 text-sm text-foreground/64">
+      {text}
+    </p>
   );
 }
 
 function AdminPageFallback() {
   return (
-    <main className="container-shell py-8 sm:py-10">
-      <div>
-        <span className="section-kicker">Backoffice</span>
-        <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">
-          Catálogo
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-foreground/66">
-          Cargando productos...
-        </p>
-      </div>
-    </main>
+    <div>
+      <span className="section-kicker">Backoffice</span>
+      <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">
+        Resumen operativo
+      </h1>
+      <p className="mt-2 text-sm leading-6 text-foreground/66">Cargando panel...</p>
+    </div>
   );
 }

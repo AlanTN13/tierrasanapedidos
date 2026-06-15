@@ -4,11 +4,23 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
+import {
+  calculateAmountInBaseUnits,
+  formatPresentationLabel,
+  normalizeMeasurementUnitForKind,
+  parseMeasurementValue,
+  type PresentationMeasurementKind,
+  type PresentationMeasurementUnit,
+} from "@/lib/presentation";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 type ParsedPresentation = {
   id: string | undefined;
   label: string;
+  measurementKind: PresentationMeasurementKind;
+  amountValue: number;
+  amountUnit: PresentationMeasurementUnit;
+  amountInBaseUnits: number;
   priceCents: number;
   sortOrder: number;
 };
@@ -155,6 +167,10 @@ export async function saveProduct(formData: FormData) {
         .from("product_presentations")
         .update({
           label: presentation.label,
+          measurement_kind: presentation.measurementKind,
+          amount_value: String(presentation.amountValue),
+          amount_unit: presentation.amountUnit,
+          amount_in_base_units: String(presentation.amountInBaseUnits),
           price_cents: presentation.priceCents,
           sort_order: presentation.sortOrder,
           is_active: true,
@@ -168,6 +184,10 @@ export async function saveProduct(formData: FormData) {
       const { error } = await supabase.from("product_presentations").insert({
         product_id: resolvedProductId,
         label: presentation.label,
+        measurement_kind: presentation.measurementKind,
+        amount_value: String(presentation.amountValue),
+        amount_unit: presentation.amountUnit,
+        amount_in_base_units: String(presentation.amountInBaseUnits),
         price_cents: presentation.priceCents,
         sort_order: presentation.sortOrder,
         is_active: true,
@@ -284,23 +304,52 @@ export async function saveCategory(formData: FormData) {
 
 function parsePresentations(formData: FormData): ParsedPresentation[] {
   const ids = formData.getAll("presentationId").map((value) => readString(value));
-  const labels = formData.getAll("presentationLabel").map((value) => readString(value));
+  const measurementKinds = formData
+    .getAll("presentationMeasurementKind")
+    .map((value) => readString(value));
+  const amountValues = formData
+    .getAll("presentationAmountValue")
+    .map((value) => readString(value));
+  const amountUnits = formData
+    .getAll("presentationAmountUnit")
+    .map((value) => readString(value));
   const prices = formData.getAll("presentationPrice").map((value) => readString(value));
   const sortOrders = formData
     .getAll("presentationSortOrder")
     .map((value) => readString(value));
 
-  const parsedPresentations = labels
-    .map((label, index) => {
+  const parsedPresentations = amountValues
+    .map((rawAmountValue, index) => {
       const price = prices[index] ?? "";
+      const rawMeasurementKind = measurementKinds[index] ?? "unit";
+      const rawAmountUnit = amountUnits[index] ?? "unit";
 
-      if (!label || !price) {
+      if (!rawAmountValue || !price) {
         return null;
       }
 
+      const measurementKind = parseMeasurementKind(rawMeasurementKind);
+      const amountValue = parseMeasurementValue(rawAmountValue);
+      const amountUnit = normalizeMeasurementUnitForKind(
+        measurementKind,
+        rawAmountUnit,
+      );
+      const amountInBaseUnits = calculateAmountInBaseUnits({
+        amountValue,
+        amountUnit,
+      });
+
       return {
         id: ids[index] || undefined,
-        label,
+        label: formatPresentationLabel({
+          measurementKind,
+          amountValue,
+          amountUnit,
+        }),
+        measurementKind,
+        amountValue,
+        amountUnit,
+        amountInBaseUnits,
         priceCents: parseCurrencyToCents(price),
         sortOrder: Number.parseInt(sortOrders[index] || String(index), 10) || index,
       };
@@ -308,6 +357,14 @@ function parsePresentations(formData: FormData): ParsedPresentation[] {
     .filter((value): value is ParsedPresentation => Boolean(value));
 
   return parsedPresentations;
+}
+
+function parseMeasurementKind(value: string): PresentationMeasurementKind {
+  if (value === "weight" || value === "volume") {
+    return value;
+  }
+
+  return "unit";
 }
 
 function parseCurrencyToCents(value: string) {

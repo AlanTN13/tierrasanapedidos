@@ -8,6 +8,12 @@ import {
   CATEGORY_ORDER,
   getResolvedProductCategories,
 } from "@/lib/catalog";
+import {
+  type PresentationMeasurementKind,
+  type PresentationMeasurementUnit,
+  calculateAmountInBaseUnits,
+  inferPresentationMeasurementFromLabel,
+} from "@/lib/presentation";
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
@@ -31,8 +37,18 @@ type CategoryRow = Pick<
 >;
 type ProductPresentationRow = Pick<
   Database["public"]["Tables"]["product_presentations"]["Row"],
-  "id" | "product_id" | "label" | "price_cents" | "sort_order" | "is_active"
->;
+  | "id"
+  | "product_id"
+  | "label"
+  | "price_cents"
+  | "sort_order"
+  | "is_active"
+> & {
+  measurement_kind?: string | null;
+  amount_value?: string | number | null;
+  amount_unit?: string | null;
+  amount_in_base_units?: string | number | null;
+};
 type ProductCategoryRow = Pick<
   Database["public"]["Tables"]["product_categories"]["Row"],
   "product_id" | "category_id" | "sort_order"
@@ -67,7 +83,20 @@ type CatalogSnapshot = {
   products: Product[];
 };
 
-const fallbackProducts = productsData as Product[];
+const fallbackProducts = (productsData as Product[]).map((product) => ({
+  ...product,
+  presentaciones: product.presentaciones.map((presentation) => {
+    const inferred = inferPresentationMeasurementFromLabel(presentation.etiqueta);
+
+    return {
+      ...presentation,
+      measurementKind: inferred.measurementKind,
+      amountValue: inferred.amountValue,
+      amountUnit: inferred.amountUnit,
+      amountInBaseUnits: calculateAmountInBaseUnits(inferred),
+    };
+  }),
+}));
 
 function fallbackCategories(): CatalogCategory[] {
   return CATEGORY_CONFIG.map((entry, index) => ({
@@ -90,6 +119,45 @@ function bySortOrder<T extends { sortOrder: number }>(a: T, b: T) {
   return a.sortOrder - b.sortOrder;
 }
 
+function isMissingColumnError(message: string) {
+  return message.toLowerCase().includes("does not exist");
+}
+
+async function fetchPresentationRows(
+  supabase: SupabaseClient<Database>,
+  includeInactive: boolean,
+) {
+  const selectWithMeasurement =
+    "id, product_id, label, measurement_kind, amount_value, amount_unit, amount_in_base_units, price_cents, sort_order, is_active";
+  const legacySelect = "id, product_id, label, price_cents, sort_order, is_active";
+
+  let query = supabase
+    .from("product_presentations")
+    .select(selectWithMeasurement)
+    .order("sort_order", { ascending: true });
+
+  if (!includeInactive) {
+    query = query.eq("is_active", true);
+  }
+
+  const result = await query;
+
+  if (!result.error || !isMissingColumnError(result.error.message)) {
+    return result;
+  }
+
+  let legacyQuery = supabase
+    .from("product_presentations")
+    .select(legacySelect)
+    .order("sort_order", { ascending: true });
+
+  if (!includeInactive) {
+    legacyQuery = legacyQuery.eq("is_active", true);
+  }
+
+  return legacyQuery;
+}
+
 async function fetchCatalogRows(
   supabase: SupabaseClient<Database>,
   includeInactive: boolean,
@@ -110,25 +178,17 @@ async function fetchCatalogRows(
     productsQuery = productsQuery.eq("is_active", true);
   }
 
-  let presentationsQuery = supabase
-    .from("product_presentations")
-    .select("id, product_id, label, price_cents, sort_order, is_active")
-    .order("sort_order", { ascending: true });
-
-  if (!includeInactive) {
-    presentationsQuery = presentationsQuery.eq("is_active", true);
-  }
-
   const productCategoriesQuery = supabase
     .from("product_categories")
     .select("product_id, category_id, sort_order")
     .order("sort_order", { ascending: true });
 
+  const presentationsPromise = fetchPresentationRows(supabase, includeInactive);
   const [categoriesResult, productsResult, presentationsResult, productCategoriesResult] =
     await Promise.all([
       categoriesPromise,
       productsQuery,
-      presentationsQuery,
+      presentationsPromise,
       productCategoriesQuery,
     ]);
 
@@ -157,10 +217,26 @@ function mapCatalogCategory(row: CategoryRow): CatalogCategory {
 }
 
 function mapProductPresentation(row: ProductPresentationRow): ProductPresentation {
+  const inferredMeasurement = inferPresentationMeasurementFromLabel(row.label);
+
   return {
     id: row.id,
     etiqueta: row.label,
     precio: row.price_cents / 100,
+    measurementKind:
+      (row.measurement_kind as PresentationMeasurementKind | undefined) ??
+      inferredMeasurement.measurementKind,
+    amountValue:
+      row.amount_value != null
+        ? Number.parseFloat(String(row.amount_value))
+        : inferredMeasurement.amountValue,
+    amountUnit:
+      (row.amount_unit as PresentationMeasurementUnit | undefined) ??
+      inferredMeasurement.amountUnit,
+    amountInBaseUnits:
+      row.amount_in_base_units != null
+        ? Number.parseFloat(String(row.amount_in_base_units))
+        : calculateAmountInBaseUnits(inferredMeasurement),
     sortOrder: row.sort_order,
     activa: row.is_active,
   };
