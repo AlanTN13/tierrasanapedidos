@@ -35,7 +35,7 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
     <div className="space-y-6">
       <PageHeader
         kicker="Venta"
-        title={`Ticket ${sale.id.slice(0, 8)}`}
+        title={sale.saleCode}
         description={`${formatDateTime(sale.soldAt)}${sale.channel ? ` · ${sale.channel}` : ""}`}
         actions={
           <Link
@@ -47,7 +47,8 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
         }
       />
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-4">
+        <InfoCard label="Código" value={sale.saleCode} />
         <InfoCard label="Total" value={formatARS(sale.totalCents / 100)} />
         <InfoCard label="Margen" value={formatARS(sale.totalMarginCents / 100)} />
         <InfoCard

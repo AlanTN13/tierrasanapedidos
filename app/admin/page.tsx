@@ -49,7 +49,7 @@ async function AdminPageContent() {
         }
       />
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
         <MetricCard label="Productos" value={String(products.length)} description="Catálogo activo e inactivo." />
         <MetricCard label="Categorías" value={String(categories.length)} description="Rutas de organización del surtido." />
         <MetricCard
@@ -59,6 +59,11 @@ async function AdminPageContent() {
         />
         <MetricCard
           label={`Ventas (${metrics.periodDays} días)`}
+          value={String(metrics.salesCount)}
+          description="Cantidad de ventas registradas en el período."
+        />
+        <MetricCard
+          label={`Facturación (${metrics.periodDays} días)`}
           value={formatARS(metrics.salesTotalCents / 100)}
           description={`Margen estimado: ${formatARS(metrics.salesMarginCents / 100)}.`}
         />
@@ -75,7 +80,7 @@ async function AdminPageContent() {
             <div>
               <h2 className="text-xl font-semibold text-olive-dark">Ventas recientes</h2>
               <p className="text-sm text-foreground/64">
-                Tickets guardados con total y margen.
+                Ventas guardadas con total y margen.
               </p>
             </div>
             <Link
@@ -97,7 +102,7 @@ async function AdminPageContent() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <div className="text-sm font-semibold text-olive-dark">
-                        Ticket {sale.id.slice(0, 8)}
+                        {sale.saleCode}
                       </div>
                       <div className="text-sm text-foreground/68">{formatDateLabel(sale.soldAt)}</div>
                     </div>
@@ -113,7 +118,7 @@ async function AdminPageContent() {
                 </Link>
               ))
             ) : (
-              <EmptyCard text="Todavía no hay tickets cargados." />
+              <EmptyCard text="Todavía no hay ventas cargadas." />
             )}
           </div>
         </div>

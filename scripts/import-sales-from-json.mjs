@@ -233,7 +233,7 @@ function inferMeasurementFromLabel(label) {
   };
 }
 
-function normalizeSourcePresentationLabel(productName, rawLabel, linePrice, quantity) {
+function normalizeSourcePresentationLabel(productName, rawLabel, linePrice) {
   const normalizedProduct = normalizeText(productName);
   const normalizedLabel = normalizeText(rawLabel);
 
@@ -257,7 +257,7 @@ function parseLooseSalesFile(filePath) {
 
   try {
     return JSON.parse(raw);
-  } catch (error) {
+  } catch {
     const normalized = `${raw}\n  ]\n}\n`;
     return JSON.parse(normalized);
   }
@@ -399,7 +399,6 @@ async function ensurePresentation({
     sourceProductName,
     rawLabel,
     linePrice,
-    quantity,
   );
   const presentationLabel = spec?.defaultPresentationLabel && normalizeText(rawLabel) === "1"
     ? spec.defaultPresentationLabel

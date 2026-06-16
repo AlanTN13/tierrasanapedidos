@@ -20,6 +20,21 @@ export function formatDateTime(value: string) {
   }).format(new Date(value));
 }
 
+export function formatSaleCode(
+  saleNumber: number | null | undefined,
+  fallbackId?: string,
+) {
+  if (typeof saleNumber === "number" && Number.isFinite(saleNumber) && saleNumber > 0) {
+    return `TS-${String(Math.trunc(saleNumber)).padStart(6, "0")}`;
+  }
+
+  if (fallbackId) {
+    return `TS-${fallbackId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+  }
+
+  return "TS-pendiente";
+}
+
 export function toDateTimeLocalValue(value: string) {
   const date = new Date(value);
   const timezoneOffset = date.getTimezoneOffset();

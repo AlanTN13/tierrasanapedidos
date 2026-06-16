@@ -23,7 +23,7 @@ async function NewSaleContent() {
     <div className="max-w-6xl space-y-6">
       <PageHeader
         title="Nueva venta"
-        description="Cargá el ticket por presentación. El sistema descuenta el stock base real al guardar."
+        description="Cargá la venta por presentación. El sistema descuenta el stock base real al guardar."
       />
       <TransactionForm mode="sale" options={options} action={saveSale} />
     </div>

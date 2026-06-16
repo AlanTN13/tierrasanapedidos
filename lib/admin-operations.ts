@@ -2,6 +2,7 @@ import "server-only";
 
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import { getAdminProducts } from "@/lib/catalog-data";
+import { formatSaleCode } from "@/lib/format";
 import type { PresentationMeasurementKind } from "@/lib/presentation";
 import type { Database } from "@/types/database";
 
@@ -10,6 +11,9 @@ type PurchaseOrderItemRow = Database["public"]["Tables"]["purchase_order_items"]
 type SaleRow = Database["public"]["Tables"]["sales"]["Row"];
 type SaleItemRow = Database["public"]["Tables"]["sale_items"]["Row"];
 type InventorySummaryRow = Database["public"]["Views"]["inventory_summary_by_presentation"]["Row"];
+type SaleRowCompat = Omit<SaleRow, "sale_number"> & {
+  sale_number?: number | null;
+};
 
 export type AdminPresentationOption = {
   id: string;
@@ -91,6 +95,8 @@ export type SaleItemRecord = {
 
 export type SaleRecord = {
   id: string;
+  saleNumber: number | null;
+  saleCode: string;
   soldAt: string;
   channel: string;
   notes: string | null;
@@ -123,6 +129,7 @@ export type AdminDashboardMetrics = {
   purchasesTotalCents: number;
   salesTotalCents: number;
   salesMarginCents: number;
+  salesCount: number;
   stockLowCount: number;
   topRotationProducts: Array<{
     productPresentationId: string;
@@ -493,7 +500,7 @@ function mapPurchaseOrders(
 }
 
 function mapSales(
-  sales: SaleRow[],
+  sales: SaleRowCompat[],
   items: SaleItemRow[],
   presentationById: Map<string, AdminPresentationOption>,
   inventoryByProductId: Map<string, InventorySummaryRecord>,
@@ -536,6 +543,8 @@ function mapSales(
 
     return {
       id: sale.id,
+      saleNumber: sale.sale_number ?? null,
+      saleCode: formatSaleCode(sale.sale_number, sale.id),
       soldAt: sale.sold_at,
       channel: sale.channel,
       notes: sale.notes,
@@ -549,6 +558,26 @@ function mapSales(
       items: saleItems,
     } satisfies SaleRecord;
   });
+}
+
+async function fetchSalesRows(supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>) {
+  const selectWithNumber =
+    "id, sale_number, sold_at, channel, notes, created_by, created_at, updated_at";
+  const legacySelect = "id, sold_at, channel, notes, created_by, created_at, updated_at";
+
+  const result = await supabase
+    .from("sales")
+    .select(selectWithNumber)
+    .order("sold_at", { ascending: false });
+
+  if (!result.error || !isMissingRelationError(result.error.message)) {
+    return result;
+  }
+
+  return supabase
+    .from("sales")
+    .select(legacySelect)
+    .order("sold_at", { ascending: false });
 }
 
 export async function getInventorySummary() {
@@ -611,10 +640,7 @@ export async function getSales() {
   );
 
   const [salesResult, itemsResult] = await Promise.all([
-    supabase
-      .from("sales")
-      .select("id, sold_at, channel, notes, created_by, created_at, updated_at")
-      .order("sold_at", { ascending: false }),
+    fetchSalesRows(supabase),
     supabase
       .from("sale_items")
       .select("id, sale_id, product_presentation_id, quantity, unit_price_cents, unit_cost_snapshot_cents, line_total_cents, line_margin_cents, created_at"),
@@ -681,6 +707,7 @@ export async function getAdminDashboardMetrics(periodDays = DASHBOARD_PERIOD_DAY
     purchasesTotalCents: purchasesInPeriod.reduce((sum, order) => sum + order.totalCents, 0),
     salesTotalCents: salesInPeriod.reduce((sum, sale) => sum + sale.totalCents, 0),
     salesMarginCents: salesInPeriod.reduce((sum, sale) => sum + sale.totalMarginCents, 0),
+    salesCount: salesInPeriod.length,
     stockLowCount: inventorySummary.filter((item) => item.isLowStock).length,
     topRotationProducts: [...topRotationByPresentation.entries()]
       .map(([productPresentationId, item]) => ({

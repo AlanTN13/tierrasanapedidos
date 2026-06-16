@@ -292,6 +292,7 @@ export type Database = {
       sales: {
         Row: {
           id: string;
+          sale_number: number | null;
           sold_at: string;
           channel: string;
           notes: string | null;
@@ -301,6 +302,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          sale_number?: number | null;
           sold_at?: string;
           channel?: string;
           notes?: string | null;
@@ -310,6 +312,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          sale_number?: number | null;
           sold_at?: string;
           channel?: string;
           notes?: string | null;

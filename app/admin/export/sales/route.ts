@@ -7,6 +7,7 @@ export async function GET() {
   const sales = await getSales();
 
   const header = [
+    "sale_code",
     "sale_id",
     "sold_at",
     "customer_name",
@@ -22,6 +23,7 @@ export async function GET() {
 
   const rows = sales.flatMap((sale) =>
     sale.items.map((item) => [
+      sale.saleCode,
       sale.id,
       sale.soldAt,
       sale.channel ?? "",

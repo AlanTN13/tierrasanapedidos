@@ -23,7 +23,7 @@ async function SalesPageContent() {
     <div className="space-y-6">
       <PageHeader
         title="Ventas"
-        description="Guardá tickets, medí margen y descontá stock base real aunque vendas por presentación."
+        description={`${sales.length} ventas registradas. Guardá ventas, medí margen y descontá stock base real aunque vendas por presentación.`}
         actions={
           <>
             <Link
@@ -52,7 +52,7 @@ async function SalesPageContent() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-lg font-semibold text-olive-dark">
-                    Ticket {sale.id.slice(0, 8)}
+                    {sale.saleCode}
                   </h2>
                   <span className="rounded-full bg-earth/10 px-2.5 py-1 text-[11px] font-semibold text-earth">
                     {sale.channel || "Sin nombre"}
@@ -70,6 +70,10 @@ async function SalesPageContent() {
               </div>
 
               <div className="space-y-2 text-sm text-olive-dark">
+                <div className="rounded-2xl border border-olive/10 bg-olive-soft/26 px-3 py-2">
+                  <strong>Ítems</strong>
+                  <div>{sale.itemCount}</div>
+                </div>
                 <div className="rounded-2xl border border-olive/10 bg-olive-soft/26 px-3 py-2">
                   <strong>Total</strong>
                   <div>{formatARS(sale.totalCents / 100)}</div>
