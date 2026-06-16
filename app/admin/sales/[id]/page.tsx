@@ -36,7 +36,7 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
       <PageHeader
         kicker="Venta"
         title={`Ticket ${sale.id.slice(0, 8)}`}
-        description={`${formatDateTime(sale.soldAt)} · ${sale.channel}`}
+        description={`${formatDateTime(sale.soldAt)}${sale.channel ? ` · ${sale.channel}` : ""}`}
         actions={
           <Link
             href="/admin/sales/new"

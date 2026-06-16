@@ -55,7 +55,7 @@ async function SalesPageContent() {
                     Ticket {sale.id.slice(0, 8)}
                   </h2>
                   <span className="rounded-full bg-earth/10 px-2.5 py-1 text-[11px] font-semibold text-earth">
-                    {sale.channel}
+                    {sale.channel || "Sin nombre"}
                   </span>
                   {sale.hasNegativeStock ? (
                     <span className="rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-semibold text-red-700">

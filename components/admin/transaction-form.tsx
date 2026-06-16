@@ -90,16 +90,14 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
               </label>
 
               <label className="space-y-2">
-                <span className="text-sm font-semibold text-olive-dark">Canal</span>
-                <select
+                <span className="text-sm font-semibold text-olive-dark">
+                  Nombre del cliente (opcional)
+                </span>
+                <input
                   name="channel"
-                  defaultValue="local"
+                  placeholder="Ej: Juan Perez"
                   className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
-                >
-                  <option value="local">Local</option>
-                  <option value="whatsapp">WhatsApp</option>
-                  <option value="other">Otro</option>
-                </select>
+                />
               </label>
             </>
           ) : (

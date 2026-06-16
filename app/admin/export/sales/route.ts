@@ -9,7 +9,7 @@ export async function GET() {
   const header = [
     "sale_id",
     "sold_at",
-    "channel",
+    "customer_name",
     "product_name",
     "presentation_label",
     "quantity",
@@ -24,7 +24,7 @@ export async function GET() {
     sale.items.map((item) => [
       sale.id,
       sale.soldAt,
-      sale.channel,
+      sale.channel ?? "",
       item.productName,
       item.presentationLabel,
       item.quantity,

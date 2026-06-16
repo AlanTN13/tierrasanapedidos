@@ -77,7 +77,7 @@ export async function savePurchaseOrder(formData: FormData) {
 export async function saveSale(formData: FormData) {
   const admin = await requireAdminUser();
   const soldAt = readDateTimeOrNow(formData.get("soldAt"));
-  const channel = readString(formData.get("channel")) || "local";
+  const customerName = readNullableString(formData.get("channel"));
   const notes = readNullableString(formData.get("notes"));
   const items = parseSaleItems(formData);
 
@@ -91,7 +91,7 @@ export async function saveSale(formData: FormData) {
     .from("sales")
     .insert({
       sold_at: soldAt,
-      channel,
+      channel: customerName ?? undefined,
       notes,
       created_by: admin.userId,
     })
