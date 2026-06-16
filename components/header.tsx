@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import type { FilterCategory } from "@/types/catalog";
 import type { HomeSectionLink } from "@/types/home";
@@ -32,11 +32,59 @@ export function Header({
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const desktopCategoryRailRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollCategoriesLeft, setCanScrollCategoriesLeft] = useState(false);
+  const [canScrollCategoriesRight, setCanScrollCategoriesRight] = useState(false);
   const mobileSearchInputRef = useRef<HTMLInputElement | null>(null);
   const mobileCategoryHeadingRef = useRef<HTMLParagraphElement | null>(null);
   const mobileSearchPanelId = useId();
   const mobileCategoryPanelId = useId();
   const safeSearchQuery = searchQuery ?? "";
+
+  function updateDesktopCategoryScrollState() {
+    const container = desktopCategoryRailRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+    setCanScrollCategoriesLeft(container.scrollLeft > 4);
+    setCanScrollCategoriesRight(container.scrollLeft < maxScrollLeft - 4);
+  }
+
+  useEffect(() => {
+    const container = desktopCategoryRailRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    updateDesktopCategoryScrollState();
+
+    const handleResize = () => updateDesktopCategoryScrollState();
+    container.addEventListener("scroll", updateDesktopCategoryScrollState, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      container.removeEventListener("scroll", updateDesktopCategoryScrollState);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [categories.length]);
+
+  function moveDesktopCategoryRail(direction: "left" | "right") {
+    const container = desktopCategoryRailRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const scrollAmount = Math.max(container.clientWidth * 0.42, 220);
+    container.scrollBy({
+      left: direction === "right" ? scrollAmount : -scrollAmount,
+      behavior: "smooth",
+    });
+  }
 
   useEffect(() => {
     if (!isMenuOpen && !isSearchOpen) {
@@ -68,7 +116,7 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-50 border-b border-olive/10 bg-background/88 backdrop-blur-xl">
-      <div className="container-shell py-3 sm:py-4">
+      <div className="container-shell py-3 sm:py-4 lg:py-2">
         <div className="flex items-center gap-3 lg:hidden">
           <a href="#inicio" className="shrink-0">
             <Image
@@ -181,23 +229,23 @@ export function Header({
           </div>
         </div>
 
-        <div className="hidden lg:grid lg:grid-cols-[150px_minmax(0,1fr)] lg:grid-rows-[auto_auto] lg:gap-x-6">
-          <div className="row-span-2 flex items-center justify-center self-stretch border-r border-olive/8 pr-6">
+        <div className="hidden lg:grid lg:grid-cols-[160px_minmax(0,1fr)] lg:grid-rows-[auto_auto] lg:gap-x-5 xl:grid-cols-[170px_minmax(0,1fr)]">
+          <div className="row-span-2 flex items-center justify-center self-stretch border-r border-olive/8 pr-5 xl:pr-6">
             <a href="#inicio" className="flex h-full items-center">
               <Image
                 src="/logo-tierra-sana-header.png"
                 alt="Tierra Sana Dietetica & Bienestar"
                 width={420}
                 height={190}
-                className="h-auto w-[132px] xl:w-[148px]"
+                className="h-auto w-[116px] xl:w-[130px]"
               />
             </a>
           </div>
 
-          <div className="flex min-w-0 items-center gap-6 pb-3">
+          <div className="flex min-w-0 items-center gap-5 pb-2 xl:gap-6">
             <nav
               aria-label="Secciones principales"
-              className="flex items-center gap-6 text-sm font-medium text-foreground/72 xl:gap-7"
+              className="flex items-center gap-5 text-sm font-medium text-foreground/72 xl:gap-6"
             >
               {sectionLinks.map((section) => (
                 <a
@@ -212,7 +260,7 @@ export function Header({
 
             <div className="ml-auto flex min-w-0 items-center gap-3 xl:gap-4">
               <form
-                className="relative w-full min-w-[18rem] max-w-[26rem] xl:min-w-[24rem] xl:max-w-[30rem]"
+                className="relative w-full min-w-[21rem] max-w-[30rem] xl:min-w-[25rem] xl:max-w-[34rem]"
                 role="search"
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -266,24 +314,57 @@ export function Header({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 border-t border-olive/10 pt-3">
-            <div className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="flex min-w-max items-center gap-5 pr-4 text-sm font-medium text-foreground/72 xl:gap-6">
-                {categories.map((category) => {
-                  const isActive = category === activeCategory;
+          <div className="flex items-center justify-between gap-4 border-t border-olive/10 pt-2">
+            <div className="relative min-w-0 flex-1">
+              <div
+                className={`pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-12 bg-[linear-gradient(90deg,rgba(255,253,248,0.98)_15%,rgba(255,253,248,0)_100%)] transition-opacity ${
+                  canScrollCategoriesLeft ? "opacity-100" : "opacity-0"
+                }`}
+              />
+              <div
+                className={`pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-14 bg-[linear-gradient(270deg,rgba(255,253,248,0.98)_18%,rgba(255,253,248,0)_100%)] transition-opacity ${
+                  canScrollCategoriesRight ? "opacity-100" : "opacity-0"
+                }`}
+              />
+              <div className="pointer-events-none absolute top-1/2 left-0 z-20 -translate-y-1/2">
+                <DesktopRailArrow
+                  label="Ver categorias anteriores"
+                  disabled={!canScrollCategoriesLeft}
+                  onClick={() => moveDesktopCategoryRail("left")}
+                >
+                  <ArrowLeftIcon />
+                </DesktopRailArrow>
+              </div>
+              <div className="pointer-events-none absolute top-1/2 right-1 z-20 -translate-y-1/2">
+                <DesktopRailArrow
+                  label="Ver categorias siguientes"
+                  disabled={!canScrollCategoriesRight}
+                  onClick={() => moveDesktopCategoryRail("right")}
+                >
+                  <ArrowRightIcon />
+                </DesktopRailArrow>
+              </div>
+              <div
+                ref={desktopCategoryRailRef}
+                className="overflow-x-auto pl-8 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                <div className="flex min-w-max items-center gap-4 pr-4 text-sm font-medium text-foreground/72 xl:gap-5">
+                  {categories.map((category) => {
+                    const isActive = category === activeCategory;
 
-                  return (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => onChangeCategory(category)}
-                      className={`shrink-0 transition-colors ${isActive ? "text-olive-dark" : "hover:text-olive-dark"}`}
-                      aria-pressed={isActive}
-                    >
-                      {category}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={category}
+                        type="button"
+                        onClick={() => onChangeCategory(category)}
+                        className={`shrink-0 transition-colors ${isActive ? "text-olive-dark" : "hover:text-olive-dark"}`}
+                        aria-pressed={isActive}
+                      >
+                        {category}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
@@ -418,6 +499,66 @@ function SearchIcon() {
       <circle cx="9" cy="9" r="5.5" />
       <path d="m13.5 13.5 4 4" />
     </svg>
+  );
+}
+
+function ArrowLeftIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
+type DesktopRailArrowProps = {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+  children: ReactNode;
+};
+
+function DesktopRailArrow({
+  label,
+  disabled,
+  onClick,
+  children,
+}: DesktopRailArrowProps) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-olive/10 bg-white/88 text-olive-dark shadow-[0_6px_16px_rgba(111,127,79,0.08)] transition hover:border-olive/22 hover:bg-olive-soft/55 disabled:cursor-default disabled:opacity-0"
+    >
+      {children}
+    </button>
   );
 }
 
