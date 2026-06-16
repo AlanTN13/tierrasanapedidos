@@ -464,7 +464,7 @@ export function Header({
       </div>
       <div
         aria-hidden="true"
-        className="hidden h-[9px] w-full bg-[linear-gradient(180deg,#8fc9ec_0%,#8fc9ec_33.333%,#ffffff_33.333%,#ffffff_66.666%,#8fc9ec_66.666%,#8fc9ec_100%)] lg:block"
+        className="h-[9px] w-full bg-[linear-gradient(180deg,#8fc9ec_0%,#8fc9ec_33.333%,#ffffff_33.333%,#ffffff_66.666%,#8fc9ec_66.666%,#8fc9ec_100%)]"
       />
     </header>
   );
