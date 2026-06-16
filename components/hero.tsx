@@ -9,8 +9,7 @@ type HeroProps = {
   onClearSearch: () => void;
 };
 
-export function Hero(props: HeroProps) {
-  void props;
+export function Hero({ content }: HeroProps) {
 
   return (
     <section id="inicio" className="container-shell pt-5 pb-8 sm:pt-7 sm:pb-10">
@@ -22,8 +21,8 @@ export function Hero(props: HeroProps) {
           <article className="organic-outline relative overflow-hidden rounded-[1.8rem] bg-white/55 shadow-[0_20px_36px_rgba(111,127,79,0.12)]">
             <div className="relative aspect-[1.9/1] sm:aspect-[2.2/1] lg:aspect-[2.55/1]">
               <Image
-                src="/hero-optimized/banner-home.webp"
-                alt="Armá tu pedido en 3 pasos"
+                src={content.bannerImage}
+                alt={content.bannerAlt}
                 fill
                 priority
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 96vw, 1200px"

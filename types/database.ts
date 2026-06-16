@@ -58,6 +58,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      home_settings: {
+        Row: {
+          id: string;
+          hero_banner_path: string | null;
+          hero_banner_alt: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          hero_banner_path?: string | null;
+          hero_banner_alt?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          hero_banner_path?: string | null;
+          hero_banner_alt?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       purchase_order_items: {
         Row: {
           id: string;

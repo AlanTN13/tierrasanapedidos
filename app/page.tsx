@@ -3,10 +3,9 @@ import { Storefront } from "@/components/storefront";
 import {
   getAvailableCategories,
   getCatalogProducts,
-  getCategoryCards,
 } from "@/lib/catalog-data";
 import { filterProducts } from "@/lib/catalog";
-import { getHomeContent } from "@/lib/home";
+import { getResolvedHomeContent } from "@/lib/home-data";
 
 type HomeProps = {
   searchParams?: Promise<{
@@ -25,18 +24,16 @@ export default async function Home({ searchParams }: HomeProps) {
 async function HomeContent({ searchParams }: HomeProps) {
   const resolvedSearchParams = await searchParams;
   const initialSearchQuery = resolvedSearchParams?.q?.trim() ?? "";
-  const [products, availableCategories, categoryCards] = await Promise.all([
+  const [products, availableCategories, homeContent] = await Promise.all([
     getCatalogProducts(),
     getAvailableCategories(),
-    getCategoryCards(),
+    getResolvedHomeContent(),
   ]);
   const initialCategory = availableCategories[0] ?? "Destacados";
   const shouldDeferFullCatalog = initialSearchQuery.length === 0;
   const initialProducts = shouldDeferFullCatalog
     ? filterProducts(products, initialCategory, "")
     : products;
-  const homeContent = getHomeContent(categoryCards);
-
   return (
     <Storefront
       initialProducts={initialProducts}

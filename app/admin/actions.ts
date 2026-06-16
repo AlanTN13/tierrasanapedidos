@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
+import { refreshHomeCache } from "@/lib/home-data";
 import {
   calculateAmountInBaseUnits,
   formatPresentationLabel,
@@ -31,8 +32,10 @@ const PRODUCT_IMAGE_WEBP_QUALITY = 82;
 const PRODUCT_IMAGE_BUCKET = "product-images";
 const PRODUCT_IMAGE_PREFIX = "products";
 const CATEGORY_IMAGE_PREFIX = "categories";
+const HOME_IMAGE_PREFIX = "home";
 const PRODUCT_IMAGE_PLACEHOLDER = "/productos/frutos-secos-placeholder.svg";
 const CATEGORY_IMAGE_PLACEHOLDER = "/categorias-optimized/semillas.webp";
+const HOME_BANNER_PLACEHOLDER = "/hero-optimized/banner-home.webp";
 
 export async function signOutAdmin() {
   if (!isSupabaseConfigured()) {
@@ -302,6 +305,34 @@ export async function saveCategory(formData: FormData) {
   redirect(`/admin/categories/${resolvedCategoryId}?saved=1`);
 }
 
+export async function saveHomeSettings(formData: FormData) {
+  await requireAdminUser();
+
+  if (!isSupabaseConfigured()) {
+    throw new Error("Supabase no está configurado.");
+  }
+
+  const supabase = await createClient();
+  const existingHeroBannerPath = readString(formData.get("existingHeroBannerPath"));
+  const heroBannerFile = formData.get("heroBannerFile");
+  const heroBannerPath = await resolveHomeBannerPath({
+    imageFile: heroBannerFile,
+    existingImagePath: existingHeroBannerPath,
+  });
+
+  const { error } = await supabase.from("home_settings").upsert({
+    id: "main",
+    hero_banner_path: heroBannerPath,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await refreshHomeCache();
+  redirect("/admin/home?saved=1");
+}
+
 function parsePresentations(formData: FormData): ParsedPresentation[] {
   const ids = formData.getAll("presentationId").map((value) => readString(value));
   const measurementKinds = formData
@@ -438,6 +469,27 @@ async function resolveCategoryImagePath({
   const extension = getOutputImageExtension(imageFile);
   const normalizedBaseName = slugify(slug || name);
   const filePath = `${CATEGORY_IMAGE_PREFIX}/${normalizedBaseName}.${extension}`;
+  const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
+
+  await uploadImageToStorage(imageFile, filePath);
+  await removeStoredImageAtPath(existingImagePath);
+
+  return storagePath;
+}
+
+async function resolveHomeBannerPath({
+  imageFile,
+  existingImagePath,
+}: {
+  imageFile: FormDataEntryValue | null;
+  existingImagePath: string;
+}) {
+  if (!(imageFile instanceof File) || imageFile.size === 0) {
+    return existingImagePath || HOME_BANNER_PLACEHOLDER;
+  }
+
+  const extension = getOutputImageExtension(imageFile);
+  const filePath = `${HOME_IMAGE_PREFIX}/banner-home.${extension}`;
   const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
 
   await uploadImageToStorage(imageFile, filePath);

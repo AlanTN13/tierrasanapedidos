@@ -6,6 +6,8 @@ export type HomeSectionLink = {
 };
 
 export type HomeHeroConfig = {
+  bannerImage: string;
+  bannerAlt: string;
   eyebrow: string;
   title: string;
   description: string;

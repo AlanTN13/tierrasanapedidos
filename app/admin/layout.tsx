@@ -24,7 +24,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
           <div className="admin-sidebar__footer">
             <p className="admin-sidebar__hint">
-              Compras, ventas y catálogo en una sola vista operativa.
+              Home, catálogo, compras y ventas en una sola vista operativa.
             </p>
             <form action={signOutAdmin}>
               <button type="submit" className="admin-sidebar__logout">

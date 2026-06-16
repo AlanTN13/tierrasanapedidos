@@ -17,6 +17,8 @@ const sectionLinks: HomeSectionLink[] = [
 ];
 
 const hero: HomeHeroConfig = {
+  bannerImage: "/hero-optimized/banner-home.webp",
+  bannerAlt: "Armá tu pedido en 3 pasos",
   eyebrow: "Compra simple",
   title: "Elegí algo rico, sumalo al pedido y resolvelo fácil",
   description:
@@ -247,4 +249,8 @@ export function getRecipeHighlights(products: Product[]) {
 
 export function getRecipeBySlug(products: Product[], slug: string) {
   return resolveRecipes(products).find((recipe) => recipe.slug === slug) ?? null;
+}
+
+export function getDefaultHomeHero() {
+  return hero;
 }
