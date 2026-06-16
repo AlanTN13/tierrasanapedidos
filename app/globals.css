@@ -441,14 +441,18 @@ input {
     display: flex;
     height: 3rem;
     width: 3rem;
+    overflow: hidden;
     align-items: center;
     justify-content: center;
     border-radius: 1rem;
     background: linear-gradient(180deg, rgba(221, 232, 207, 0.22), rgba(221, 232, 207, 0.08));
-    color: #f7f1e5;
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+    box-shadow: inset 0 0 0 1px rgba(221, 232, 207, 0.08);
+  }
+
+  .admin-sidebar__logo-image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
   }
 
   .admin-sidebar__eyebrow {
