@@ -331,10 +331,14 @@ async function getRawInventorySummary() {
   return data ?? [];
 }
 
+async function getSafeRawInventorySummary() {
+  return getRawInventorySummary().catch(() => [] as InventorySummaryRow[]);
+}
+
 export async function getAdminPresentationOptions() {
   const [products, inventoryRows] = await Promise.all([
     getAdminProducts(),
-    getRawInventorySummary().catch(() => [] as InventorySummaryRow[]),
+    getSafeRawInventorySummary(),
   ]);
   const productInventorySummary = buildProductInventorySummary(products, inventoryRows);
   const productInventoryByProductId = new Map(
@@ -384,7 +388,7 @@ export async function getAdminPresentationOptions() {
 export async function getAdminPurchaseProductOptions() {
   const [products, inventoryRows, latestCostByProductId] = await Promise.all([
     getAdminProducts(),
-    getRawInventorySummary().catch(() => [] as InventorySummaryRow[]),
+    getSafeRawInventorySummary(),
     getLatestPurchaseUnitCostByProductId(),
   ]);
   const productInventorySummary = buildProductInventorySummary(products, inventoryRows);
@@ -550,7 +554,7 @@ function mapSales(
 export async function getInventorySummary() {
   const [products, rows] = await Promise.all([
     getAdminProducts(),
-    getRawInventorySummary(),
+    getSafeRawInventorySummary(),
   ]);
   return buildProductInventorySummary(products, rows)
     .sort((a, b) => {

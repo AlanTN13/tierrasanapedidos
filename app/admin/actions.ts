@@ -242,7 +242,7 @@ export async function saveCategory(formData: FormData) {
   const submittedSlug = readString(formData.get("slug"));
   const slug = slugify(submittedSlug || name);
   const existingImagePath = readString(formData.get("existingImagePath"));
-  const imagePathOverride = readString(formData.get("imagePath"));
+  const imagePathOverride = validateManualImagePath(readString(formData.get("imagePath")));
   const imageFile = formData.get("imageFile");
   const searchTags = readString(formData.get("searchTags"))
     .split(",")
@@ -496,6 +496,29 @@ async function resolveHomeBannerPath({
   await removeStoredImageAtPath(existingImagePath);
 
   return storagePath;
+}
+
+function validateManualImagePath(imagePath: string) {
+  if (!imagePath) {
+    return "";
+  }
+
+  const normalizedPath = imagePath.trim();
+  const allowedExtensionPattern = /\.(webp|svg)(?:$|[?#])/i;
+
+  if (!allowedExtensionPattern.test(normalizedPath)) {
+    throw new Error("La ruta manual solo puede apuntar a imágenes WEBP o SVG.");
+  }
+
+  if (
+    normalizedPath.startsWith("/") ||
+    normalizedPath.startsWith("http://") ||
+    normalizedPath.startsWith("https://")
+  ) {
+    return normalizedPath;
+  }
+
+  throw new Error("La ruta manual debe empezar con /, http:// o https://.");
 }
 
 function getOutputImageExtension(file: File) {

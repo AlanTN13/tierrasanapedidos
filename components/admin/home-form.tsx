@@ -44,7 +44,9 @@ export function HomeForm({ settings, action }: HomeFormProps) {
                 className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
               />
               <p className="text-xs leading-5 text-foreground/58">
-                Si no subís una imagen nueva, se conserva la actual.
+                Podés subir PNG, JPG, WEBP o SVG. Las imágenes raster se convierten
+                automáticamente a WEBP optimizado y los SVG se conservan tal cual.
+                Si no subís una imagen nueva, se mantiene la actual.
               </p>
             </label>
           </div>

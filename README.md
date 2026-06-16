@@ -35,6 +35,13 @@ Importar categorias y productos al proyecto conectado:
 npm run catalog:import
 ```
 
+### Imagenes del admin
+
+- En productos, categorias y banner home se pueden subir `png`, `jpg`, `webp` o `svg`.
+- Las imagenes raster (`png`, `jpg`, `webp`) se optimizan en el servidor y se guardan como `webp`.
+- Los `svg` se conservan sin conversion.
+- La carga manual por ruta debe usarse solo para `webp` o `svg`.
+
 ### Ajustes pendientes en Supabase Dashboard
 
 En `Auth` configura:
