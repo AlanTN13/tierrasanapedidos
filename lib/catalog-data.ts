@@ -1,5 +1,7 @@
 import "server-only";
 
+import fs from "node:fs";
+import path from "node:path";
 import { cacheTag, revalidateTag } from "next/cache";
 import { createClient as createPublicClient, type SupabaseClient } from "@supabase/supabase-js";
 import productsData from "@/data/products.json";
@@ -97,6 +99,13 @@ const fallbackProducts = (productsData as Product[]).map((product) => ({
     };
   }),
 }));
+const fallbackProductBySlug = new Map(
+  fallbackProducts.flatMap((product) => [
+    [product.id, product] as const,
+    [slugify(product.id), product] as const,
+  ]),
+);
+const publicRoot = path.join(process.cwd(), "public");
 
 function fallbackCategories(): CatalogCategory[] {
   return CATEGORY_CONFIG.map((entry, index) => ({
@@ -117,6 +126,36 @@ function createSupabasePublicClient() {
 
 function bySortOrder<T extends { sortOrder: number }>(a: T, b: T) {
   return a.sortOrder - b.sortOrder;
+}
+
+function isRemoteImagePath(imagePath: string) {
+  return (
+    imagePath.startsWith("http://") ||
+    imagePath.startsWith("https://") ||
+    imagePath.startsWith("/storage/")
+  );
+}
+
+function hasLocalPublicAsset(imagePath: string) {
+  if (!imagePath.startsWith("/")) {
+    return false;
+  }
+
+  return fs.existsSync(path.join(publicRoot, imagePath.slice(1)));
+}
+
+function resolveImagePath(...candidates: Array<string | null | undefined>) {
+  for (const candidate of candidates) {
+    if (!candidate) {
+      continue;
+    }
+
+    if (isRemoteImagePath(candidate) || hasLocalPublicAsset(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 function isMissingColumnError(message: string) {
@@ -209,7 +248,12 @@ function mapCatalogCategory(row: CategoryRow): CatalogCategory {
     id: row.id,
     slug: row.slug,
     name: row.name,
-    image: row.image_path ?? fallback?.image ?? "/categorias-optimized/semillas.webp",
+    image:
+      resolveImagePath(
+        row.image_path,
+        fallback?.image,
+        "/categorias-optimized/semillas.webp",
+      ) ?? "/categorias-optimized/semillas.webp",
     searchTags: row.search_tags ?? [...(fallback?.searchTags ?? [])],
     sortOrder: row.sort_order,
     isActive: row.is_active,
@@ -272,6 +316,9 @@ function mapProductRowsToCatalog(
   }
 
   const products = productRows.map((row) => {
+    const fallbackProduct =
+      fallbackProductBySlug.get(row.slug) ??
+      fallbackProductBySlug.get(slugify(row.slug));
     const presentations = (presentationsByProductId.get(row.id) ?? []).sort(
       (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
     );
@@ -289,7 +336,12 @@ function mapProductRowsToCatalog(
       descripcion: row.description,
       tags: row.tags ?? [],
       presentaciones: presentations,
-      imagen: row.image_path ?? "/productos/frutos-secos-placeholder.svg",
+      imagen:
+        resolveImagePath(
+          row.image_path,
+          fallbackProduct?.imagen,
+          "/productos/frutos-secos-placeholder.svg",
+        ) ?? "/productos/frutos-secos-placeholder.svg",
       destacado: row.is_featured,
       featuredOrder: row.featured_order,
     } satisfies Product;
@@ -477,24 +529,34 @@ export async function getAdminProducts() {
   const categoryById = new Map(categoryRows.map((category) => [category.id, category]));
 
   return (productsResult.data ?? [])
-    .map((productRow) => ({
-      uuid: productRow.id,
-      slug: productRow.slug,
-      name: productRow.name,
-      description: productRow.description,
-      imagePath:
-        productRow.image_path ?? "/productos/frutos-secos-placeholder.svg",
-      tags: productRow.tags ?? [],
-      isFeatured: productRow.is_featured,
-      featuredOrder: productRow.featured_order,
-      isActive: productRow.is_active,
-      categoryIds: (categoryAssignmentsByProductId.get(productRow.id) ?? []).filter((categoryId) =>
-        categoryById.has(categoryId),
-      ),
-      presentations: (presentationsByProductId.get(productRow.id) ?? []).sort(
-        (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
-      ),
-    }))
+    .map((productRow) => {
+      const fallbackProduct =
+        fallbackProductBySlug.get(productRow.slug) ??
+        fallbackProductBySlug.get(slugify(productRow.slug));
+
+      return {
+        uuid: productRow.id,
+        slug: productRow.slug,
+        name: productRow.name,
+        description: productRow.description,
+        imagePath:
+          resolveImagePath(
+            productRow.image_path,
+            fallbackProduct?.imagen,
+            "/productos/frutos-secos-placeholder.svg",
+          ) ?? "/productos/frutos-secos-placeholder.svg",
+        tags: productRow.tags ?? [],
+        isFeatured: productRow.is_featured,
+        featuredOrder: productRow.featured_order,
+        isActive: productRow.is_active,
+        categoryIds: (categoryAssignmentsByProductId.get(productRow.id) ?? []).filter((categoryId) =>
+          categoryById.has(categoryId),
+        ),
+        presentations: (presentationsByProductId.get(productRow.id) ?? []).sort(
+          (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+        ),
+      };
+    })
     .sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
