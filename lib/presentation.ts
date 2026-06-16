@@ -82,7 +82,11 @@ export function inferPresentationMeasurementFromLabel(label: string): Presentati
   const rawAmount = normalized.match(/([0-9]+(?:[.,][0-9]+)?)/)?.[1] ?? "1";
   const amountValue = parseMeasurementValue(rawAmount);
 
-  if (normalized.includes("kg")) {
+  if (
+    normalized.includes("kg") ||
+    normalized.includes("kilo") ||
+    normalized.includes("kilos")
+  ) {
     return {
       measurementKind: "weight",
       amountValue,

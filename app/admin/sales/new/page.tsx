@@ -23,7 +23,7 @@ async function NewSaleContent() {
     <div className="max-w-6xl space-y-6">
       <PageHeader
         title="Nueva venta"
-        description="Cargá el ticket con cantidades y precios. El costo histórico se snapshottea al guardar."
+        description="Cargá el ticket por presentación. El sistema descuenta el stock base real al guardar."
       />
       <TransactionForm mode="sale" options={options} action={saveSale} />
     </div>

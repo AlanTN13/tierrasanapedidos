@@ -23,7 +23,7 @@ async function SalesPageContent() {
     <div className="space-y-6">
       <PageHeader
         title="Ventas"
-        description="Guardá tickets, medí margen y empezá a ver rotación real por presentación."
+        description="Guardá tickets, medí margen y descontá stock base real aunque vendas por presentación."
         actions={
           <>
             <Link
@@ -59,7 +59,7 @@ async function SalesPageContent() {
                   </span>
                   {sale.hasNegativeStock ? (
                     <span className="rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-semibold text-red-700">
-                      Stock negativo
+                      Stock base negativo
                     </span>
                   ) : null}
                 </div>

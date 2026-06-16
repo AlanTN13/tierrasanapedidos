@@ -2,6 +2,7 @@ import "server-only";
 
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import { getAdminProducts } from "@/lib/catalog-data";
+import type { PresentationMeasurementKind } from "@/lib/presentation";
 import type { Database } from "@/types/database";
 
 type PurchaseOrderRow = Database["public"]["Tables"]["purchase_orders"]["Row"];
@@ -16,10 +17,32 @@ export type AdminPresentationOption = {
   productName: string;
   productSlug: string;
   presentationLabel: string;
+  measurementKind: PresentationMeasurementKind;
+  amountInBaseUnits: number;
   salePriceCents: number;
   isActive: boolean;
   stockCurrent: number;
+  stockCurrentBaseUnits: number;
+  stockCurrentBaseLabel: string;
+  stockEquivalentQuantity: number;
   lastUnitCostCents: number | null;
+  displayName: string;
+};
+
+export type AdminPurchaseProductOption = {
+  id: string;
+  productId: string;
+  productName: string;
+  productSlug: string;
+  measurementKind: PresentationMeasurementKind;
+  purchaseUnitLabel: "kg" | "l" | "unidades";
+  purchaseUnitBaseAmount: number;
+  referencePresentationId: string;
+  referencePresentationLabel: string;
+  referencePresentationBaseAmount: number;
+  stockCurrentBaseUnits: number;
+  stockCurrentBaseLabel: string;
+  lastPurchaseUnitCostCents: number | null;
   displayName: string;
 };
 
@@ -29,7 +52,9 @@ export type PurchaseOrderItemRecord = {
   productName: string;
   presentationLabel: string;
   quantity: number;
+  quantityLabel: string;
   unitCostCents: number;
+  unitCostLabel: string;
   lineTotalCents: number;
 };
 
@@ -50,6 +75,7 @@ export type PurchaseOrderRecord = {
 export type SaleItemRecord = {
   id: string;
   productPresentationId: string;
+  productId: string;
   productName: string;
   presentationLabel: string;
   quantity: number;
@@ -58,6 +84,8 @@ export type SaleItemRecord = {
   lineTotalCents: number;
   lineMarginCents: number;
   stockCurrent: number;
+  stockCurrentBaseUnits: number;
+  stockCurrentBaseLabel: string;
   hasNegativeStock: boolean;
 };
 
@@ -77,17 +105,15 @@ export type SaleRecord = {
 };
 
 export type InventorySummaryRecord = {
-  productPresentationId: string;
+  productId: string;
   productName: string;
-  presentationLabel: string;
+  measurementKind: PresentationMeasurementKind;
   quantityPurchased: number;
   quantitySold: number;
   stockCurrent: number;
-  lastUnitCostCents: number | null;
-  revenueCents: number;
-  costCents: number;
-  marginCents: number;
-  salePriceCents: number;
+  stockCurrentLabel: string;
+  lowStockThreshold: number;
+  lowStockThresholdLabel: string;
   isLowStock: boolean;
   isNegativeStock: boolean;
 };
@@ -135,17 +161,151 @@ function parseNumericQuantity(value: string | number | null | undefined) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function parseIntegerAmount(value: string | number | null | undefined) {
-  if (typeof value === "number") {
-    return value;
+function formatBaseQuantity(
+  value: number,
+  measurementKind: PresentationMeasurementKind,
+) {
+  if (measurementKind === "unit") {
+    const suffix = value === 1 ? "unidad" : "unidades";
+    return `${formatQuantityValue(value)} ${suffix}`;
   }
 
-  if (!value) {
-    return 0;
+  const useLargeUnit = Math.abs(value) >= 1000;
+  const normalizedValue = useLargeUnit ? value / 1000 : value;
+  const unit =
+    measurementKind === "weight"
+      ? useLargeUnit
+        ? "kg"
+        : "g"
+      : useLargeUnit
+        ? "l"
+        : "ml";
+
+  return `${formatQuantityValue(normalizedValue)}${unit}`;
+}
+
+function getPurchaseUnitConfig(measurementKind: PresentationMeasurementKind) {
+  if (measurementKind === "weight") {
+    return {
+      purchaseUnitLabel: "kg" as const,
+      purchaseUnitBaseAmount: 1000,
+    };
   }
 
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) ? parsed : 0;
+  if (measurementKind === "volume") {
+    return {
+      purchaseUnitLabel: "l" as const,
+      purchaseUnitBaseAmount: 1000,
+    };
+  }
+
+  return {
+    purchaseUnitLabel: "unidades" as const,
+    purchaseUnitBaseAmount: 1,
+  };
+}
+
+function formatQuantityValue(value: number) {
+  return new Intl.NumberFormat("es-AR", {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 3,
+  }).format(value);
+}
+
+type ProductInventoryAggregate = {
+  productId: string;
+  productName: string;
+  measurementKind: PresentationMeasurementKind;
+  quantityPurchased: number;
+  quantitySold: number;
+  stockCurrent: number;
+  stockCurrentLabel: string;
+  lowStockThreshold: number;
+  lowStockThresholdLabel: string;
+  isLowStock: boolean;
+  isNegativeStock: boolean;
+};
+
+function resolvePrimaryMeasurementKind(
+  kinds: PresentationMeasurementKind[],
+): PresentationMeasurementKind {
+  if (kinds.includes("weight")) {
+    return "weight";
+  }
+
+  if (kinds.includes("volume")) {
+    return "volume";
+  }
+
+  return "unit";
+}
+
+function resolveLowStockThreshold(
+  amountsInBaseUnits: number[],
+  fallbackMeasurementKind: PresentationMeasurementKind,
+) {
+  const finiteAmounts = amountsInBaseUnits.filter((value) => Number.isFinite(value) && value > 0);
+  const threshold =
+    finiteAmounts.length > 0
+      ? Math.min(...finiteAmounts)
+      : fallbackMeasurementKind === "unit"
+        ? LOW_STOCK_THRESHOLD
+        : 0;
+
+  return threshold;
+}
+
+function buildProductInventorySummary(
+  products: Awaited<ReturnType<typeof getAdminProducts>>,
+  inventoryRows: InventorySummaryRow[],
+) {
+  const inventoryByPresentationId = new Map(
+    inventoryRows.map((row) => [row.product_presentation_id, row]),
+  );
+
+  return products.map((product) => {
+    const activePresentations = product.presentations.filter((presentation) => presentation.id);
+    const measurementKind = resolvePrimaryMeasurementKind(
+      activePresentations.map((presentation) => presentation.measurementKind),
+    );
+    const lowStockThreshold = resolveLowStockThreshold(
+      activePresentations.map((presentation) => presentation.amountInBaseUnits),
+      measurementKind,
+    );
+
+    const totals = activePresentations.reduce(
+      (summary, presentation) => {
+        const row = inventoryByPresentationId.get(presentation.id!);
+        const purchased = parseNumericQuantity(row?.quantity_purchased) * presentation.amountInBaseUnits;
+        const sold = parseNumericQuantity(row?.quantity_sold) * presentation.amountInBaseUnits;
+
+        return {
+          quantityPurchased: summary.quantityPurchased + purchased,
+          quantitySold: summary.quantitySold + sold,
+        };
+      },
+      {
+        quantityPurchased: 0,
+        quantitySold: 0,
+      },
+    );
+
+    const stockCurrent = totals.quantityPurchased - totals.quantitySold;
+
+    return {
+      productId: product.uuid,
+      productName: product.name,
+      measurementKind,
+      quantityPurchased: totals.quantityPurchased,
+      quantitySold: totals.quantitySold,
+      stockCurrent,
+      stockCurrentLabel: formatBaseQuantity(stockCurrent, measurementKind),
+      lowStockThreshold,
+      lowStockThresholdLabel: formatBaseQuantity(lowStockThreshold, measurementKind),
+      isLowStock: stockCurrent <= lowStockThreshold,
+      isNegativeStock: stockCurrent < 0,
+    } satisfies ProductInventoryAggregate;
+  });
 }
 
 function mapPresentationLookup(options: AdminPresentationOption[]) {
@@ -176,6 +336,10 @@ export async function getAdminPresentationOptions() {
     getAdminProducts(),
     getRawInventorySummary().catch(() => [] as InventorySummaryRow[]),
   ]);
+  const productInventorySummary = buildProductInventorySummary(products, inventoryRows);
+  const productInventoryByProductId = new Map(
+    productInventorySummary.map((item) => [item.productId, item]),
+  );
   const inventoryByPresentationId = new Map(
     inventoryRows.map((row) => [row.product_presentation_id, row]),
   );
@@ -186,20 +350,88 @@ export async function getAdminPresentationOptions() {
         .filter((presentation) => presentation.id)
         .map((presentation) => {
           const inventory = inventoryByPresentationId.get(presentation.id!);
+          const productInventory = productInventoryByProductId.get(product.uuid);
+          const stockCurrentBaseUnits = productInventory?.stockCurrent ?? 0;
+
           return {
             id: presentation.id!,
             productId: product.uuid,
             productName: product.name,
             productSlug: product.slug,
             presentationLabel: presentation.etiqueta,
+            measurementKind: presentation.measurementKind,
+            amountInBaseUnits: presentation.amountInBaseUnits,
             salePriceCents: Math.round(presentation.precio * 100),
             isActive: product.isActive && (presentation.activa ?? true),
-            stockCurrent: parseNumericQuantity(inventory?.stock_current),
+            stockCurrent:
+              presentation.amountInBaseUnits > 0
+                ? stockCurrentBaseUnits / presentation.amountInBaseUnits
+                : 0,
+            stockCurrentBaseUnits,
+            stockCurrentBaseLabel: productInventory?.stockCurrentLabel ?? "0 unidades",
+            stockEquivalentQuantity:
+              presentation.amountInBaseUnits > 0
+                ? stockCurrentBaseUnits / presentation.amountInBaseUnits
+                : 0,
             lastUnitCostCents: inventory?.last_unit_cost_cents ?? null,
             displayName: `${product.name} - ${presentation.etiqueta}`,
           } satisfies AdminPresentationOption;
         }),
     )
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, "es"));
+}
+
+export async function getAdminPurchaseProductOptions() {
+  const [products, inventoryRows, latestCostByProductId] = await Promise.all([
+    getAdminProducts(),
+    getRawInventorySummary().catch(() => [] as InventorySummaryRow[]),
+    getLatestPurchaseUnitCostByProductId(),
+  ]);
+  const productInventorySummary = buildProductInventorySummary(products, inventoryRows);
+  const productInventoryByProductId = new Map(
+    productInventorySummary.map((item) => [item.productId, item]),
+  );
+
+  return products
+    .map((product) => {
+      const activePresentations = product.presentations
+        .filter((presentation) => presentation.id)
+        .sort((a, b) => a.amountInBaseUnits - b.amountInBaseUnits);
+      const primaryMeasurementKind = resolvePrimaryMeasurementKind(
+        activePresentations.map((presentation) => presentation.measurementKind),
+      );
+      const referencePresentation =
+        activePresentations.find(
+          (presentation) => presentation.measurementKind === primaryMeasurementKind,
+        ) ?? activePresentations[0];
+
+      if (!referencePresentation?.id) {
+        return null;
+      }
+
+      const productInventory = productInventoryByProductId.get(product.uuid);
+      const { purchaseUnitLabel, purchaseUnitBaseAmount } = getPurchaseUnitConfig(
+        primaryMeasurementKind,
+      );
+
+      return {
+        id: product.uuid,
+        productId: product.uuid,
+        productName: product.name,
+        productSlug: product.slug,
+        measurementKind: primaryMeasurementKind,
+        purchaseUnitLabel,
+        purchaseUnitBaseAmount,
+        referencePresentationId: referencePresentation.id,
+        referencePresentationLabel: referencePresentation.etiqueta,
+        referencePresentationBaseAmount: referencePresentation.amountInBaseUnits,
+        stockCurrentBaseUnits: productInventory?.stockCurrent ?? 0,
+        stockCurrentBaseLabel: productInventory?.stockCurrentLabel ?? "0 unidades",
+        lastPurchaseUnitCostCents: latestCostByProductId.get(product.uuid) ?? null,
+        displayName: product.name,
+      } satisfies AdminPurchaseProductOption;
+    })
+    .filter((value): value is AdminPurchaseProductOption => Boolean(value))
     .sort((a, b) => a.displayName.localeCompare(b.displayName, "es"));
 }
 
@@ -212,14 +444,24 @@ function mapPurchaseOrders(
 
   for (const item of items) {
     const presentation = presentationById.get(item.product_presentation_id);
+    const measurementKind = presentation?.measurementKind ?? "unit";
+    const quantityBaseUnits =
+      parseNumericQuantity(item.quantity) * (presentation?.amountInBaseUnits ?? 1);
+    const purchaseUnit = getPurchaseUnitConfig(measurementKind);
+    const purchaseQuantity = quantityBaseUnits / purchaseUnit.purchaseUnitBaseAmount;
     const list = itemsByOrderId.get(item.purchase_order_id) ?? [];
     list.push({
       id: item.id,
       productPresentationId: item.product_presentation_id,
       productName: presentation?.productName ?? "Presentación eliminada",
       presentationLabel: presentation?.presentationLabel ?? item.product_presentation_id,
-      quantity: parseNumericQuantity(item.quantity),
+      quantity: purchaseQuantity,
+      quantityLabel: `${formatQuantityValue(purchaseQuantity)} ${purchaseUnit.purchaseUnitLabel}`,
       unitCostCents: item.unit_cost_cents,
+      unitCostLabel:
+        purchaseQuantity > 0
+          ? `${formatCurrencyFromCents(item.line_total_cents / purchaseQuantity)} / ${purchaseUnit.purchaseUnitLabel}`
+          : `${formatCurrencyFromCents(0)} / ${purchaseUnit.purchaseUnitLabel}`,
       lineTotalCents: item.line_total_cents,
     });
     itemsByOrderId.set(item.purchase_order_id, list);
@@ -250,18 +492,21 @@ function mapSales(
   sales: SaleRow[],
   items: SaleItemRow[],
   presentationById: Map<string, AdminPresentationOption>,
-  inventoryByPresentationId: Map<string, InventorySummaryRecord>,
+  inventoryByProductId: Map<string, InventorySummaryRecord>,
 ) {
   const itemsBySaleId = new Map<string, SaleItemRecord[]>();
 
   for (const item of items) {
     const presentation = presentationById.get(item.product_presentation_id);
-    const inventory = inventoryByPresentationId.get(item.product_presentation_id);
-    const stockCurrent = inventory?.stockCurrent ?? 0;
+    const inventory = presentation
+      ? inventoryByProductId.get(presentation.productId)
+      : undefined;
+    const stockCurrentBaseUnits = inventory?.stockCurrent ?? 0;
     const list = itemsBySaleId.get(item.sale_id) ?? [];
     list.push({
       id: item.id,
       productPresentationId: item.product_presentation_id,
+      productId: presentation?.productId ?? "",
       productName: presentation?.productName ?? "Presentación eliminada",
       presentationLabel: presentation?.presentationLabel ?? item.product_presentation_id,
       quantity: parseNumericQuantity(item.quantity),
@@ -269,8 +514,13 @@ function mapSales(
       unitCostSnapshotCents: item.unit_cost_snapshot_cents,
       lineTotalCents: item.line_total_cents,
       lineMarginCents: item.line_margin_cents,
-      stockCurrent,
-      hasNegativeStock: stockCurrent < 0,
+      stockCurrent:
+        presentation && presentation.amountInBaseUnits > 0
+          ? stockCurrentBaseUnits / presentation.amountInBaseUnits
+          : 0,
+      stockCurrentBaseUnits,
+      stockCurrentBaseLabel: inventory?.stockCurrentLabel ?? "0 unidades",
+      hasNegativeStock: (inventory?.stockCurrent ?? 0) < 0,
     });
     itemsBySaleId.set(item.sale_id, list);
   }
@@ -298,33 +548,11 @@ function mapSales(
 }
 
 export async function getInventorySummary() {
-  const [rows, presentationOptions] = await Promise.all([
+  const [products, rows] = await Promise.all([
+    getAdminProducts(),
     getRawInventorySummary(),
-    getAdminPresentationOptions(),
   ]);
-  const presentationById = mapPresentationLookup(presentationOptions);
-
-  return rows
-    .map((row) => {
-      const presentation = presentationById.get(row.product_presentation_id);
-      const stockCurrent = parseNumericQuantity(row.stock_current);
-
-      return {
-        productPresentationId: row.product_presentation_id,
-        productName: presentation?.productName ?? "Presentación eliminada",
-        presentationLabel: presentation?.presentationLabel ?? row.product_presentation_id,
-        quantityPurchased: parseNumericQuantity(row.quantity_purchased),
-        quantitySold: parseNumericQuantity(row.quantity_sold),
-        stockCurrent,
-        lastUnitCostCents: row.last_unit_cost_cents,
-        revenueCents: parseIntegerAmount(row.revenue_cents),
-        costCents: parseIntegerAmount(row.cost_cents),
-        marginCents: parseIntegerAmount(row.margin_cents),
-        salePriceCents: presentation?.salePriceCents ?? 0,
-        isLowStock: stockCurrent <= LOW_STOCK_THRESHOLD,
-        isNegativeStock: stockCurrent < 0,
-      } satisfies InventorySummaryRecord;
-    })
+  return buildProductInventorySummary(products, rows)
     .sort((a, b) => {
       if (a.stockCurrent !== b.stockCurrent) {
         return a.stockCurrent - b.stockCurrent;
@@ -374,8 +602,8 @@ export async function getSales() {
     getInventorySummary(),
   ]);
   const presentationById = mapPresentationLookup(presentationOptions);
-  const inventoryByPresentationId = new Map(
-    inventorySummary.map((item) => [item.productPresentationId, item]),
+  const inventoryByProductId = new Map(
+    inventorySummary.map((item) => [item.productId, item]),
   );
 
   const [salesResult, itemsResult] = await Promise.all([
@@ -402,7 +630,7 @@ export async function getSales() {
     salesResult.data ?? [],
     itemsResult.data ?? [],
     presentationById,
-    inventoryByPresentationId,
+    inventoryByProductId,
   );
 }
 
@@ -464,9 +692,108 @@ export async function getAdminDashboardMetrics(periodDays = DASHBOARD_PERIOD_DAY
 }
 
 export async function getLatestCostByPresentationId() {
-  const inventorySummary = await getInventorySummary();
+  const [presentationOptions, latestCostByProductId] = await Promise.all([
+    getAdminPresentationOptions(),
+    getLatestPurchaseUnitCostByProductId(),
+  ]);
 
   return new Map(
-    inventorySummary.map((item) => [item.productPresentationId, item.lastUnitCostCents ?? 0]),
+    presentationOptions.map((item) => {
+      const unitCostByPurchaseUnit = latestCostByProductId.get(item.productId) ?? 0;
+      const purchaseUnitBaseAmount = getPurchaseUnitConfig(item.measurementKind).purchaseUnitBaseAmount;
+      const unitCostSnapshotCents =
+        purchaseUnitBaseAmount > 0
+          ? Math.round((unitCostByPurchaseUnit * item.amountInBaseUnits) / purchaseUnitBaseAmount)
+          : 0;
+
+      return [item.id, unitCostSnapshotCents] as const;
+    }),
   );
+}
+
+async function getLatestPurchaseUnitCostByProductId() {
+  const supabase = await createServerSupabaseClient();
+  const [products, ordersResult, itemsResult] = await Promise.all([
+    getAdminProducts(),
+    supabase
+      .from("purchase_orders")
+      .select("id, purchased_at")
+      .order("purchased_at", { ascending: false }),
+    supabase
+      .from("purchase_order_items")
+      .select("product_presentation_id, purchase_order_id, quantity, line_total_cents, created_at"),
+  ]);
+
+  const relationError = ordersResult.error ?? itemsResult.error;
+
+  if (relationError && isMissingRelationError(relationError.message)) {
+    return new Map<string, number>();
+  }
+
+  if (ordersResult.error || itemsResult.error) {
+    throw new Error(ordersResult.error?.message ?? itemsResult.error?.message);
+  }
+
+  const orderById = new Map((ordersResult.data ?? []).map((order) => [order.id, order]));
+  const presentationMetaById = new Map(
+    products.flatMap((product) =>
+      product.presentations
+        .filter((presentation) => presentation.id)
+        .map((presentation) => [
+          presentation.id!,
+          {
+            productId: product.uuid,
+            measurementKind: presentation.measurementKind,
+            amountInBaseUnits: presentation.amountInBaseUnits,
+          },
+        ]),
+    ),
+  );
+
+  const sortedItems = [...(itemsResult.data ?? [])].sort((a, b) => {
+    const orderA = orderById.get(a.purchase_order_id);
+    const orderB = orderById.get(b.purchase_order_id);
+    const timeA = orderA ? new Date(orderA.purchased_at).getTime() : 0;
+    const timeB = orderB ? new Date(orderB.purchased_at).getTime() : 0;
+
+    if (timeA !== timeB) {
+      return timeB - timeA;
+    }
+
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  const latestCostByProductId = new Map<string, number>();
+
+  for (const item of sortedItems) {
+    const meta = presentationMetaById.get(item.product_presentation_id);
+
+    if (!meta || latestCostByProductId.has(meta.productId)) {
+      continue;
+    }
+
+    const quantityStored = parseNumericQuantity(item.quantity);
+    const baseUnitsPurchased = quantityStored * meta.amountInBaseUnits;
+    const purchaseUnitBaseAmount = getPurchaseUnitConfig(meta.measurementKind).purchaseUnitBaseAmount;
+    const purchaseUnitQuantity = baseUnitsPurchased / purchaseUnitBaseAmount;
+
+    if (purchaseUnitQuantity <= 0) {
+      continue;
+    }
+
+    latestCostByProductId.set(
+      meta.productId,
+      Math.round(item.line_total_cents / purchaseUnitQuantity),
+    );
+  }
+
+  return latestCostByProductId;
+}
+
+function formatCurrencyFromCents(value: number) {
+  return new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    maximumFractionDigits: 0,
+  }).format(value / 100);
 }

@@ -23,7 +23,7 @@ async function PurchasesPageContent() {
     <div className="space-y-6">
       <PageHeader
         title="Compras"
-        description="Registrá órdenes de compra y guardá el costo histórico por presentación."
+        description="Registrá órdenes de compra y sumá stock base real según gramos, ml o unidades."
         actions={
           <>
             <Link

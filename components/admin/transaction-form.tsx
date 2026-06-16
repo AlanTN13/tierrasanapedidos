@@ -1,18 +1,21 @@
 "use client";
 
 import { useDeferredValue, useState } from "react";
-import type { AdminPresentationOption } from "@/lib/admin-operations";
+import type {
+  AdminPresentationOption,
+  AdminPurchaseProductOption,
+} from "@/lib/admin-operations";
 import { formatARS, formatQuantity, toDateTimeLocalValue } from "@/lib/format";
 
 type TransactionFormProps = {
   mode: "purchase" | "sale";
-  options: AdminPresentationOption[];
+  options: AdminPresentationOption[] | AdminPurchaseProductOption[];
   action: (formData: FormData) => Promise<void>;
 };
 
 type TransactionRow = {
   key: string;
-  presentationId: string;
+  optionId: string;
   searchTerm: string;
   quantity: string;
   unitAmount: string;
@@ -32,14 +35,18 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
     );
   }
 
-  function handlePresentationChange(key: string, presentationId: string) {
-    const option = options.find((item) => item.id === presentationId);
+  function handleOptionChange(key: string, optionId: string) {
+    const option = options.find((item) => item.id === optionId);
 
     updateRow(key, {
-      presentationId,
+      optionId,
       searchTerm: option?.displayName ?? "",
       unitAmount: option
-        ? formatCentsAsInput(isSale ? option.salePriceCents : option.lastUnitCostCents ?? 0)
+        ? formatCentsAsInput(
+            isSale
+              ? (option as AdminPresentationOption).salePriceCents
+              : (option as AdminPurchaseProductOption).lastPurchaseUnitCostCents ?? 0,
+          )
         : "",
     });
     setActiveRowKey(null);
@@ -48,7 +55,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
   function handleSearchChange(key: string, value: string) {
     updateRow(key, {
       searchTerm: value,
-      presentationId: "",
+      optionId: "",
       unitAmount: "",
     });
     setActiveRowKey(key);
@@ -58,7 +65,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
     setRows((currentRows) => [...currentRows, createRow()]);
   }
 
-  const filledRows = rows.filter((row) => row.presentationId && row.quantity && row.unitAmount);
+  const filledRows = rows.filter((row) => row.optionId && row.quantity && row.unitAmount);
   const totalCents = filledRows.reduce((sum, row) => {
     const quantity = parseInputNumber(row.quantity);
     const unitAmount = parseInputNumber(row.unitAmount);
@@ -152,8 +159,8 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
             </h2>
             <p className="text-sm text-foreground/64">
               {isSale
-                ? "Elegí la presentación exacta del producto. La cantidad siempre representa cuántas presentaciones vendiste."
-                : "Elegí la presentación exacta del producto. La cantidad siempre representa cuántas presentaciones compraste."}
+                ? "Elegí la presentación exacta que vendiste. El sistema descuenta el stock base real del producto según sus gramos, ml o unidades."
+                : "Elegí el producto base de la compra. La cantidad se carga en kg, litros o unidades y después se convierte al stock real."}
             </p>
           </div>
 
@@ -168,9 +175,25 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
 
         <div className="mt-4 space-y-3">
           {rows.map((row, index) => {
-            const option = options.find((item) => item.id === row.presentationId);
+            const option = options.find((item) => item.id === row.optionId);
+            const purchaseOption = !isSale ? (option as AdminPurchaseProductOption | undefined) : undefined;
+            const quantityLabel = isSale
+              ? "Cantidad"
+              : purchaseOption?.purchaseUnitLabel === "kg"
+                ? "Kilo"
+                : purchaseOption?.purchaseUnitLabel === "l"
+                  ? "Litro"
+                  : "Unidad";
             const deferredRow = deferredRows.find((item) => item.key === row.key) ?? row;
-            const filteredOptions = getFilteredOptions(options, deferredRow.searchTerm);
+            const filteredOptions = isSale
+              ? getFilteredPresentationOptions(
+                  options as AdminPresentationOption[],
+                  deferredRow.searchTerm,
+                )
+              : getFilteredPurchaseOptions(
+                  options as AdminPurchaseProductOption[],
+                  deferredRow.searchTerm,
+                );
             const lineTotal =
               parseInputNumber(row.quantity) > 0 && parseInputNumber(row.unitAmount) >= 0
                 ? Math.round(parseInputNumber(row.quantity) * parseInputNumber(row.unitAmount) * 100)
@@ -194,10 +217,14 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                         setActiveRowKey((currentKey) => (currentKey === row.key ? null : currentKey));
                       }, 150);
                     }}
-                    placeholder="Buscar presentación"
+                    placeholder={isSale ? "Buscar presentación" : "Buscar producto"}
                     className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                   />
-                  <input type="hidden" name="linePresentationId" value={row.presentationId} />
+                  <input
+                    type="hidden"
+                    name={isSale ? "linePresentationId" : "lineProductId"}
+                    value={row.optionId}
+                  />
                   {activeRowKey === row.key && filteredOptions.length > 0 ? (
                     <div className="absolute top-[5.4rem] z-20 max-h-64 w-full overflow-auto rounded-[1.4rem] border border-olive/14 bg-white p-2 shadow-[0_20px_40px_rgba(63,74,47,0.12)]">
                       {filteredOptions.map((item) => (
@@ -206,7 +233,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                           type="button"
                           onMouseDown={(event) => {
                             event.preventDefault();
-                            handlePresentationChange(row.key, item.id);
+                            handleOptionChange(row.key, item.id);
                           }}
                           className="block w-full rounded-[1rem] px-3 py-3 text-left hover:bg-olive-soft/36"
                         >
@@ -214,10 +241,15 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                             {item.displayName}
                           </div>
                           <div className="mt-1 text-xs text-foreground/62">
-                            Stock: {formatQuantity(item.stockCurrent)} ·{" "}
+                            Stock base: {item.stockCurrentBaseLabel} ·{" "}
                             {isSale
-                              ? `Precio ${formatARS(item.salePriceCents / 100)}`
-                              : `Último costo ${formatARS((item.lastUnitCostCents ?? 0) / 100)}`}
+                              ? `Precio ${formatARS(
+                                  (item as AdminPresentationOption).salePriceCents / 100,
+                                )}`
+                              : `Último costo ${formatARS(
+                                  ((item as AdminPurchaseProductOption).lastPurchaseUnitCostCents ??
+                                    0) / 100,
+                                )} por ${(item as AdminPurchaseProductOption).purchaseUnitLabel}`}
                           </div>
                         </button>
                       ))}
@@ -225,24 +257,55 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                   ) : null}
                   <div className="min-h-9 text-xs leading-5 text-foreground/58">
                     {option ? (
-                      <>
-                        <div>
-                          Presentación: {option.presentationLabel}. Si cargás 3, son 3 presentaciones
-                          de este tipo.
-                        </div>
-                        <div>
-                          Stock actual: {formatQuantity(option.stockCurrent)}
-                          {option.stockCurrent < 0 ? " (negativo)" : ""}
-                        </div>
-                        <div>
-                          {isSale ? "Precio catálogo" : "Último costo"}:{" "}
-                          {formatARS(
-                            ((isSale
-                              ? option.salePriceCents
-                              : option.lastUnitCostCents ?? 0) || 0) / 100,
-                          )}
-                        </div>
-                      </>
+                      isSale ? (
+                        <>
+                          <div>
+                            Presentación: {(option as AdminPresentationOption).presentationLabel}. Si
+                            cargás 3, son 3 presentaciones de este tipo.
+                          </div>
+                          <div>
+                            Stock base actual: {(option as AdminPresentationOption).stockCurrentBaseLabel}
+                            {(option as AdminPresentationOption).stockCurrentBaseUnits < 0
+                              ? " (negativo)"
+                              : ""}
+                          </div>
+                          <div>
+                            Equivale a{" "}
+                            {formatQuantity(
+                              (option as AdminPresentationOption).stockEquivalentQuantity,
+                            )}{" "}
+                            presentaciones de{" "}
+                            {(option as AdminPresentationOption).presentationLabel}.
+                          </div>
+                          <div>
+                            Precio catálogo:{" "}
+                            {formatARS(
+                              (option as AdminPresentationOption).salePriceCents / 100,
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div>Producto base: {(option as AdminPurchaseProductOption).productName}.</div>
+                          <div>
+                            Stock base actual: {(option as AdminPurchaseProductOption).stockCurrentBaseLabel}
+                            {(option as AdminPurchaseProductOption).stockCurrentBaseUnits < 0
+                              ? " (negativo)"
+                              : ""}
+                          </div>
+                          <div>
+                            Cargá la compra en {(option as AdminPurchaseProductOption).purchaseUnitLabel}.
+                          </div>
+                          <div>
+                            Último costo:{" "}
+                            {formatARS(
+                              (((option as AdminPurchaseProductOption).lastPurchaseUnitCostCents ??
+                                0) || 0) / 100,
+                            )}{" "}
+                            por {(option as AdminPurchaseProductOption).purchaseUnitLabel}
+                          </div>
+                        </>
+                      )
                     ) : (
                       <span>Fila {index + 1}. Dejala vacía si no la necesitás.</span>
                     )}
@@ -251,7 +314,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
 
                 <label className="space-y-2">
                   <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-                    Cant. present.
+                    {quantityLabel}
                   </span>
                   <input
                     name="lineQuantity"
@@ -261,6 +324,15 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                     inputMode="decimal"
                     className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                   />
+                  <p className="text-xs leading-5 text-foreground/58">
+                    {isSale
+                      ? "Cuántas presentaciones vendiste."
+                      : purchaseOption?.purchaseUnitLabel === "kg"
+                        ? "Cuántos kilos compraste."
+                        : purchaseOption?.purchaseUnitLabel === "l"
+                          ? "Cuántos litros compraste."
+                          : "Cuántas unidades compraste."}
+                  </p>
                 </label>
 
                 <label className="space-y-2">
@@ -332,7 +404,7 @@ function createInitialRows() {
 function createRow(): TransactionRow {
   return {
     key: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    presentationId: "",
+    optionId: "",
     searchTerm: "",
     quantity: "",
     unitAmount: "",
@@ -363,7 +435,7 @@ function normalizeDecimalInput(value: string) {
   return trimmed;
 }
 
-function getFilteredOptions(options: AdminPresentationOption[], searchTerm: string) {
+function getFilteredPresentationOptions(options: AdminPresentationOption[], searchTerm: string) {
   const normalizedSearchTerm = normalizeSearchText(searchTerm);
 
   if (!normalizedSearchTerm) {
@@ -375,6 +447,22 @@ function getFilteredOptions(options: AdminPresentationOption[], searchTerm: stri
       normalizeSearchText(
         `${item.displayName} ${item.productSlug} ${item.productName} ${item.presentationLabel}`,
       ).includes(normalizedSearchTerm),
+    )
+    .slice(0, 8);
+}
+
+function getFilteredPurchaseOptions(options: AdminPurchaseProductOption[], searchTerm: string) {
+  const normalizedSearchTerm = normalizeSearchText(searchTerm);
+
+  if (!normalizedSearchTerm) {
+    return options.slice(0, 8);
+  }
+
+  return options
+    .filter((item) =>
+      normalizeSearchText(`${item.displayName} ${item.productSlug} ${item.productName}`).includes(
+        normalizedSearchTerm,
+      ),
     )
     .slice(0, 8);
 }

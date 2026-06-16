@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { PageHeader } from "@/components/admin/page-header";
 import { getPurchaseOrderById } from "@/lib/admin-operations";
-import { formatARS, formatDateTime, formatQuantity } from "@/lib/format";
+import { formatARS, formatDateTime } from "@/lib/format";
 import { requireAdminUser } from "@/lib/supabase/admin";
 
 type PurchaseDetailPageProps = {
@@ -64,8 +64,8 @@ async function PurchaseDetailContent({ params }: PurchaseDetailPageProps) {
                 <h2 className="text-lg font-semibold text-olive-dark">{item.productName}</h2>
                 <p className="mt-1 text-sm text-foreground/62">{item.presentationLabel}</p>
               </div>
-              <MiniInfo label="Presentaciones" value={formatQuantity(item.quantity)} />
-              <MiniInfo label="Costo unitario" value={formatARS(item.unitCostCents / 100)} />
+              <MiniInfo label="Cantidad comprada" value={item.quantityLabel} />
+              <MiniInfo label="Costo unitario" value={item.unitCostLabel} />
               <MiniInfo label="Total línea" value={formatARS(item.lineTotalCents / 100)} />
             </article>
           ))}

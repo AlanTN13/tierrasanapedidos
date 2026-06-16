@@ -3,14 +3,16 @@
 import { redirect } from "next/navigation";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { getLatestCostByPresentationId } from "@/lib/admin-operations";
+import {
+  getAdminPurchaseProductOptions,
+  getLatestCostByPresentationId,
+} from "@/lib/admin-operations";
 
 type ParsedPurchaseItem = {
   productPresentationId: string;
-  quantity: string;
-  quantityValue: number;
-  unitCostCents: number;
   lineTotalCents: number;
+  storedQuantity: string;
+  storedUnitCostCents: number;
 };
 
 type ParsedSaleItem = {
@@ -27,7 +29,7 @@ export async function savePurchaseOrder(formData: FormData) {
   const referenceNumber = readNullableString(formData.get("referenceNumber"));
   const purchasedAt = readDateTimeOrNow(formData.get("purchasedAt"));
   const notes = readNullableString(formData.get("notes"));
-  const items = parsePurchaseItems(formData);
+  const items = await parsePurchaseItems(formData);
 
   if (!supplierName) {
     throw new Error("La compra necesita un proveedor.");
@@ -58,8 +60,8 @@ export async function savePurchaseOrder(formData: FormData) {
     items.map((item) => ({
       purchase_order_id: order.id,
       product_presentation_id: item.productPresentationId,
-      quantity: item.quantity,
-      unit_cost_cents: item.unitCostCents,
+      quantity: item.storedQuantity,
+      unit_cost_cents: item.storedUnitCostCents,
       line_total_cents: item.lineTotalCents,
     })),
   );
@@ -126,31 +128,43 @@ export async function saveSale(formData: FormData) {
   redirect(`/admin/sales/${sale.id}?saved=1`);
 }
 
-function parsePurchaseItems(formData: FormData) {
-  const presentationIds = formData
-    .getAll("linePresentationId")
+async function parsePurchaseItems(formData: FormData) {
+  const productIds = formData
+    .getAll("lineProductId")
     .map((value) => readString(value));
   const quantities = formData.getAll("lineQuantity").map((value) => readString(value));
   const unitCosts = formData.getAll("lineUnitCost").map((value) => readString(value));
+  const purchaseOptions = await getAdminPurchaseProductOptions();
 
-  return presentationIds
-    .map((productPresentationId, index) => {
+  return productIds
+    .map((productId, index) => {
       const quantity = quantities[index] ?? "";
       const unitCost = unitCosts[index] ?? "";
 
-      if (!productPresentationId || !quantity || !unitCost) {
+      if (!productId || !quantity || !unitCost) {
         return null;
       }
 
-      const normalizedQuantity = parseQuantity(quantity);
+      const option = purchaseOptions.find((item) => item.productId === productId);
+
+      if (!option) {
+        throw new Error(`Producto de compra inválido: ${productId}`);
+      }
+
+      const purchaseQuantityValue = parseQuantity(quantity);
       const unitCostCents = parseCurrencyToCents(unitCost);
+      const totalBaseUnits = purchaseQuantityValue * option.purchaseUnitBaseAmount;
+      const storedQuantityValue = totalBaseUnits / option.referencePresentationBaseAmount;
+      const storedUnitCostCents =
+        storedQuantityValue > 0
+          ? Math.round((unitCostCents * purchaseQuantityValue) / storedQuantityValue)
+          : 0;
 
       return {
-        productPresentationId,
-        quantity: formatNumericForDatabase(normalizedQuantity),
-        quantityValue: normalizedQuantity,
-        unitCostCents,
-        lineTotalCents: Math.round(unitCostCents * normalizedQuantity),
+        productPresentationId: option.referencePresentationId,
+        lineTotalCents: Math.round(unitCostCents * purchaseQuantityValue),
+        storedQuantity: formatNumericForDatabase(storedQuantityValue),
+        storedUnitCostCents,
       } satisfies ParsedPurchaseItem;
     })
     .filter((value): value is ParsedPurchaseItem => Boolean(value));

@@ -63,9 +63,9 @@ async function AdminPageContent() {
           description={`Margen estimado: ${formatARS(metrics.salesMarginCents / 100)}.`}
         />
         <MetricCard
-          label="Stock bajo"
+          label="Stock crítico"
           value={String(metrics.stockLowCount)}
-          description="Presentaciones con stock menor o igual a 3."
+          description="Productos cuyo stock base ya no supera su presentación más chica."
         />
       </section>
 
@@ -160,7 +160,7 @@ async function AdminPageContent() {
             <div>
               <h2 className="text-xl font-semibold text-olive-dark">Alertas de stock</h2>
               <p className="text-sm text-foreground/64">
-                Reposición sugerida según movimientos cargados.
+                Reposición sugerida según el stock base disponible.
               </p>
             </div>
           </div>
@@ -169,14 +169,15 @@ async function AdminPageContent() {
             {stockAlerts.length > 0 ? (
               stockAlerts.map((item) => (
                 <div
-                  key={item.productPresentationId}
+                  key={item.productId}
                   className="rounded-2xl border border-olive/10 bg-white/92 px-4 py-3"
                 >
-                  <div className="text-sm font-semibold text-olive-dark">
-                    {item.productName} - {item.presentationLabel}
-                  </div>
+                  <div className="text-sm font-semibold text-olive-dark">{item.productName}</div>
                   <div className="mt-1 text-sm text-foreground/68">
-                    Stock: {formatQuantity(item.stockCurrent)}
+                    Stock base: {item.stockCurrentLabel}
+                  </div>
+                  <div className="mt-1 text-sm text-foreground/58">
+                    Alerta cuando queda igual o menos que {item.lowStockThresholdLabel}
                   </div>
                 </div>
               ))

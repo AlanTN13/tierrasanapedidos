@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import { TransactionForm } from "@/components/admin/transaction-form";
 import { savePurchaseOrder } from "@/app/admin/operations/actions";
-import { getAdminPresentationOptions } from "@/lib/admin-operations";
+import { getAdminPurchaseProductOptions } from "@/lib/admin-operations";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/admin/page-header";
 
@@ -17,13 +17,13 @@ export default function NewPurchasePage() {
 async function NewPurchaseContent() {
   await connection();
   await requireAdminUser();
-  const options = await getAdminPresentationOptions();
+  const options = await getAdminPurchaseProductOptions();
 
   return (
     <div className="max-w-6xl space-y-6">
       <PageHeader
         title="Nueva compra"
-        description="Cargá proveedor, fecha y presentaciones para construir historial de costos."
+        description="Buscá un producto único y cargá la compra en kg, litros o unidades según corresponda."
       />
       <TransactionForm mode="purchase" options={options} action={savePurchaseOrder} />
     </div>

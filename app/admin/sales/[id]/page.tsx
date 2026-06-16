@@ -52,7 +52,7 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
         <InfoCard label="Margen" value={formatARS(sale.totalMarginCents / 100)} />
         <InfoCard
           label="Stock"
-          value={sale.hasNegativeStock ? "Hay presentaciones en negativo" : "Sin alertas"}
+          value={sale.hasNegativeStock ? "Hay productos en negativo" : "Sin alertas"}
         />
       </section>
 
@@ -68,13 +68,13 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
                   <h2 className="text-lg font-semibold text-olive-dark">{item.productName}</h2>
                   {item.hasNegativeStock ? (
                     <span className="rounded-full bg-red-100 px-2.5 py-1 text-[11px] font-semibold text-red-700">
-                      Stock negativo
+                      Stock base negativo
                     </span>
                   ) : null}
                 </div>
                 <p className="mt-1 text-sm text-foreground/62">{item.presentationLabel}</p>
                 <p className="mt-3 text-sm text-foreground/66">
-                  Stock actual: {formatQuantity(item.stockCurrent)}
+                  Stock base actual: {item.stockCurrentBaseLabel}
                 </p>
               </div>
               <MiniInfo label="Presentaciones" value={formatQuantity(item.quantity)} />
