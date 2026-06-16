@@ -10,6 +10,7 @@
     "check:catalog": "node scripts/validate-catalog.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",
     "catalog:import": "node scripts/import-catalog-to-supabase.mjs",
+    "sales:import": "node scripts/import-sales-from-json.mjs",
     "admin:create": "node scripts/create-admin-user.mjs"
   },
   "dependencies": {
