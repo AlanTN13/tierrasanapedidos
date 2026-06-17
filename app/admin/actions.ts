@@ -73,6 +73,7 @@ export async function saveProduct(formData: FormData) {
   const baseSku = normalizeManualSku(readString(formData.get("baseSku"))) || generateBaseSku(slug, name);
   const description = readString(formData.get("description"));
   const existingImagePath = readString(formData.get("existingImagePath"));
+  const removeExistingImage = readBooleanFlag(formData.get("removeExistingImage"));
   const imageFile = formData.get("imageFile");
   const tags = readString(formData.get("tags"))
     .split(",")
@@ -91,6 +92,7 @@ export async function saveProduct(formData: FormData) {
     name,
     imageFile,
     existingImagePath,
+    removeExistingImage,
   });
 
   if (!slug || !name || !description || !imagePath) {
@@ -337,6 +339,7 @@ export async function saveCategory(formData: FormData) {
   const submittedSlug = readString(formData.get("slug"));
   const slug = slugify(submittedSlug || name);
   const existingImagePath = readString(formData.get("existingImagePath"));
+  const removeExistingImage = readBooleanFlag(formData.get("removeExistingImage"));
   const imagePathOverride = validateManualImagePath(readString(formData.get("imagePath")));
   const imageFile = formData.get("imageFile");
   const searchTags = readString(formData.get("searchTags"))
@@ -351,6 +354,7 @@ export async function saveCategory(formData: FormData) {
     imageFile,
     existingImagePath,
     imagePathOverride,
+    removeExistingImage,
   });
 
   if (!name || !slug) {
@@ -520,14 +524,21 @@ async function resolveProductImagePath({
   name,
   imageFile,
   existingImagePath,
+  removeExistingImage,
 }: {
   slug: string;
   name: string;
   imageFile: FormDataEntryValue | null;
   existingImagePath: string;
+  removeExistingImage: boolean;
 }) {
   if (!slug || !name) {
     return existingImagePath || PRODUCT_IMAGE_PLACEHOLDER;
+  }
+
+  if (removeExistingImage && (!(imageFile instanceof File) || imageFile.size === 0)) {
+    await removeStoredImageAtPath(existingImagePath);
+    return PRODUCT_IMAGE_PLACEHOLDER;
   }
 
   if (!(imageFile instanceof File) || imageFile.size === 0) {
@@ -555,17 +566,38 @@ async function resolveCategoryImagePath({
   imageFile,
   existingImagePath,
   imagePathOverride,
+  removeExistingImage,
 }: {
   slug: string;
   name: string;
   imageFile: FormDataEntryValue | null;
   existingImagePath: string;
   imagePathOverride: string;
+  removeExistingImage: boolean;
 }) {
   const normalizedManualPath = imagePathOverride || "";
 
   if (!slug || !name) {
     return normalizedManualPath || existingImagePath || CATEGORY_IMAGE_PLACEHOLDER;
+  }
+
+  if (
+    removeExistingImage &&
+    !(imageFile instanceof File) &&
+    !normalizedManualPath
+  ) {
+    await removeStoredImageAtPath(existingImagePath);
+    return CATEGORY_IMAGE_PLACEHOLDER;
+  }
+
+  if (
+    removeExistingImage &&
+    imageFile instanceof File &&
+    imageFile.size === 0 &&
+    !normalizedManualPath
+  ) {
+    await removeStoredImageAtPath(existingImagePath);
+    return CATEGORY_IMAGE_PLACEHOLDER;
   }
 
   if (!(imageFile instanceof File) || imageFile.size === 0) {
@@ -791,6 +823,11 @@ function readNullableNumber(value: FormDataEntryValue | null) {
 
   const parsed = Number.parseInt(stringValue, 10);
   return Number.isNaN(parsed) ? null : parsed;
+}
+
+function readBooleanFlag(value: FormDataEntryValue | null) {
+  const stringValue = readString(value).toLowerCase();
+  return stringValue === "1" || stringValue === "true" || stringValue === "on";
 }
 
 function readNumberOrDefault(value: FormDataEntryValue | null, fallback: number) {

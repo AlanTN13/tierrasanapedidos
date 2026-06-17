@@ -1,4 +1,5 @@
 import type { AdminCatalogCategory } from "@/lib/catalog-data";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 
 type CategoryFormProps = {
   category?: AdminCatalogCategory | null;
@@ -36,40 +37,13 @@ export function CategoryForm({ category, action }: CategoryFormProps) {
 
           <label className="space-y-2 md:col-span-2">
             <span className="text-sm font-semibold text-olive-dark">Imagen</span>
-            <div className="space-y-3 rounded-[1.6rem] border border-dashed border-olive/18 bg-white/80 p-4">
-              {category?.imagePath ? (
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-                    Imagen actual
-                  </span>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={category.imagePath}
-                      alt={category.name}
-                      className="h-24 w-24 rounded-2xl object-cover"
-                    />
-                    <p className="text-sm text-foreground/66">{category.imagePath}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-foreground/66">
-                  Subí la imagen de la categoría desde tu compu.
-                </p>
-              )}
-
-              <input
-                type="file"
-                name="imageFile"
-                accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
-              />
-              <p className="text-xs leading-5 text-foreground/58">
-                Podés subir PNG, JPG, WEBP o SVG. Las imágenes raster se convierten
-                automáticamente a WEBP optimizado y los SVG se conservan tal cual.
-                Si no elegís una imagen nueva, se mantiene la actual.
-              </p>
-            </div>
+            <ImageUploadField
+              currentImagePath={category?.imagePath}
+              currentImageAlt={category?.name ?? "Imagen de la categoría"}
+              emptyMessage="Subí la imagen de la categoría desde tu compu."
+              removeFieldName="removeExistingImage"
+              helperText="Podés subir PNG, JPG, WEBP o SVG. Las imágenes raster se convierten automáticamente a WEBP optimizado y los SVG se conservan tal cual. Si no elegís una imagen nueva, se mantiene la actual salvo que la borres."
+            />
           </label>
 
           <label className="space-y-2 md:col-span-2">

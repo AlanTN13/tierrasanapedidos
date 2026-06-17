@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AdminCatalogProduct } from "@/lib/catalog-data";
 import { formatPresentationLabel } from "@/lib/presentation";
 import type { CatalogCategory } from "@/types/catalog";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 
 type ProductFormProps = {
   categories: CatalogCategory[];
@@ -24,6 +25,7 @@ export function ProductForm({
       length: Math.max(3, 5 - existingPresentationCount),
     }).map(() => ({
       id: undefined,
+      sku: "",
       etiqueta: "",
       precio: 0,
       measurementKind: "unit" as const,
@@ -63,42 +65,28 @@ export function ProductForm({
             />
           </label>
 
+          <label className="space-y-2">
+            <span className="text-sm font-semibold text-olive-dark">SKU base</span>
+            <input
+              name="baseSku"
+              defaultValue={product?.baseSku ?? ""}
+              placeholder="AZUCAR-IMPALPABLE"
+              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm uppercase text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+            />
+            <p className="text-xs leading-5 text-foreground/58">
+              Si lo dejás vacío, se genera desde el slug o nombre.
+            </p>
+          </label>
+
           <label className="space-y-2 md:col-span-2">
             <span className="text-sm font-semibold text-olive-dark">Imagen</span>
-            <div className="space-y-3 rounded-[1.6rem] border border-dashed border-olive/18 bg-white/80 p-4">
-              {product?.imagePath ? (
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-                    Imagen actual
-                  </span>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={product.imagePath}
-                      alt={product.name}
-                      className="h-24 w-24 rounded-2xl object-cover"
-                    />
-                    <p className="text-sm text-foreground/66">{product.imagePath}</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-foreground/66">
-                  Subí la imagen del producto desde tu compu.
-                </p>
-              )}
-
-              <input
-                type="file"
-                name="imageFile"
-                accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
-              />
-              <p className="text-xs leading-5 text-foreground/58">
-                Podés subir PNG, JPG, WEBP o SVG. Las imágenes raster se convierten
-                automáticamente a WEBP optimizado y los SVG se conservan tal cual.
-                Si no elegís una imagen nueva al editar, se mantiene la actual.
-              </p>
-            </div>
+            <ImageUploadField
+              currentImagePath={product?.imagePath}
+              currentImageAlt={product?.name ?? "Imagen del producto"}
+              emptyMessage="Subí la imagen del producto desde tu compu."
+              removeFieldName="removeExistingImage"
+              helperText="Podés subir PNG, JPG, WEBP o SVG. Las imágenes raster se convierten automáticamente a WEBP optimizado y los SVG se conservan tal cual. Si no elegís una imagen nueva al editar, se mantiene la actual salvo que la borres."
+            />
           </label>
 
           <label className="space-y-2 md:col-span-2">
@@ -278,6 +266,20 @@ export function ProductForm({
                   className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
+              <label className="space-y-2 md:col-span-2">
+                <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+                  SKU manual (opcional)
+                </span>
+                <input
+                  name="presentationSkuOverride"
+                  defaultValue={presentation.sku ?? ""}
+                  placeholder="AZUCAR-IMPALPABLE-250G"
+                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm uppercase text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                />
+                <p className="text-xs leading-5 text-foreground/58">
+                  Si queda vacío, se regenera con el SKU base y la equivalencia.
+                </p>
+              </label>
               <div className="rounded-2xl border border-olive/10 bg-olive-soft/24 px-4 py-3 md:col-span-2">
                 <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
                   Etiqueta visible
@@ -290,6 +292,9 @@ export function ProductForm({
                       amountUnit: presentation.amountUnit,
                     })}
                 </p>
+                {presentation.sku ? (
+                  <p className="mt-1 text-xs text-foreground/58">SKU actual: {presentation.sku}</p>
+                ) : null}
               </div>
             </div>
           ))}
