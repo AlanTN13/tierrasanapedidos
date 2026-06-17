@@ -14,9 +14,12 @@ export function ProductForm({
   product,
   action,
 }: ProductFormProps) {
-  const existingPresentationCount = product?.presentations.length ?? 0;
+  const activePresentations = (product?.presentations ?? []).filter(
+    (presentation) => presentation.activa ?? true,
+  );
+  const existingPresentationCount = activePresentations.length;
   const presentationRows = [
-    ...(product?.presentations ?? []),
+    ...activePresentations,
     ...Array.from({
       length: Math.max(3, 5 - existingPresentationCount),
     }).map(() => ({

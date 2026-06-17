@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { PageHeader } from "@/components/admin/page-header";
+import { deletePurchaseOrder } from "@/app/admin/operations/actions";
 import { getPurchaseOrderById } from "@/lib/admin-operations";
 import { formatARS, formatDateTime } from "@/lib/format";
 import { requireAdminUser } from "@/lib/supabase/admin";
@@ -38,12 +40,27 @@ async function PurchaseDetailContent({ params }: PurchaseDetailPageProps) {
         title={purchaseOrder.supplierName}
         description={formatDateTime(purchaseOrder.purchasedAt)}
         actions={
-          <Link
-            href="/admin/purchases/new"
-            className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
-          >
-            Nueva compra
-          </Link>
+          <>
+            <Link
+              href="/admin/purchases"
+              className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
+            >
+              Volver
+            </Link>
+            <Link
+              href="/admin/purchases/new"
+              className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
+            >
+              Nueva compra
+            </Link>
+            <DeleteRecordButton
+              action={deletePurchaseOrder}
+              recordId={purchaseOrder.id}
+              recordLabel="compra"
+              submitLabel="Borrar compra"
+              confirmMessage={`Vas a borrar la compra de ${purchaseOrder.supplierName}. Esta acción no se puede deshacer.`}
+            />
+          </>
         }
       />
 

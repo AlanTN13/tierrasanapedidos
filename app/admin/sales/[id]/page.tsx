@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { PageHeader } from "@/components/admin/page-header";
+import { deleteSale } from "@/app/admin/operations/actions";
 import { getSaleById } from "@/lib/admin-operations";
 import { formatARS, formatDateTime, formatQuantity } from "@/lib/format";
 import { requireAdminUser } from "@/lib/supabase/admin";
@@ -38,12 +40,27 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
         title={sale.saleCode}
         description={`${formatDateTime(sale.soldAt)}${sale.channel ? ` · ${sale.channel}` : ""}`}
         actions={
-          <Link
-            href="/admin/sales/new"
-            className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
-          >
-            Nueva venta
-          </Link>
+          <>
+            <Link
+              href="/admin/sales"
+              className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
+            >
+              Volver
+            </Link>
+            <Link
+              href="/admin/sales/new"
+              className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
+            >
+              Nueva venta
+            </Link>
+            <DeleteRecordButton
+              action={deleteSale}
+              recordId={sale.id}
+              recordLabel="venta"
+              submitLabel="Borrar venta"
+              confirmMessage={`Vas a borrar la venta ${sale.saleCode}. Esta acción no se puede deshacer.`}
+            />
+          </>
         }
       />
 
@@ -80,12 +97,24 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
               </div>
               <MiniInfo label="Presentaciones" value={formatQuantity(item.quantity)} />
               <MiniInfo label="Precio" value={formatARS(item.unitPriceCents / 100)} />
-              <MiniInfo label="Costo snap" value={formatARS(item.unitCostSnapshotCents / 100)} />
+              <MiniInfo
+                label={item.usesEstimatedCost ? "Costo estimado" : "Costo snap"}
+                value={formatARS(item.unitCostSnapshotCents / 100)}
+              />
               <MiniInfo label="Margen" value={formatARS(item.lineMarginCents / 100)} />
             </article>
           ))}
         </div>
       </section>
+
+      {sale.items.some((item) => item.usesEstimatedCost) ? (
+        <section className="surface-panel organic-outline rounded-[1.8rem] p-5">
+          <p className="text-sm leading-6 text-foreground/68">
+            Algunos items no tenían costo guardado al momento de crear la venta. Para esos casos,
+            el margen se muestra con el último costo disponible en compras.
+          </p>
+        </section>
+      ) : null}
 
       {sale.notes ? (
         <section className="surface-panel organic-outline rounded-[1.8rem] p-5">

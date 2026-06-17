@@ -149,15 +149,17 @@ export async function saveProduct(formData: FormData) {
     .map((presentation) => presentation.id)
     .filter((value): value is string => Boolean(value));
   const existingPresentationIds = (existingPresentations ?? []).map((item) => item.id);
-  const presentationIdsToDelete = existingPresentationIds.filter(
+  const presentationIdsToDeactivate = existingPresentationIds.filter(
     (id) => !submittedPresentationIds.includes(id),
   );
 
-  if (presentationIdsToDelete.length > 0) {
+  if (presentationIdsToDeactivate.length > 0) {
     const { error } = await supabase
       .from("product_presentations")
-      .delete()
-      .in("id", presentationIdsToDelete);
+      .update({
+        is_active: false,
+      })
+      .in("id", presentationIdsToDeactivate);
 
     if (error) {
       throw new Error(error.message);

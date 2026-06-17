@@ -2,6 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
+import { ListPagination } from "@/components/admin/list-pagination";
 import type { AdminCatalogProduct } from "@/lib/catalog-data";
 
 type ProductsListProps = {
@@ -11,28 +12,45 @@ type ProductsListProps = {
 
 export function ProductsList({ products, categoryNameById }: ProductsListProps) {
   const [query, setQuery] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState(1);
   const deferredQuery = useDeferredValue(query);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = normalizeSearchText(deferredQuery);
 
     if (!normalizedQuery) {
-      return products;
+      return products.map((product) => ({
+        ...product,
+        presentations: product.presentations.filter((presentation) => presentation.activa ?? true),
+      }));
     }
 
     return products.filter((product) => {
+      const activePresentations = product.presentations.filter(
+        (presentation) => presentation.activa ?? true,
+      );
       const haystack = normalizeSearchText([
         product.name,
         product.slug,
         product.description,
         product.tags.join(" "),
         product.categoryIds.map((categoryId) => categoryNameById[categoryId] ?? categoryId).join(" "),
-        product.presentations.map((presentation) => presentation.etiqueta).join(" "),
+        activePresentations.map((presentation) => presentation.etiqueta).join(" "),
       ].join(" "));
 
       return haystack.includes(normalizedQuery);
-    });
+    }).map((product) => ({
+      ...product,
+      presentations: product.presentations.filter((presentation) => presentation.activa ?? true),
+    }));
   }, [categoryNameById, deferredQuery, products]);
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
 
   return (
     <div className="space-y-4">
@@ -42,7 +60,10 @@ export function ProductsList({ products, categoryNameById }: ProductsListProps) 
             <span className="text-sm font-semibold text-olive-dark">Buscar producto</span>
             <input
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPage(1);
+              }}
               placeholder="Nombre, categoría, slug o presentación"
               className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
@@ -55,9 +76,9 @@ export function ProductsList({ products, categoryNameById }: ProductsListProps) 
       </section>
 
       <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
-        <div className="grid gap-px bg-olive/8">
+          <div className="grid gap-px bg-olive/8">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
+            paginatedProducts.map((product) => (
               <article
                 key={product.uuid}
                 className="grid gap-4 bg-white/92 px-5 py-4 md:grid-cols-[minmax(0,1fr)_220px_150px]"
@@ -117,6 +138,19 @@ export function ProductsList({ products, categoryNameById }: ProductsListProps) 
               No encontramos productos con esa búsqueda.
             </div>
           )}
+          {filteredProducts.length > 0 ? (
+            <ListPagination
+              page={currentPage}
+              pageSize={pageSize}
+              totalItems={filteredProducts.length}
+              onPageChange={setPage}
+              onPageSizeChange={(nextPageSize) => {
+                setPageSize(nextPageSize);
+                setPage(1);
+              }}
+              itemLabel="productos"
+            />
+          ) : null}
         </div>
       </section>
     </div>

@@ -91,6 +91,7 @@ export type SaleItemRecord = {
   stockCurrentBaseUnits: number;
   stockCurrentBaseLabel: string;
   hasNegativeStock: boolean;
+  usesEstimatedCost: boolean;
 };
 
 export type SaleRecord = {
@@ -504,6 +505,7 @@ function mapSales(
   items: SaleItemRow[],
   presentationById: Map<string, AdminPresentationOption>,
   inventoryByProductId: Map<string, InventorySummaryRecord>,
+  latestCostByPresentationId: Map<string, number>,
 ) {
   const itemsBySaleId = new Map<string, SaleItemRecord[]>();
 
@@ -513,6 +515,18 @@ function mapSales(
       ? inventoryByProductId.get(presentation.productId)
       : undefined;
     const stockCurrentBaseUnits = inventory?.stockCurrent ?? 0;
+    const quantity = parseNumericQuantity(item.quantity);
+    const fallbackUnitCostCents =
+      latestCostByPresentationId.get(item.product_presentation_id) ??
+      presentation?.lastUnitCostCents ??
+      0;
+    const usesEstimatedCost = item.unit_cost_snapshot_cents <= 0 && fallbackUnitCostCents > 0;
+    const effectiveUnitCostCents = usesEstimatedCost
+      ? fallbackUnitCostCents
+      : item.unit_cost_snapshot_cents;
+    const effectiveLineMarginCents = usesEstimatedCost
+      ? item.line_total_cents - Math.round(effectiveUnitCostCents * quantity)
+      : item.line_margin_cents;
     const list = itemsBySaleId.get(item.sale_id) ?? [];
     list.push({
       id: item.id,
@@ -520,11 +534,11 @@ function mapSales(
       productId: presentation?.productId ?? "",
       productName: presentation?.productName ?? "Presentación eliminada",
       presentationLabel: presentation?.presentationLabel ?? item.product_presentation_id,
-      quantity: parseNumericQuantity(item.quantity),
+      quantity,
       unitPriceCents: item.unit_price_cents,
-      unitCostSnapshotCents: item.unit_cost_snapshot_cents,
+      unitCostSnapshotCents: effectiveUnitCostCents,
       lineTotalCents: item.line_total_cents,
-      lineMarginCents: item.line_margin_cents,
+      lineMarginCents: effectiveLineMarginCents,
       stockCurrent:
         presentation && presentation.amountInBaseUnits > 0
           ? stockCurrentBaseUnits / presentation.amountInBaseUnits
@@ -532,6 +546,7 @@ function mapSales(
       stockCurrentBaseUnits,
       stockCurrentBaseLabel: inventory?.stockCurrentLabel ?? "0 unidades",
       hasNegativeStock: (inventory?.stockCurrent ?? 0) < 0,
+      usesEstimatedCost,
     });
     itemsBySaleId.set(item.sale_id, list);
   }
@@ -630,9 +645,10 @@ export async function getPurchaseOrderById(id: string) {
 
 export async function getSales() {
   const supabase = await createServerSupabaseClient();
-  const [presentationOptions, inventorySummary] = await Promise.all([
+  const [presentationOptions, inventorySummary, latestCostByPresentationId] = await Promise.all([
     getAdminPresentationOptions(),
     getInventorySummary(),
+    getLatestCostByPresentationId(),
   ]);
   const presentationById = mapPresentationLookup(presentationOptions);
   const inventoryByProductId = new Map(
@@ -661,6 +677,7 @@ export async function getSales() {
     itemsResult.data ?? [],
     presentationById,
     inventoryByProductId,
+    latestCostByPresentationId,
   );
 }
 

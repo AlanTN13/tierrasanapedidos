@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { CategoryForm } from "@/components/admin/category-form";
@@ -36,6 +37,14 @@ async function EditCategoryContent({ params }: EditCategoryPageProps) {
       <PageHeader
         title="Editar categoría"
         description="Ajustá nombre, slug, orden e imagen visible."
+        actions={
+          <Link
+            href="/admin/categories"
+            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-5 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
+          >
+            Volver
+          </Link>
+        }
       />
       <CategoryForm category={category} action={saveCategory} />
     </div>

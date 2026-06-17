@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -126,6 +127,60 @@ export async function saveSale(formData: FormData) {
   }
 
   redirect(`/admin/sales/${sale.id}?saved=1`);
+}
+
+export async function deletePurchaseOrder(
+  _state: { error: string | null },
+  formData: FormData,
+) {
+  await requireAdminUser();
+  const recordId = readString(formData.get("recordId"));
+
+  if (!recordId) {
+    return {
+      error: "No encontramos la compra a borrar.",
+    };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("purchase_orders").delete().eq("id", recordId);
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/purchases");
+  redirect("/admin/purchases?deleted=1");
+}
+
+export async function deleteSale(
+  _state: { error: string | null },
+  formData: FormData,
+) {
+  await requireAdminUser();
+  const recordId = readString(formData.get("recordId"));
+
+  if (!recordId) {
+    return {
+      error: "No encontramos la venta a borrar.",
+    };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("sales").delete().eq("id", recordId);
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/sales");
+  redirect("/admin/sales?deleted=1");
 }
 
 async function parsePurchaseItems(formData: FormData) {

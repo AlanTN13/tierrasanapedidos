@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
+import { DashboardStockAlertCard } from "@/components/admin/dashboard-stock-alert-card";
 import { PageHeader } from "@/components/admin/page-header";
 import { getAdminDashboardMetrics, getInventorySummary } from "@/lib/admin-operations";
 import { getAdminCategories, getAdminProducts } from "@/lib/catalog-data";
@@ -67,8 +68,8 @@ async function AdminPageContent() {
           value={formatARS(metrics.salesTotalCents / 100)}
           description={`Margen estimado: ${formatARS(metrics.salesMarginCents / 100)}.`}
         />
-        <MetricCard
-          label="Stock crítico"
+        <DashboardStockAlertCard
+          inventorySummary={inventorySummary}
           value={String(metrics.stockLowCount)}
           description="Productos cuyo stock base ya no supera su presentación más chica."
         />
