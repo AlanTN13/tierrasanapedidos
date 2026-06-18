@@ -10,7 +10,25 @@ type PurchaseOrderRow = Database["public"]["Tables"]["purchase_orders"]["Row"];
 type PurchaseOrderItemRow = Database["public"]["Tables"]["purchase_order_items"]["Row"];
 type SaleRow = Database["public"]["Tables"]["sales"]["Row"];
 type SaleItemRow = Database["public"]["Tables"]["sale_items"]["Row"];
+type StockMovementRow = Database["public"]["Tables"]["stock_movements"]["Row"];
 type InventorySummaryRow = Database["public"]["Views"]["inventory_summary_by_presentation"]["Row"];
+type PurchaseOrderItemRowCompat = PurchaseOrderItemRow | (
+  Omit<
+    PurchaseOrderItemRow,
+    "base_sku_snapshot" | "presentation_sku_snapshot" | "amount_in_base_units_snapshot"
+  > & {
+    base_sku_snapshot?: string | null;
+    presentation_sku_snapshot?: string | null;
+    amount_in_base_units_snapshot?: string | null;
+  }
+);
+type SaleItemRowCompat = SaleItemRow | (
+  Omit<SaleItemRow, "base_sku_snapshot" | "presentation_sku_snapshot" | "amount_in_base_units_snapshot"> & {
+    base_sku_snapshot?: string | null;
+    presentation_sku_snapshot?: string | null;
+    amount_in_base_units_snapshot?: string | null;
+  }
+);
 type SaleRowCompat = Omit<SaleRow, "sale_number"> & {
   sale_number?: number | null;
 };
@@ -18,6 +36,8 @@ type SaleRowCompat = Omit<SaleRow, "sale_number"> & {
 export type AdminPresentationOption = {
   id: string;
   productId: string;
+  baseSku: string;
+  presentationSku: string;
   productName: string;
   productSlug: string;
   presentationLabel: string;
@@ -36,12 +56,14 @@ export type AdminPresentationOption = {
 export type AdminPurchaseProductOption = {
   id: string;
   productId: string;
+  baseSku: string;
   productName: string;
   productSlug: string;
   measurementKind: PresentationMeasurementKind;
   purchaseUnitLabel: "kg" | "l" | "unidades";
   purchaseUnitBaseAmount: number;
   referencePresentationId: string;
+  referencePresentationSku: string;
   referencePresentationLabel: string;
   referencePresentationBaseAmount: number;
   stockCurrentBaseUnits: number;
@@ -53,6 +75,8 @@ export type AdminPurchaseProductOption = {
 export type PurchaseOrderItemRecord = {
   id: string;
   productPresentationId: string;
+  baseSku: string;
+  presentationSku: string;
   productName: string;
   presentationLabel: string;
   quantity: number;
@@ -80,6 +104,8 @@ export type SaleItemRecord = {
   id: string;
   productPresentationId: string;
   productId: string;
+  baseSku: string;
+  presentationSku: string;
   productName: string;
   presentationLabel: string;
   quantity: number;
@@ -113,16 +139,53 @@ export type SaleRecord = {
 
 export type InventorySummaryRecord = {
   productId: string;
+  baseSku: string;
   productName: string;
   measurementKind: PresentationMeasurementKind;
   quantityPurchased: number;
   quantitySold: number;
   stockCurrent: number;
   stockCurrentLabel: string;
+  stockBaseUnits: number;
+  stockBaseLabel: string;
   lowStockThreshold: number;
   lowStockThresholdLabel: string;
+  smallestPresentationBaseUnits: number;
+  smallestPresentationLabel: string;
+  smallestPresentationSku: string;
   isLowStock: boolean;
   isNegativeStock: boolean;
+};
+
+export type StockMovementType = "entry" | "exit" | "set";
+
+export type StockMovementRecord = {
+  id: string;
+  productId: string;
+  productName: string;
+  presentationId: string | null;
+  presentationLabel: string | null;
+  movementType: StockMovementType;
+  quantity: number;
+  quantityLabel: string;
+  quantityBaseUnits: number;
+  quantityBaseLabel: string;
+  previousStock: number;
+  previousStockLabel: string;
+  newStock: number;
+  newStockLabel: string;
+  reason: string;
+  notes: string | null;
+  createdBy: string;
+  createdByEmail: string;
+  createdAt: string;
+};
+
+export type StockMovementDashboardMetrics = {
+  movementsToday: number;
+  manualEntriesToday: number;
+  manualExitsToday: number;
+  productsAffectedToday: number;
 };
 
 export type AdminDashboardMetrics = {
@@ -192,6 +255,18 @@ function formatBaseQuantity(
   return `${formatQuantityValue(normalizedValue)}${unit}`;
 }
 
+function getBaseUnitLabel(measurementKind: PresentationMeasurementKind) {
+  if (measurementKind === "weight") {
+    return "g";
+  }
+
+  if (measurementKind === "volume") {
+    return "ml";
+  }
+
+  return "unidades";
+}
+
 function getPurchaseUnitConfig(measurementKind: PresentationMeasurementKind) {
   if (measurementKind === "weight") {
     return {
@@ -222,16 +297,29 @@ function formatQuantityValue(value: number) {
 
 type ProductInventoryAggregate = {
   productId: string;
+  baseSku: string;
   productName: string;
   measurementKind: PresentationMeasurementKind;
   quantityPurchased: number;
   quantitySold: number;
   stockCurrent: number;
   stockCurrentLabel: string;
+  stockBaseUnits: number;
+  stockBaseLabel: string;
   lowStockThreshold: number;
   lowStockThresholdLabel: string;
+  smallestPresentationBaseUnits: number;
+  smallestPresentationLabel: string;
+  smallestPresentationSku: string;
   isLowStock: boolean;
   isNegativeStock: boolean;
+};
+
+type ProductMeasurementMeta = {
+  productId: string;
+  baseSku: string;
+  productName: string;
+  measurementKind: PresentationMeasurementKind;
 };
 
 function resolvePrimaryMeasurementKind(
@@ -248,36 +336,69 @@ function resolvePrimaryMeasurementKind(
   return "unit";
 }
 
-function resolveLowStockThreshold(
-  amountsInBaseUnits: number[],
+function resolveSmallestPresentation(
+  presentations: Awaited<ReturnType<typeof getAdminProducts>>[number]["presentations"],
   fallbackMeasurementKind: PresentationMeasurementKind,
 ) {
-  const finiteAmounts = amountsInBaseUnits.filter((value) => Number.isFinite(value) && value > 0);
+  const activePresentations = presentations
+    .filter((presentation) => (presentation.activa ?? true) && presentation.id)
+    .filter((presentation) => Number.isFinite(presentation.amountInBaseUnits) && presentation.amountInBaseUnits > 0)
+    .sort((a, b) => a.amountInBaseUnits - b.amountInBaseUnits);
+  const smallestPresentation = activePresentations[0];
   const threshold =
-    finiteAmounts.length > 0
-      ? Math.min(...finiteAmounts)
-      : fallbackMeasurementKind === "unit"
-        ? LOW_STOCK_THRESHOLD
-        : 0;
+    smallestPresentation?.amountInBaseUnits ??
+    (fallbackMeasurementKind === "unit" ? LOW_STOCK_THRESHOLD : 0);
 
-  return threshold;
+  return {
+    smallestPresentationBaseUnits: threshold,
+    smallestPresentationLabel: smallestPresentation?.etiqueta ?? formatBaseQuantity(threshold, fallbackMeasurementKind),
+    smallestPresentationSku: smallestPresentation?.sku ?? "",
+  };
+}
+
+function getProductMeasurementMeta(
+  products: Awaited<ReturnType<typeof getAdminProducts>>,
+) {
+  return new Map(
+    products.map((product) => {
+      const activePresentations = product.presentations.filter(
+        (presentation) => presentation.id && (presentation.activa ?? true),
+      );
+      const measurementKind = resolvePrimaryMeasurementKind(
+        activePresentations.map((presentation) => presentation.measurementKind),
+      );
+
+      return [
+        product.uuid,
+        {
+          productId: product.uuid,
+          baseSku: product.baseSku,
+          productName: product.name,
+          measurementKind,
+        } satisfies ProductMeasurementMeta,
+      ] as const;
+    }),
+  );
 }
 
 function buildProductInventorySummary(
   products: Awaited<ReturnType<typeof getAdminProducts>>,
   inventoryRows: InventorySummaryRow[],
+  manualMovementBaseUnitsByProductId: Map<string, number>,
 ) {
   const inventoryByPresentationId = new Map(
     inventoryRows.map((row) => [row.product_presentation_id, row]),
   );
 
   return products.map((product) => {
-    const activePresentations = product.presentations.filter((presentation) => presentation.id);
+    const activePresentations = product.presentations.filter(
+      (presentation) => presentation.id && (presentation.activa ?? true),
+    );
     const measurementKind = resolvePrimaryMeasurementKind(
       activePresentations.map((presentation) => presentation.measurementKind),
     );
-    const lowStockThreshold = resolveLowStockThreshold(
-      activePresentations.map((presentation) => presentation.amountInBaseUnits),
+    const smallestPresentation = resolveSmallestPresentation(
+      product.presentations,
       measurementKind,
     );
 
@@ -299,19 +420,30 @@ function buildProductInventorySummary(
     );
 
     const stockCurrent = totals.quantityPurchased - totals.quantitySold;
+    const manualAdjustment = manualMovementBaseUnitsByProductId.get(product.uuid) ?? 0;
+    const stockCurrentWithAdjustments = stockCurrent + manualAdjustment;
 
     return {
       productId: product.uuid,
+      baseSku: product.baseSku,
       productName: product.name,
       measurementKind,
       quantityPurchased: totals.quantityPurchased,
       quantitySold: totals.quantitySold,
-      stockCurrent,
-      stockCurrentLabel: formatBaseQuantity(stockCurrent, measurementKind),
-      lowStockThreshold,
-      lowStockThresholdLabel: formatBaseQuantity(lowStockThreshold, measurementKind),
-      isLowStock: stockCurrent <= lowStockThreshold,
-      isNegativeStock: stockCurrent < 0,
+      stockCurrent: stockCurrentWithAdjustments,
+      stockCurrentLabel: formatBaseQuantity(stockCurrentWithAdjustments, measurementKind),
+      stockBaseUnits: stockCurrentWithAdjustments,
+      stockBaseLabel: formatBaseQuantity(stockCurrentWithAdjustments, measurementKind),
+      lowStockThreshold: smallestPresentation.smallestPresentationBaseUnits,
+      lowStockThresholdLabel: formatBaseQuantity(
+        smallestPresentation.smallestPresentationBaseUnits,
+        measurementKind,
+      ),
+      smallestPresentationBaseUnits: smallestPresentation.smallestPresentationBaseUnits,
+      smallestPresentationLabel: smallestPresentation.smallestPresentationLabel,
+      smallestPresentationSku: smallestPresentation.smallestPresentationSku,
+      isLowStock: stockCurrentWithAdjustments <= smallestPresentation.smallestPresentationBaseUnits,
+      isNegativeStock: stockCurrentWithAdjustments < 0,
     } satisfies ProductInventoryAggregate;
   });
 }
@@ -343,12 +475,57 @@ async function getSafeRawInventorySummary() {
   return getRawInventorySummary().catch(() => [] as InventorySummaryRow[]);
 }
 
+async function getRawStockMovements() {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("stock_movements")
+    .select(
+      "id, product_id, presentation_id, movement_type, quantity, quantity_base_units, previous_stock, new_stock, reason, notes, created_by, created_at",
+    )
+    .order("created_at", { ascending: false });
+
+  if (error && isMissingRelationError(error.message)) {
+    return [];
+  }
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? [];
+}
+
+async function getSafeRawStockMovements() {
+  return getRawStockMovements().catch(() => [] as StockMovementRow[]);
+}
+
+function aggregateManualMovementBaseUnitsByProduct(
+  rows: StockMovementRow[],
+) {
+  const movementByProductId = new Map<string, number>();
+
+  for (const row of rows) {
+    const current = movementByProductId.get(row.product_id) ?? 0;
+    movementByProductId.set(
+      row.product_id,
+      current + parseNumericQuantity(row.quantity_base_units),
+    );
+  }
+
+  return movementByProductId;
+}
+
 export async function getAdminPresentationOptions() {
-  const [products, inventoryRows] = await Promise.all([
+  const [products, inventoryRows, stockMovementRows] = await Promise.all([
     getAdminProducts(),
     getSafeRawInventorySummary(),
+    getSafeRawStockMovements(),
   ]);
-  const productInventorySummary = buildProductInventorySummary(products, inventoryRows);
+  const productInventorySummary = buildProductInventorySummary(
+    products,
+    inventoryRows,
+    aggregateManualMovementBaseUnitsByProduct(stockMovementRows),
+  );
   const productInventoryByProductId = new Map(
     productInventorySummary.map((item) => [item.productId, item]),
   );
@@ -359,7 +536,7 @@ export async function getAdminPresentationOptions() {
   return products
     .flatMap((product) =>
       product.presentations
-        .filter((presentation) => presentation.id)
+        .filter((presentation) => presentation.id && (presentation.activa ?? true))
         .map((presentation) => {
           const inventory = inventoryByPresentationId.get(presentation.id!);
           const productInventory = productInventoryByProductId.get(product.uuid);
@@ -368,6 +545,8 @@ export async function getAdminPresentationOptions() {
           return {
             id: presentation.id!,
             productId: product.uuid,
+            baseSku: product.baseSku,
+            presentationSku: presentation.sku ?? "",
             productName: product.name,
             productSlug: product.slug,
             presentationLabel: presentation.etiqueta,
@@ -386,7 +565,7 @@ export async function getAdminPresentationOptions() {
                 ? stockCurrentBaseUnits / presentation.amountInBaseUnits
                 : 0,
             lastUnitCostCents: inventory?.last_unit_cost_cents ?? null,
-            displayName: `${product.name} - ${presentation.etiqueta}`,
+            displayName: `${product.name} · ${presentation.etiqueta} · ${presentation.sku ?? ""}`,
           } satisfies AdminPresentationOption;
         }),
     )
@@ -394,12 +573,17 @@ export async function getAdminPresentationOptions() {
 }
 
 export async function getAdminPurchaseProductOptions() {
-  const [products, inventoryRows, latestCostByProductId] = await Promise.all([
+  const [products, inventoryRows, latestCostByProductId, stockMovementRows] = await Promise.all([
     getAdminProducts(),
     getSafeRawInventorySummary(),
     getLatestPurchaseUnitCostByProductId(),
+    getSafeRawStockMovements(),
   ]);
-  const productInventorySummary = buildProductInventorySummary(products, inventoryRows);
+  const productInventorySummary = buildProductInventorySummary(
+    products,
+    inventoryRows,
+    aggregateManualMovementBaseUnitsByProduct(stockMovementRows),
+  );
   const productInventoryByProductId = new Map(
     productInventorySummary.map((item) => [item.productId, item]),
   );
@@ -407,7 +591,7 @@ export async function getAdminPurchaseProductOptions() {
   return products
     .map((product) => {
       const activePresentations = product.presentations
-        .filter((presentation) => presentation.id)
+        .filter((presentation) => presentation.id && (presentation.activa ?? true))
         .sort((a, b) => a.amountInBaseUnits - b.amountInBaseUnits);
       const primaryMeasurementKind = resolvePrimaryMeasurementKind(
         activePresentations.map((presentation) => presentation.measurementKind),
@@ -429,18 +613,20 @@ export async function getAdminPurchaseProductOptions() {
       return {
         id: product.uuid,
         productId: product.uuid,
+        baseSku: product.baseSku,
         productName: product.name,
         productSlug: product.slug,
         measurementKind: primaryMeasurementKind,
         purchaseUnitLabel,
         purchaseUnitBaseAmount,
         referencePresentationId: referencePresentation.id,
+        referencePresentationSku: referencePresentation.sku ?? "",
         referencePresentationLabel: referencePresentation.etiqueta,
         referencePresentationBaseAmount: referencePresentation.amountInBaseUnits,
         stockCurrentBaseUnits: productInventory?.stockCurrent ?? 0,
         stockCurrentBaseLabel: productInventory?.stockCurrentLabel ?? "0 unidades",
         lastPurchaseUnitCostCents: latestCostByProductId.get(product.uuid) ?? null,
-        displayName: product.name,
+        displayName: `${product.name} · ${product.baseSku}`,
       } satisfies AdminPurchaseProductOption;
     })
     .filter((value): value is AdminPurchaseProductOption => Boolean(value))
@@ -449,7 +635,7 @@ export async function getAdminPurchaseProductOptions() {
 
 function mapPurchaseOrders(
   orders: PurchaseOrderRow[],
-  items: PurchaseOrderItemRow[],
+  items: PurchaseOrderItemRowCompat[],
   presentationById: Map<string, AdminPresentationOption>,
 ) {
   const itemsByOrderId = new Map<string, PurchaseOrderItemRecord[]>();
@@ -465,6 +651,8 @@ function mapPurchaseOrders(
     list.push({
       id: item.id,
       productPresentationId: item.product_presentation_id,
+      baseSku: item.base_sku_snapshot ?? presentation?.baseSku ?? "",
+      presentationSku: item.presentation_sku_snapshot ?? presentation?.presentationSku ?? "",
       productName: presentation?.productName ?? "Presentación eliminada",
       presentationLabel: presentation?.presentationLabel ?? item.product_presentation_id,
       quantity: purchaseQuantity,
@@ -502,7 +690,7 @@ function mapPurchaseOrders(
 
 function mapSales(
   sales: SaleRowCompat[],
-  items: SaleItemRow[],
+  items: SaleItemRowCompat[],
   presentationById: Map<string, AdminPresentationOption>,
   inventoryByProductId: Map<string, InventorySummaryRecord>,
   latestCostByPresentationId: Map<string, number>,
@@ -532,6 +720,8 @@ function mapSales(
       id: item.id,
       productPresentationId: item.product_presentation_id,
       productId: presentation?.productId ?? "",
+      baseSku: item.base_sku_snapshot ?? presentation?.baseSku ?? "",
+      presentationSku: item.presentation_sku_snapshot ?? presentation?.presentationSku ?? "",
       productName: presentation?.productName ?? "Presentación eliminada",
       presentationLabel: presentation?.presentationLabel ?? item.product_presentation_id,
       quantity,
@@ -595,12 +785,53 @@ async function fetchSalesRows(supabase: Awaited<ReturnType<typeof createServerSu
     .order("sold_at", { ascending: false });
 }
 
+async function fetchPurchaseOrderItemRows(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+) {
+  const selectWithSnapshots =
+    "id, purchase_order_id, product_presentation_id, base_sku_snapshot, presentation_sku_snapshot, amount_in_base_units_snapshot, quantity, unit_cost_cents, line_total_cents, created_at";
+  const legacySelect =
+    "id, purchase_order_id, product_presentation_id, quantity, unit_cost_cents, line_total_cents, created_at";
+
+  const result = await supabase
+    .from("purchase_order_items")
+    .select(selectWithSnapshots);
+
+  if (!result.error || !isMissingRelationError(result.error.message)) {
+    return result;
+  }
+
+  return supabase.from("purchase_order_items").select(legacySelect);
+}
+
+async function fetchSaleItemRows(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+) {
+  const selectWithSnapshots =
+    "id, sale_id, product_presentation_id, base_sku_snapshot, presentation_sku_snapshot, amount_in_base_units_snapshot, quantity, unit_price_cents, unit_cost_snapshot_cents, line_total_cents, line_margin_cents, created_at";
+  const legacySelect =
+    "id, sale_id, product_presentation_id, quantity, unit_price_cents, unit_cost_snapshot_cents, line_total_cents, line_margin_cents, created_at";
+
+  const result = await supabase.from("sale_items").select(selectWithSnapshots);
+
+  if (!result.error || !isMissingRelationError(result.error.message)) {
+    return result;
+  }
+
+  return supabase.from("sale_items").select(legacySelect);
+}
+
 export async function getInventorySummary() {
-  const [products, rows] = await Promise.all([
+  const [products, rows, stockMovementRows] = await Promise.all([
     getAdminProducts(),
     getSafeRawInventorySummary(),
+    getSafeRawStockMovements(),
   ]);
-  return buildProductInventorySummary(products, rows)
+  return buildProductInventorySummary(
+    products,
+    rows,
+    aggregateManualMovementBaseUnitsByProduct(stockMovementRows),
+  )
     .sort((a, b) => {
       if (a.stockCurrent !== b.stockCurrent) {
         return a.stockCurrent - b.stockCurrent;
@@ -620,9 +851,7 @@ export async function getPurchaseOrders() {
       .from("purchase_orders")
       .select("id, supplier_name, reference_number, purchased_at, notes, created_by, created_at, updated_at")
       .order("purchased_at", { ascending: false }),
-    supabase
-      .from("purchase_order_items")
-      .select("id, purchase_order_id, product_presentation_id, quantity, unit_cost_cents, line_total_cents, created_at"),
+    fetchPurchaseOrderItemRows(supabase),
   ]);
 
   const relationError = ordersResult.error ?? itemsResult.error;
@@ -657,9 +886,7 @@ export async function getSales() {
 
   const [salesResult, itemsResult] = await Promise.all([
     fetchSalesRows(supabase),
-    supabase
-      .from("sale_items")
-      .select("id, sale_id, product_presentation_id, quantity, unit_price_cents, unit_cost_snapshot_cents, line_total_cents, line_margin_cents, created_at"),
+    fetchSaleItemRows(supabase),
   ]);
 
   const relationError = salesResult.error ?? itemsResult.error;
@@ -684,6 +911,94 @@ export async function getSales() {
 export async function getSaleById(id: string) {
   const sales = await getSales();
   return sales.find((sale) => sale.id === id) ?? null;
+}
+
+export async function getStockMovements() {
+  const [products, stockMovementRows, adminUsersResult] = await Promise.all([
+    getAdminProducts(),
+    getSafeRawStockMovements(),
+    createServerSupabaseClient().then((supabase) =>
+      supabase.from("admin_users").select("user_id, email"),
+    ),
+  ]);
+
+  if (adminUsersResult.error) {
+    throw new Error(adminUsersResult.error.message);
+  }
+
+  const productById = new Map(products.map((product) => [product.uuid, product]));
+  const presentationMetaById = new Map(
+    products.flatMap((product) =>
+      product.presentations
+        .filter((presentation) => presentation.id)
+        .map((presentation) => [
+          presentation.id!,
+          {
+            productId: product.uuid,
+            presentationLabel: presentation.etiqueta,
+            amountInBaseUnits: presentation.amountInBaseUnits,
+          },
+        ]),
+    ),
+  );
+  const measurementMetaByProductId = getProductMeasurementMeta(products);
+  const adminEmailById = new Map(
+    (adminUsersResult.data ?? []).map((adminUser) => [adminUser.user_id, adminUser.email]),
+  );
+
+  return stockMovementRows.map((row) => {
+    const product = productById.get(row.product_id);
+    const presentation = row.presentation_id
+      ? presentationMetaById.get(row.presentation_id)
+      : null;
+    const measurementMeta = measurementMetaByProductId.get(row.product_id);
+    const measurementKind = measurementMeta?.measurementKind ?? "unit";
+    const quantity = parseNumericQuantity(row.quantity);
+    const quantityBaseUnits = parseNumericQuantity(row.quantity_base_units);
+    const previousStock = parseNumericQuantity(row.previous_stock);
+    const newStock = parseNumericQuantity(row.new_stock);
+    const baseUnitLabel = getBaseUnitLabel(measurementKind);
+    const quantityLabel = presentation
+      ? `${formatQuantityValue(quantity)} x ${presentation.presentationLabel}`
+      : `${formatQuantityValue(quantity)} ${baseUnitLabel}`;
+
+    return {
+      id: row.id,
+      productId: row.product_id,
+      productName: product?.name ?? measurementMeta?.productName ?? row.product_id,
+      presentationId: row.presentation_id,
+      presentationLabel: presentation?.presentationLabel ?? null,
+      movementType: row.movement_type as StockMovementType,
+      quantity,
+      quantityLabel,
+      quantityBaseUnits,
+      quantityBaseLabel: formatBaseQuantity(quantityBaseUnits, measurementKind),
+      previousStock,
+      previousStockLabel: formatBaseQuantity(previousStock, measurementKind),
+      newStock,
+      newStockLabel: formatBaseQuantity(newStock, measurementKind),
+      reason: row.reason,
+      notes: row.notes,
+      createdBy: row.created_by,
+      createdByEmail: adminEmailById.get(row.created_by) ?? row.created_by,
+      createdAt: row.created_at,
+    } satisfies StockMovementRecord;
+  });
+}
+
+export async function getStockMovementDashboardMetrics() {
+  const movements = await getStockMovements();
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const todaysMovements = movements.filter(
+    (movement) => movement.createdAt.slice(0, 10) === todayKey,
+  );
+
+  return {
+    movementsToday: todaysMovements.length,
+    manualEntriesToday: todaysMovements.filter((movement) => movement.quantityBaseUnits > 0).length,
+    manualExitsToday: todaysMovements.filter((movement) => movement.quantityBaseUnits < 0).length,
+    productsAffectedToday: new Set(todaysMovements.map((movement) => movement.productId)).size,
+  } satisfies StockMovementDashboardMetrics;
 }
 
 export async function getAdminDashboardMetrics(periodDays = DASHBOARD_PERIOD_DAYS) {
@@ -759,7 +1074,7 @@ export async function getLatestCostByPresentationId() {
   );
 }
 
-async function getLatestPurchaseUnitCostByProductId() {
+export async function getLatestPurchaseUnitCostByProductId() {
   const supabase = await createServerSupabaseClient();
   const [products, ordersResult, itemsResult] = await Promise.all([
     getAdminProducts(),

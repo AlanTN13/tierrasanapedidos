@@ -258,6 +258,9 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                       isSale ? (
                         <>
                           <div>
+                            SKU: {(option as AdminPresentationOption).presentationSku}
+                          </div>
+                          <div>
                             Presentación: {(option as AdminPresentationOption).presentationLabel}. Si
                             cargás 3, son 3 presentaciones de este tipo.
                           </div>
@@ -285,6 +288,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                       ) : (
                         <>
                           <div>Producto base: {(option as AdminPurchaseProductOption).productName}.</div>
+                          <div>SKU base: {(option as AdminPurchaseProductOption).baseSku}</div>
                           <div>
                             Stock base actual: {(option as AdminPurchaseProductOption).stockCurrentBaseLabel}
                             {(option as AdminPurchaseProductOption).stockCurrentBaseUnits < 0

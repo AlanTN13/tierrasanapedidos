@@ -13,6 +13,7 @@ export async function GET() {
 
   const header = [
     "slug",
+    "sku_base",
     "nombre",
     "descripcion",
     "imagen",
@@ -26,6 +27,7 @@ export async function GET() {
 
   const rows = products.map((product) => [
     product.slug,
+    product.baseSku,
     product.name,
     product.description,
     product.imagePath,
@@ -39,7 +41,7 @@ export async function GET() {
     product.presentations
       .map(
         (presentation) =>
-          `${presentation.etiqueta}: ${presentation.precio.toLocaleString("es-AR")}`,
+          `${presentation.sku ?? "sin-sku"} ${presentation.etiqueta}: ${presentation.precio.toLocaleString("es-AR")}`,
       )
       .join(" | "),
   ]);

@@ -32,10 +32,19 @@ export function ImageUploadField({
 
       {hasCurrentImage && !removeCurrentImage ? (
         <div className="space-y-3">
-          <div className="space-y-2">
-            <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-              Imagen actual
-            </span>
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
+                Imagen actual
+              </span>
+              <button
+                type="button"
+                onClick={() => setRemoveCurrentImage(true)}
+                className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100"
+              >
+                Borrar imagen actual
+              </button>
+            </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -46,14 +55,6 @@ export function ImageUploadField({
               <p className="text-sm text-foreground/66">{currentImagePath}</p>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setRemoveCurrentImage(true)}
-            className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100"
-          >
-            Borrar imagen actual
-          </button>
         </div>
       ) : (
         <div className="space-y-3">

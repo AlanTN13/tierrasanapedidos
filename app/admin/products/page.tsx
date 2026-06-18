@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { PageHeader } from "@/components/admin/page-header";
 import { ProductsList } from "@/components/admin/products-list";
 import { getAdminCategories, getAdminProducts } from "@/lib/catalog-data";
+import { getInventorySummary, getLatestPurchaseUnitCostByProductId } from "@/lib/admin-operations";
 import { requireAdminUser } from "@/lib/supabase/admin";
 
 export default function ProductsPage() {
@@ -17,7 +18,12 @@ export default function ProductsPage() {
 async function ProductsPageContent() {
   await connection();
   await requireAdminUser();
-  const [products, categories] = await Promise.all([getAdminProducts(), getAdminCategories()]);
+  const [products, categories, inventorySummary, latestCostByProductId] = await Promise.all([
+    getAdminProducts(),
+    getAdminCategories(),
+    getInventorySummary(),
+    getLatestPurchaseUnitCostByProductId(),
+  ]);
   const categoryNameById = Object.fromEntries(
     categories.map((category) => [category.id, category.name]),
   );
@@ -26,7 +32,7 @@ async function ProductsPageContent() {
     <div className="space-y-6">
       <PageHeader
         title="Productos"
-        description="Gestioná catálogo, presentaciones y visibilidad sin mezclarlo con compras o ventas."
+        description="Gestioná catálogo con SKU base, stock real por producto y presentaciones derivadas para compras, ventas y alertas."
         actions={
           <>
             <Link
@@ -45,7 +51,12 @@ async function ProductsPageContent() {
         }
       />
 
-      <ProductsList products={products} categoryNameById={categoryNameById} />
+      <ProductsList
+        products={products}
+        categoryNameById={categoryNameById}
+        inventorySummary={inventorySummary}
+        latestCostByProductId={Object.fromEntries(latestCostByProductId)}
+      />
     </div>
   );
 }

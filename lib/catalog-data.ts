@@ -16,6 +16,7 @@ import {
   calculateAmountInBaseUnits,
   inferPresentationMeasurementFromLabel,
 } from "@/lib/presentation";
+import { generateBaseSku, generatePresentationSku, normalizeManualSku } from "@/lib/sku";
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
@@ -32,7 +33,9 @@ type ProductRow = Pick<
   | "is_featured"
   | "featured_order"
   | "is_active"
->;
+> & {
+  base_sku?: string | null;
+};
 type CategoryRow = Pick<
   Database["public"]["Tables"]["categories"]["Row"],
   "id" | "slug" | "name" | "image_path" | "search_tags" | "sort_order" | "is_active"
@@ -46,6 +49,7 @@ type ProductPresentationRow = Pick<
   | "sort_order"
   | "is_active"
 > & {
+  sku?: string | null;
   measurement_kind?: string | null;
   amount_value?: string | number | null;
   amount_unit?: string | null;
@@ -59,6 +63,7 @@ type ProductCategoryRow = Pick<
 export type AdminCatalogProduct = {
   uuid: string;
   slug: string;
+  baseSku: string;
   name: string;
   description: string;
   imagePath: string;
@@ -87,11 +92,19 @@ type CatalogSnapshot = {
 
 const fallbackProducts = (productsData as Product[]).map((product) => ({
   ...product,
+  baseSku: generateBaseSku(product.id, product.nombre),
   presentaciones: product.presentaciones.map((presentation) => {
     const inferred = inferPresentationMeasurementFromLabel(presentation.etiqueta);
+    const baseSku = generateBaseSku(product.id, product.nombre);
 
     return {
       ...presentation,
+      sku: generatePresentationSku({
+        baseSku,
+        measurementKind: inferred.measurementKind,
+        amountValue: inferred.amountValue,
+        amountUnit: inferred.amountUnit,
+      }),
       measurementKind: inferred.measurementKind,
       amountValue: inferred.amountValue,
       amountUnit: inferred.amountUnit,
@@ -167,7 +180,7 @@ async function fetchPresentationRows(
   includeInactive: boolean,
 ) {
   const selectWithMeasurement =
-    "id, product_id, label, measurement_kind, amount_value, amount_unit, amount_in_base_units, price_cents, sort_order, is_active";
+    "id, product_id, sku, label, measurement_kind, amount_value, amount_unit, amount_in_base_units, price_cents, sort_order, is_active";
   const legacySelect = "id, product_id, label, price_cents, sort_order, is_active";
 
   let query = supabase
@@ -197,6 +210,36 @@ async function fetchPresentationRows(
   return legacyQuery;
 }
 
+async function fetchProductRows(
+  supabase: SupabaseClient<Database>,
+  includeInactive: boolean,
+) {
+  const selectWithSku =
+    "id, slug, base_sku, name, description, image_path, tags, is_featured, featured_order, is_active";
+  const legacySelect =
+    "id, slug, name, description, image_path, tags, is_featured, featured_order, is_active";
+
+  let query = supabase.from("products").select(selectWithSku).order("name", { ascending: true });
+
+  if (!includeInactive) {
+    query = query.eq("is_active", true);
+  }
+
+  const result = await query;
+
+  if (!result.error || !isMissingColumnError(result.error.message)) {
+    return result;
+  }
+
+  let legacyQuery = supabase.from("products").select(legacySelect).order("name", { ascending: true });
+
+  if (!includeInactive) {
+    legacyQuery = legacyQuery.eq("is_active", true);
+  }
+
+  return legacyQuery;
+}
+
 async function fetchCatalogRows(
   supabase: SupabaseClient<Database>,
   includeInactive: boolean,
@@ -206,17 +249,7 @@ async function fetchCatalogRows(
     .select("id, slug, name, image_path, search_tags, sort_order, is_active")
     .order("sort_order", { ascending: true });
 
-  let productsQuery = supabase
-    .from("products")
-    .select(
-      "id, slug, name, description, image_path, tags, is_featured, featured_order, is_active",
-    )
-    .order("name", { ascending: true });
-
-  if (!includeInactive) {
-    productsQuery = productsQuery.eq("is_active", true);
-  }
-
+  const productsPromise = fetchProductRows(supabase, includeInactive);
   const productCategoriesQuery = supabase
     .from("product_categories")
     .select("product_id, category_id, sort_order")
@@ -226,7 +259,7 @@ async function fetchCatalogRows(
   const [categoriesResult, productsResult, presentationsResult, productCategoriesResult] =
     await Promise.all([
       categoriesPromise,
-      productsQuery,
+      productsPromise,
       presentationsPromise,
       productCategoriesQuery,
     ]);
@@ -260,23 +293,37 @@ function mapCatalogCategory(row: CategoryRow): CatalogCategory {
   };
 }
 
-function mapProductPresentation(row: ProductPresentationRow): ProductPresentation {
+function mapProductPresentation(
+  row: ProductPresentationRow,
+  baseSku: string,
+): ProductPresentation {
   const inferredMeasurement = inferPresentationMeasurementFromLabel(row.label);
+  const measurementKind =
+    (row.measurement_kind as PresentationMeasurementKind | undefined) ??
+    inferredMeasurement.measurementKind;
+  const amountValue =
+    row.amount_value != null
+      ? Number.parseFloat(String(row.amount_value))
+      : inferredMeasurement.amountValue;
+  const amountUnit =
+    (row.amount_unit as PresentationMeasurementUnit | undefined) ??
+    inferredMeasurement.amountUnit;
 
   return {
     id: row.id,
+    sku:
+      normalizeManualSku(row.sku) ||
+      generatePresentationSku({
+        baseSku,
+        measurementKind,
+        amountValue,
+        amountUnit,
+      }),
     etiqueta: row.label,
     precio: row.price_cents / 100,
-    measurementKind:
-      (row.measurement_kind as PresentationMeasurementKind | undefined) ??
-      inferredMeasurement.measurementKind,
-    amountValue:
-      row.amount_value != null
-        ? Number.parseFloat(String(row.amount_value))
-        : inferredMeasurement.amountValue,
-    amountUnit:
-      (row.amount_unit as PresentationMeasurementUnit | undefined) ??
-      inferredMeasurement.amountUnit,
+    measurementKind,
+    amountValue,
+    amountUnit,
     amountInBaseUnits:
       row.amount_in_base_units != null
         ? Number.parseFloat(String(row.amount_in_base_units))
@@ -294,6 +341,7 @@ function mapProductRowsToCatalog(
 ) {
   const categories = categoryRows.map(mapCatalogCategory).sort(bySortOrder);
   const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const productRowById = new Map(productRows.map((row) => [row.id, row]));
   const presentationsByProductId = new Map<string, ProductPresentation[]>();
   const categoryAssignmentsByProductId = new Map<
     string,
@@ -301,8 +349,12 @@ function mapProductRowsToCatalog(
   >();
 
   for (const presentationRow of presentationRows) {
+    const productRow = productRowById.get(presentationRow.product_id);
+    const baseSku =
+      normalizeManualSku(productRow?.base_sku) ||
+      generateBaseSku(productRow?.slug, productRow?.name, presentationRow.product_id);
     const list = presentationsByProductId.get(presentationRow.product_id) ?? [];
-    list.push(mapProductPresentation(presentationRow));
+    list.push(mapProductPresentation(presentationRow, baseSku));
     presentationsByProductId.set(presentationRow.product_id, list);
   }
 
@@ -327,9 +379,12 @@ function mapProductRowsToCatalog(
       .map((assignment) => categoryById.get(assignment.categoryId))
       .filter((category): category is CatalogCategory => Boolean(category));
     const categorias = categoryAssignments.map((category) => category.name);
+    const baseSku =
+      normalizeManualSku(row.base_sku) || generateBaseSku(row.slug, row.name, fallbackProduct?.id);
 
     return {
       id: row.slug,
+      baseSku,
       nombre: row.name,
       categoria: categorias[0] ?? "Sin categoria",
       categorias,
@@ -393,7 +448,7 @@ async function getCachedCatalogSnapshot(): Promise<CatalogSnapshot> {
     }
 
     return mapProductRowsToCatalog(
-      productsResult.data ?? [],
+      (productsResult.data ?? []) as ProductRow[],
       (categoriesResult.data ?? []).filter((category) => category.is_active),
       presentationsResult.data ?? [],
       productCategoriesResult.data ?? [],
@@ -472,6 +527,7 @@ export async function getAdminProducts() {
     return fallbackProducts.map((product) => ({
       uuid: product.id,
       slug: product.id,
+      baseSku: generateBaseSku(product.baseSku, product.id, product.nombre),
       name: product.nombre,
       description: product.descripcion,
       imagePath: product.imagen,
@@ -511,12 +567,18 @@ export async function getAdminProducts() {
   }
 
   const categoryRows = categoriesResult.data ?? [];
+  const productRows = (productsResult.data ?? []) as ProductRow[];
+  const productRowById = new Map(productRows.map((row) => [row.id, row]));
   const presentationsByProductId = new Map<string, ProductPresentation[]>();
   const categoryAssignmentsByProductId = new Map<string, string[]>();
 
   for (const presentationRow of presentationsResult.data ?? []) {
+    const productRow = productRowById.get(presentationRow.product_id);
+    const baseSku =
+      normalizeManualSku(productRow?.base_sku) ||
+      generateBaseSku(productRow?.slug, productRow?.name, presentationRow.product_id);
     const list = presentationsByProductId.get(presentationRow.product_id) ?? [];
-    list.push(mapProductPresentation(presentationRow));
+    list.push(mapProductPresentation(presentationRow, baseSku));
     presentationsByProductId.set(presentationRow.product_id, list);
   }
 
@@ -528,7 +590,7 @@ export async function getAdminProducts() {
 
   const categoryById = new Map(categoryRows.map((category) => [category.id, category]));
 
-  return (productsResult.data ?? [])
+  return productRows
     .map((productRow) => {
       const fallbackProduct =
         fallbackProductBySlug.get(productRow.slug) ??
@@ -537,6 +599,9 @@ export async function getAdminProducts() {
       return {
         uuid: productRow.id,
         slug: productRow.slug,
+        baseSku:
+          normalizeManualSku(productRow.base_sku) ||
+          generateBaseSku(productRow.slug, productRow.name, fallbackProduct?.id),
         name: productRow.name,
         description: productRow.description,
         imagePath:

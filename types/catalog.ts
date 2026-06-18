@@ -4,6 +4,7 @@ export type FilterCategory = "Destacados" | ProductCategory;
 
 export type ProductPresentation = {
   id?: string;
+  sku?: string;
   etiqueta: string;
   precio: number;
   measurementKind: "unit" | "weight" | "volume";
@@ -16,6 +17,7 @@ export type ProductPresentation = {
 
 export type Product = {
   id: string;
+  baseSku?: string;
   nombre: string;
   categoria: ProductCategory;
   categorias?: ProductCategory[];

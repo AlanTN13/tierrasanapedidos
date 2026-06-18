@@ -87,6 +87,9 @@ export type Database = {
           id: string;
           purchase_order_id: string;
           product_presentation_id: string;
+          base_sku_snapshot: string | null;
+          presentation_sku_snapshot: string | null;
+          amount_in_base_units_snapshot: string | null;
           quantity: string;
           unit_cost_cents: number;
           line_total_cents: number;
@@ -96,6 +99,9 @@ export type Database = {
           id?: string;
           purchase_order_id: string;
           product_presentation_id: string;
+          base_sku_snapshot?: string | null;
+          presentation_sku_snapshot?: string | null;
+          amount_in_base_units_snapshot?: string | number | null;
           quantity: string;
           unit_cost_cents: number;
           line_total_cents: number;
@@ -105,6 +111,9 @@ export type Database = {
           id?: string;
           purchase_order_id?: string;
           product_presentation_id?: string;
+          base_sku_snapshot?: string | null;
+          presentation_sku_snapshot?: string | null;
+          amount_in_base_units_snapshot?: string | number | null;
           quantity?: string;
           unit_cost_cents?: number;
           line_total_cents?: number;
@@ -170,6 +179,7 @@ export type Database = {
         Row: {
           id: string;
           product_id: string;
+          sku: string | null;
           label: string;
           measurement_kind: string;
           amount_value: string;
@@ -184,6 +194,7 @@ export type Database = {
         Insert: {
           id?: string;
           product_id: string;
+          sku?: string | null;
           label: string;
           measurement_kind?: string;
           amount_value?: string | number;
@@ -198,6 +209,7 @@ export type Database = {
         Update: {
           id?: string;
           product_id?: string;
+          sku?: string | null;
           label?: string;
           measurement_kind?: string;
           amount_value?: string | number;
@@ -215,6 +227,7 @@ export type Database = {
         Row: {
           id: string;
           slug: string;
+          base_sku: string | null;
           name: string;
           description: string;
           image_path: string | null;
@@ -228,6 +241,7 @@ export type Database = {
         Insert: {
           id?: string;
           slug: string;
+          base_sku?: string | null;
           name: string;
           description: string;
           image_path?: string | null;
@@ -241,6 +255,7 @@ export type Database = {
         Update: {
           id?: string;
           slug?: string;
+          base_sku?: string | null;
           name?: string;
           description?: string;
           image_path?: string | null;
@@ -258,6 +273,9 @@ export type Database = {
           id: string;
           sale_id: string;
           product_presentation_id: string;
+          base_sku_snapshot: string | null;
+          presentation_sku_snapshot: string | null;
+          amount_in_base_units_snapshot: string | null;
           quantity: string;
           unit_price_cents: number;
           unit_cost_snapshot_cents: number;
@@ -269,6 +287,9 @@ export type Database = {
           id?: string;
           sale_id: string;
           product_presentation_id: string;
+          base_sku_snapshot?: string | null;
+          presentation_sku_snapshot?: string | null;
+          amount_in_base_units_snapshot?: string | number | null;
           quantity: string;
           unit_price_cents: number;
           unit_cost_snapshot_cents: number;
@@ -280,6 +301,9 @@ export type Database = {
           id?: string;
           sale_id?: string;
           product_presentation_id?: string;
+          base_sku_snapshot?: string | null;
+          presentation_sku_snapshot?: string | null;
+          amount_in_base_units_snapshot?: string | number | null;
           quantity?: string;
           unit_price_cents?: number;
           unit_cost_snapshot_cents?: number;
@@ -319,6 +343,51 @@ export type Database = {
           created_by?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      stock_movements: {
+        Row: {
+          id: string;
+          product_id: string;
+          presentation_id: string | null;
+          movement_type: string;
+          quantity: string;
+          quantity_base_units: string;
+          previous_stock: string;
+          new_stock: string;
+          reason: string;
+          notes: string | null;
+          created_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          product_id: string;
+          presentation_id?: string | null;
+          movement_type: string;
+          quantity: string | number;
+          quantity_base_units: string | number;
+          previous_stock: string | number;
+          new_stock: string | number;
+          reason: string;
+          notes?: string | null;
+          created_by: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          product_id?: string;
+          presentation_id?: string | null;
+          movement_type?: string;
+          quantity?: string | number;
+          quantity_base_units?: string | number;
+          previous_stock?: string | number;
+          new_stock?: string | number;
+          reason?: string;
+          notes?: string | null;
+          created_by?: string;
+          created_at?: string;
         };
         Relationships: [];
       };
