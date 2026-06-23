@@ -38,8 +38,12 @@ type ProductRow = Pick<
 };
 type CategoryRow = Pick<
   Database["public"]["Tables"]["categories"]["Row"],
-  "id" | "slug" | "name" | "image_path" | "search_tags" | "sort_order" | "is_active"
->;
+  "id" | "slug" | "name" | "image_path"
+> & {
+  search_tags?: Database["public"]["Tables"]["categories"]["Row"]["search_tags"];
+  sort_order?: Database["public"]["Tables"]["categories"]["Row"]["sort_order"];
+  is_active?: Database["public"]["Tables"]["categories"]["Row"]["is_active"];
+};
 type ProductPresentationRow = Pick<
   Database["public"]["Tables"]["product_presentations"]["Row"],
   | "id"
@@ -240,14 +244,28 @@ async function fetchProductRows(
   return legacyQuery;
 }
 
+async function fetchCategoryRows(supabase: SupabaseClient<Database>) {
+  const selectWithMetadata =
+    "id, slug, name, image_path, search_tags, sort_order, is_active";
+  const legacySelect = "id, slug, name, image_path";
+
+  const result = await supabase
+    .from("categories")
+    .select(selectWithMetadata)
+    .order("sort_order", { ascending: true });
+
+  if (!result.error || !isMissingColumnError(result.error.message)) {
+    return result;
+  }
+
+  return supabase.from("categories").select(legacySelect).order("name", { ascending: true });
+}
+
 async function fetchCatalogRows(
   supabase: SupabaseClient<Database>,
   includeInactive: boolean,
 ) {
-  const categoriesPromise = supabase
-    .from("categories")
-    .select("id, slug, name, image_path, search_tags, sort_order, is_active")
-    .order("sort_order", { ascending: true });
+  const categoriesPromise = fetchCategoryRows(supabase);
 
   const productsPromise = fetchProductRows(supabase, includeInactive);
   const productCategoriesQuery = supabase
@@ -276,6 +294,9 @@ function mapCatalogCategory(row: CategoryRow): CatalogCategory {
   const fallback = CATEGORY_CONFIG.find(
     (entry) => slugify(entry.category) === row.slug || entry.category === row.name,
   );
+  const fallbackIndex = fallback
+    ? CATEGORY_ORDER.findIndex((categoryName) => categoryName === fallback.category)
+    : -1;
 
   return {
     id: row.id,
@@ -288,8 +309,8 @@ function mapCatalogCategory(row: CategoryRow): CatalogCategory {
         "/categorias-optimized/semillas.webp",
       ) ?? "/categorias-optimized/semillas.webp",
     searchTags: row.search_tags ?? [...(fallback?.searchTags ?? [])],
-    sortOrder: row.sort_order,
-    isActive: row.is_active,
+    sortOrder: row.sort_order ?? (fallbackIndex >= 0 ? fallbackIndex : Number.MAX_SAFE_INTEGER),
+    isActive: row.is_active ?? true,
   };
 }
 
@@ -449,7 +470,9 @@ async function getCachedCatalogSnapshot(): Promise<CatalogSnapshot> {
 
     return mapProductRowsToCatalog(
       (productsResult.data ?? []) as ProductRow[],
-      (categoriesResult.data ?? []).filter((category) => category.is_active),
+      ((categoriesResult.data ?? []) as CategoryRow[]).filter(
+        (category) => category.is_active !== false,
+      ),
       presentationsResult.data ?? [],
       productCategoriesResult.data ?? [],
     );
@@ -491,10 +514,7 @@ export async function getAdminCategories() {
   }
 
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("categories")
-    .select("id, slug, name, image_path, search_tags, sort_order, is_active")
-    .order("sort_order", { ascending: true });
+  const { data, error } = await fetchCategoryRows(supabase);
 
   if (error) {
     throw new Error(error.message);
