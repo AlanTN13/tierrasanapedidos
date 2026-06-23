@@ -18,6 +18,7 @@ import {
 } from "@/lib/presentation";
 import { generateBaseSku, generatePresentationSku, normalizeManualSku } from "@/lib/sku";
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
 import type { CatalogCategory, Product, ProductPresentation } from "@/types/catalog";
@@ -513,7 +514,7 @@ export async function getAdminCategories() {
     return fallbackCategories();
   }
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServiceRoleClient();
   const { data, error } = await fetchCategoryRows(supabase);
 
   if (error) {
@@ -560,7 +561,7 @@ export async function getAdminProducts() {
     }));
   }
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServiceRoleClient();
   const {
     categoriesResult,
     productsResult,
