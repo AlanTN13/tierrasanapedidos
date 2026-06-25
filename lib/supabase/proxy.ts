@@ -3,6 +3,19 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 
+function buildLoginRedirect(request: NextRequest) {
+  const loginUrl = request.nextUrl.clone();
+  loginUrl.pathname = "/admin/login";
+  loginUrl.search = "";
+
+  const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+  if (nextPath && nextPath !== "/admin/login") {
+    loginUrl.searchParams.set("next", nextPath);
+  }
+
+  return loginUrl;
+}
+
 export async function updateSession(request: NextRequest) {
   if (!isSupabaseConfigured()) {
     return NextResponse.next({ request });
@@ -29,7 +42,13 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const pathname = request.nextUrl.pathname;
+  const isProtectedAdminRoute = pathname.startsWith("/admin") && pathname !== "/admin/login";
+
+  if (isProtectedAdminRoute && !data?.claims?.sub) {
+    return NextResponse.redirect(buildLoginRedirect(request));
+  }
 
   return supabaseResponse;
 }
