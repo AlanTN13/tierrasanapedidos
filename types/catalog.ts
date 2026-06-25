@@ -17,6 +17,7 @@ export type ProductPresentation = {
 
 export type Product = {
   id: string;
+  uuid?: string;
   baseSku?: string;
   nombre: string;
   categoria: ProductCategory;

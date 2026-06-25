@@ -406,6 +406,7 @@ function mapProductRowsToCatalog(
 
     return {
       id: row.slug,
+      uuid: row.id,
       baseSku,
       nombre: row.name,
       categoria: categorias[0] ?? "Sin categoria",

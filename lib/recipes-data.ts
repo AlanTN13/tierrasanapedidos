@@ -136,7 +136,13 @@ function resolveRecipeRows(
   const fallbackRecipesBySlug = new Map(
     getFallbackRecipeHighlights(products).map((recipe) => [recipe.slug, recipe]),
   );
-  const productById = new Map(products.map((product) => [product.id, product]));
+  const productById = new Map<string, Product>();
+  for (const product of products) {
+    productById.set(product.id, product);
+    if (product.uuid) {
+      productById.set(product.uuid, product);
+    }
+  }
   const productIdsByRecipeId = new Map<string, string[]>();
 
   for (const relation of recipeProductRows) {
