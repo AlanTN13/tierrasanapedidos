@@ -72,7 +72,9 @@ export async function saveRecipe(formData: FormData) {
       throw new Error("La receta necesita al menos un paso.");
     }
 
-    if (productIds.length === 0) {
+    const normalizedProductIds = await normalizeRecipeProductIds(supabase, productIds);
+
+    if (normalizedProductIds.length === 0) {
       throw new Error("La receta necesita al menos un producto sugerido.");
     }
 
@@ -137,7 +139,7 @@ export async function saveRecipe(formData: FormData) {
     const { error: insertProductLinksError } = await supabase
       .from("recipe_products")
       .insert(
-        productIds.map((productId, index) => ({
+        normalizedProductIds.map((productId, index) => ({
           recipe_id: resolvedRecipeId,
           product_id: productId,
           sort_order: index,
@@ -399,6 +401,42 @@ function parseTextAreaList(value: FormDataEntryValue | null) {
 function readNumberOrDefault(value: FormDataEntryValue | null, fallback: number) {
   const parsed = readNullableNumber(value);
   return parsed ?? fallback;
+}
+
+async function normalizeRecipeProductIds(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  productIds: string[],
+) {
+  if (productIds.length === 0) {
+    return [];
+  }
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const directIds = productIds.filter((productId) => uuidPattern.test(productId));
+  const slugs = productIds.filter((productId) => !uuidPattern.test(productId));
+
+  if (slugs.length === 0) {
+    return directIds;
+  }
+
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, slug")
+    .in("slug", slugs);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const idBySlug = new Map((data ?? []).map((product) => [product.slug, product.id]));
+  const unresolvedSlugs = slugs.filter((slug) => !idBySlug.has(slug));
+
+  if (unresolvedSlugs.length > 0) {
+    throw new Error(`No se pudieron resolver los productos: ${unresolvedSlugs.join(", ")}`);
+  }
+
+  return productIds.map((productId) => idBySlug.get(productId) ?? productId);
 }
 
 function slugify(value: string) {
