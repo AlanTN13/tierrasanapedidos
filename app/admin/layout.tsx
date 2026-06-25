@@ -1,6 +1,6 @@
 import { Suspense, type ReactNode } from "react";
 import Image from "next/image";
-import { signOutAdmin } from "@/app/admin/actions";
+import { signOutAdmin } from "@/app/admin/auth-actions";
 import { AdminNavLinks } from "@/components/admin/admin-nav-links";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
