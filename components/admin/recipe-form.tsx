@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 import type { AdminRecipe } from "@/lib/recipes-data";
-import type { CatalogCategory } from "@/types/catalog";
 
 type RecipeProductOption = {
   id: string;
@@ -10,7 +9,7 @@ type RecipeProductOption = {
 };
 
 type RecipeFormProps = {
-  categories: CatalogCategory[];
+  categories: string[];
   productOptions: RecipeProductOption[];
   recipe?: AdminRecipe | null;
   action: (formData: FormData) => Promise<void>;
@@ -87,12 +86,12 @@ export function RecipeForm({
             <span className="text-sm font-semibold text-olive-dark">Categoría sugerida</span>
             <select
               name="targetCategory"
-              defaultValue={recipe?.targetCategory ?? categories[0]?.name ?? ""}
+              defaultValue={recipe?.targetCategory ?? categories[0] ?? ""}
               className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             >
               {categories.map((category) => (
-                <option key={category.id} value={category.name}>
-                  {category.name}
+                <option key={category} value={category}>
+                  {category}
                 </option>
               ))}
             </select>

@@ -3,8 +3,7 @@ import { connection } from "next/server";
 import { saveRecipe } from "@/app/admin/actions";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
-import { getAdminCategories } from "@/lib/catalog-data";
-import { getRecipeProductOptions } from "@/lib/recipes-data";
+import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/lib/recipes-data";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
 
 export default function NewRecipePage() {
@@ -19,7 +18,7 @@ async function NewRecipeContent() {
   await connection();
   await requireAuthenticatedUser("/admin/recipes/new");
   const [categories, productOptions] = await Promise.all([
-    getAdminCategories(),
+    getRecipeCategoryOptions(),
     getRecipeProductOptions(),
   ]);
 

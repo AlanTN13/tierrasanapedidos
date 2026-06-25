@@ -2,10 +2,10 @@ import "server-only";
 
 import { cacheTag, revalidateTag } from "next/cache";
 import { createClient as createPublicClient } from "@supabase/supabase-js";
-import { getCatalogProducts, getAdminProducts } from "@/lib/catalog-data";
+import { getAvailableCategories, getCatalogProducts } from "@/lib/catalog-data";
 import { getRecipeHighlights as getFallbackRecipeHighlights } from "@/lib/home";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
-import { createServiceRoleClient } from "@/lib/supabase/service";
+import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Product } from "@/types/catalog";
 import type { Database } from "@/types/database";
 import type { HomeRecipeHighlight, ResolvedRecipeHighlight } from "@/types/home";
@@ -74,7 +74,9 @@ async function getRecipeRows(includeInactive: boolean) {
     return null;
   }
 
-  const supabase = includeInactive ? createServiceRoleClient() : createSupabaseClient();
+  const supabase = includeInactive
+    ? await createServerSupabaseClient()
+    : createSupabaseClient();
   const query = supabase
     .from("recipes")
     .select(
@@ -101,7 +103,9 @@ async function getRecipeProductRows(includeInactive: boolean) {
     return null;
   }
 
-  const supabase = includeInactive ? createServiceRoleClient() : createSupabaseClient();
+  const supabase = includeInactive
+    ? await createServerSupabaseClient()
+    : createSupabaseClient();
   const { data, error } = await supabase
     .from("recipe_products")
     .select("recipe_id, product_id, sort_order, created_at")
@@ -307,16 +311,19 @@ export async function getAdminRecipeBySlug(slug: string): Promise<AdminRecipe | 
 }
 
 export async function getRecipeProductOptions() {
-  const products = await getAdminProducts();
+  const products = await getCatalogProducts();
 
   return products
-    .filter((product) => product.isActive)
     .map((product) => ({
-      id: product.uuid,
-      label: product.name,
-      categoryLabel: product.categoryIds[0] ?? "Sin categoría",
+      id: product.id,
+      label: product.nombre,
+      categoryLabel: product.categorias?.[0] ?? product.categoria ?? "Sin categoría",
     }))
     .sort((a, b) => a.label.localeCompare(b.label, "es"));
+}
+
+export async function getRecipeCategoryOptions() {
+  return getAvailableCategories();
 }
 
 export async function refreshRecipesCache() {

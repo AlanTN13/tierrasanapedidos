@@ -5,8 +5,11 @@ import { connection } from "next/server";
 import { saveRecipe } from "@/app/admin/actions";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
-import { getAdminCategories } from "@/lib/catalog-data";
-import { getAdminRecipeBySlug, getRecipeProductOptions } from "@/lib/recipes-data";
+import {
+  getAdminRecipeBySlug,
+  getRecipeCategoryOptions,
+  getRecipeProductOptions,
+} from "@/lib/recipes-data";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
 
 type EditRecipePageProps = {
@@ -28,7 +31,7 @@ async function EditRecipeContent({ params }: EditRecipePageProps) {
   await requireAuthenticatedUser("/admin/recipes");
   const { slug } = await params;
   const [categories, productOptions, recipe] = await Promise.all([
-    getAdminCategories(),
+    getRecipeCategoryOptions(),
     getRecipeProductOptions(),
     getAdminRecipeBySlug(slug),
   ]);
