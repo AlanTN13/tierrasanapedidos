@@ -1,11 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCatalogProducts } from "@/lib/catalog-data";
-import { getRecipeHighlights } from "@/lib/home";
+import { getResolvedRecipes } from "@/lib/recipes-data";
 
 export default async function RecipesPage() {
-  const products = await getCatalogProducts();
-  const recipes = getRecipeHighlights(products);
+  const recipes = await getResolvedRecipes();
 
   return (
     <main className="pb-16">

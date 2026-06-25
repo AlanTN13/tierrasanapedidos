@@ -3,7 +3,8 @@ import "server-only";
 import { createClient as createPublicClient } from "@supabase/supabase-js";
 import { cacheTag, revalidateTag } from "next/cache";
 import { getCategoryCards } from "@/lib/catalog-data";
-import { getDefaultHomeHero, getHomeContent } from "@/lib/home";
+import { getDefaultHomeHero, getFallbackHomeRecipeHighlights, getHomeContentWithRecipes } from "@/lib/home";
+import { getHomeRecipeHighlights } from "@/lib/recipes-data";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
@@ -66,13 +67,14 @@ export async function getResolvedHomeContent(): Promise<HomeContent> {
   cacheTag("home");
   cacheTag("catalog");
 
-  const [categoryCards, settings] = await Promise.all([
+  const [categoryCards, settings, recipeHighlights] = await Promise.all([
     getCategoryCards(),
     getRawHomeSettings().catch(() => null),
+    getHomeRecipeHighlights().catch(() => getFallbackHomeRecipeHighlights()),
   ]);
 
   return {
-    ...getHomeContent(categoryCards),
+    ...getHomeContentWithRecipes(categoryCards, recipeHighlights),
     hero: mapHeroSettings(settings),
   };
 }

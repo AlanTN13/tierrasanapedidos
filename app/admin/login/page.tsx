@@ -7,6 +7,7 @@ type AdminLoginPageProps = {
   searchParams?: Promise<{
     email?: string;
     error?: string;
+    next?: string;
     reason?: string;
     signedOut?: string;
   }>;
@@ -33,6 +34,8 @@ async function AdminLoginContent({
   await connection();
   const resolvedSearchParams = await searchParams;
   const isConfigured = isSupabaseConfigured();
+  const nextPath = normalizeNextPath(resolvedSearchParams?.next);
+  const wantsRecipeModule = nextPath.startsWith("/admin/recipes");
   const reason = resolvedSearchParams?.reason
     ? reasonCopy[resolvedSearchParams.reason]
     : null;
@@ -48,12 +51,26 @@ async function AdminLoginContent({
             Administrar catálogo
           </h1>
           <p className="mt-4 text-sm leading-6 text-foreground/68">
-            Ingresá con email y contraseña. El usuario además tiene que existir en la
-            tabla
-            <code className="mx-1 rounded bg-olive-soft/50 px-1.5 py-0.5 text-xs">
-              admin_users
-            </code>
-            de Supabase.
+            {wantsRecipeModule ? (
+              <>
+                Ingresá con email y contraseña. Para el módulo de recetas alcanza con
+                tener una cuenta autenticada; el resto del backoffice sigue reservado a
+                usuarios cargados en
+                <code className="mx-1 rounded bg-olive-soft/50 px-1.5 py-0.5 text-xs">
+                  admin_users
+                </code>
+                .
+              </>
+            ) : (
+              <>
+                Ingresá con email y contraseña. El usuario además tiene que existir en
+                la tabla
+                <code className="mx-1 rounded bg-olive-soft/50 px-1.5 py-0.5 text-xs">
+                  admin_users
+                </code>
+                de Supabase.
+              </>
+            )}
           </p>
 
           {!isConfigured ? (
@@ -89,6 +106,7 @@ async function AdminLoginContent({
           ) : null}
 
           <form action={signInAdmin} className="mt-6 space-y-4">
+            <input type="hidden" name="next" value={nextPath} />
             <label className="block space-y-2">
               <span className="text-sm font-semibold text-olive-dark">Email</span>
               <input
@@ -134,6 +152,14 @@ async function AdminLoginContent({
       </div>
     </main>
   );
+}
+
+function normalizeNextPath(value: string | undefined) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/admin";
+  }
+
+  return value;
 }
 
 function AdminLoginFallback() {

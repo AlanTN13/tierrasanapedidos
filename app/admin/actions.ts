@@ -2,9 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminUser } from "@/lib/supabase/admin";
+import { requireAdminUser, requireAuthenticatedUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
 import { refreshHomeCache } from "@/lib/home-data";
+import { refreshRecipesCache } from "@/lib/recipes-data";
 import {
   calculateAmountInBaseUnits,
   formatPresentationLabel,
@@ -39,9 +40,11 @@ const PRODUCT_IMAGE_BUCKET = "product-images";
 const PRODUCT_IMAGE_PREFIX = "products";
 const CATEGORY_IMAGE_PREFIX = "categories";
 const HOME_IMAGE_PREFIX = "home";
+const RECIPE_IMAGE_PREFIX = "recipes";
 const PRODUCT_IMAGE_PLACEHOLDER = "/productos/frutos-secos-placeholder.svg";
 const CATEGORY_IMAGE_PLACEHOLDER = "/categorias-optimized/semillas.webp";
 const HOME_BANNER_PLACEHOLDER = "/hero-optimized/banner-home.webp";
+const RECIPE_IMAGE_PLACEHOLDER = "/recetas/trufas-fit.webp";
 
 function isMissingColumnError(message: string) {
   const normalized = message.toLowerCase();
@@ -432,6 +435,144 @@ export async function saveHomeSettings(formData: FormData) {
   redirect("/admin/home?saved=1");
 }
 
+export async function saveRecipe(formData: FormData) {
+  await requireAuthenticatedUser("/admin/recipes");
+
+  if (!isSupabaseConfigured()) {
+    throw new Error("Supabase no está configurado.");
+  }
+
+  const supabase = await createClient();
+  const recipeId = readString(formData.get("recipeId"));
+  const title = readString(formData.get("title"));
+  const submittedSlug = readString(formData.get("slug"));
+  const slug = slugify(submittedSlug || title);
+  const shortDescription = readString(formData.get("shortDescription"));
+  const longDescription = readString(formData.get("longDescription"));
+  const targetCategory = readString(formData.get("targetCategory"));
+  const prepLabel = readString(formData.get("prepLabel"));
+  const servingsLabel = readString(formData.get("servingsLabel"));
+  const sortOrder = readNumberOrDefault(formData.get("sortOrder"), 0);
+  const isActive = formData.get("isActive") === "on";
+  const existingImagePath = readString(formData.get("existingImagePath"));
+  const removeExistingImage = readBooleanFlag(formData.get("removeExistingImage"));
+  const imageFile = formData.get("imageFile");
+  const ingredients = parseTextAreaList(formData.get("ingredients"));
+  const steps = parseTextAreaList(formData.get("steps"));
+  const productIds = formData
+    .getAll("productIds")
+    .map((value) => readString(value))
+    .filter(Boolean);
+  const heroImagePath = await resolveRecipeImagePath({
+    slug,
+    title,
+    imageFile,
+    existingImagePath,
+    removeExistingImage,
+  });
+
+  if (
+    !slug ||
+    !title ||
+    !shortDescription ||
+    !longDescription ||
+    !targetCategory ||
+    !prepLabel ||
+    !servingsLabel
+  ) {
+    throw new Error("La receta necesita título, descripciones, categoría, tiempo y rinde.");
+  }
+
+  if (ingredients.length === 0) {
+    throw new Error("La receta necesita al menos un ingrediente.");
+  }
+
+  if (steps.length === 0) {
+    throw new Error("La receta necesita al menos un paso.");
+  }
+
+  if (productIds.length === 0) {
+    throw new Error("La receta necesita al menos un producto sugerido.");
+  }
+
+  let resolvedRecipeId = recipeId;
+
+  if (resolvedRecipeId) {
+    const { error } = await supabase
+      .from("recipes")
+      .update({
+        slug,
+        title,
+        short_description: shortDescription,
+        long_description: longDescription,
+        hero_image_path: heroImagePath,
+        target_category: targetCategory,
+        prep_label: prepLabel,
+        servings_label: servingsLabel,
+        ingredients,
+        steps,
+        sort_order: sortOrder,
+        is_active: isActive,
+      })
+      .eq("id", resolvedRecipeId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  } else {
+    const { data, error } = await supabase
+      .from("recipes")
+      .insert({
+        slug,
+        title,
+        short_description: shortDescription,
+        long_description: longDescription,
+        hero_image_path: heroImagePath,
+        target_category: targetCategory,
+        prep_label: prepLabel,
+        servings_label: servingsLabel,
+        ingredients,
+        steps,
+        sort_order: sortOrder,
+        is_active: isActive,
+      })
+      .select("id")
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message ?? "No se pudo crear la receta.");
+    }
+
+    resolvedRecipeId = data.id;
+  }
+
+  const { error: deleteProductLinksError } = await supabase
+    .from("recipe_products")
+    .delete()
+    .eq("recipe_id", resolvedRecipeId);
+
+  if (deleteProductLinksError) {
+    throw new Error(deleteProductLinksError.message);
+  }
+
+  const { error: insertProductLinksError } = await supabase
+    .from("recipe_products")
+    .insert(
+      productIds.map((productId, index) => ({
+        recipe_id: resolvedRecipeId,
+        product_id: productId,
+        sort_order: index,
+      })),
+    );
+
+  if (insertProductLinksError) {
+    throw new Error(insertProductLinksError.message);
+  }
+
+  await refreshRecipesCache();
+  redirect(`/admin/recipes/${slug}?saved=1`);
+}
+
 function parsePresentations(formData: FormData, baseSku: string): ParsedPresentation[] {
   const ids = formData.getAll("presentationId").map((value) => readString(value));
   const skuOverrides = formData
@@ -648,6 +789,47 @@ async function resolveHomeBannerPath({
   return storagePath;
 }
 
+async function resolveRecipeImagePath({
+  slug,
+  title,
+  imageFile,
+  existingImagePath,
+  removeExistingImage,
+}: {
+  slug: string;
+  title: string;
+  imageFile: FormDataEntryValue | null;
+  existingImagePath: string;
+  removeExistingImage: boolean;
+}) {
+  if (!slug || !title) {
+    return existingImagePath || RECIPE_IMAGE_PLACEHOLDER;
+  }
+
+  if (removeExistingImage && (!(imageFile instanceof File) || imageFile.size === 0)) {
+    await removeStoredImageAtPath(existingImagePath);
+    return RECIPE_IMAGE_PLACEHOLDER;
+  }
+
+  if (!(imageFile instanceof File) || imageFile.size === 0) {
+    return existingImagePath || RECIPE_IMAGE_PLACEHOLDER;
+  }
+
+  const extension = getOutputImageExtension(imageFile);
+  const normalizedBaseName = slugify(slug || title);
+  const filePath = buildVersionedStorageObjectPath(
+    RECIPE_IMAGE_PREFIX,
+    normalizedBaseName,
+    extension,
+  );
+  const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
+
+  await uploadImageToStorage(imageFile, filePath);
+  await removeStoredImageAtPath(existingImagePath);
+
+  return storagePath;
+}
+
 function validateManualImagePath(imagePath: string) {
   if (!imagePath) {
     return "";
@@ -828,6 +1010,13 @@ function readNullableNumber(value: FormDataEntryValue | null) {
 function readBooleanFlag(value: FormDataEntryValue | null) {
   const stringValue = readString(value).toLowerCase();
   return stringValue === "1" || stringValue === "true" || stringValue === "on";
+}
+
+function parseTextAreaList(value: FormDataEntryValue | null) {
+  return readString(value)
+    .split(/\r?\n/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
 }
 
 function readNumberOrDefault(value: FormDataEntryValue | null, fallback: number) {

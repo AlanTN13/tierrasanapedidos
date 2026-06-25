@@ -82,6 +82,81 @@ export type Database = {
         };
         Relationships: [];
       };
+      recipe_products: {
+        Row: {
+          recipe_id: string;
+          product_id: string;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          recipe_id: string;
+          product_id: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          recipe_id?: string;
+          product_id?: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      recipes: {
+        Row: {
+          id: string;
+          slug: string;
+          title: string;
+          short_description: string;
+          long_description: string;
+          hero_image_path: string;
+          target_category: string;
+          prep_label: string;
+          servings_label: string;
+          ingredients: string[];
+          steps: string[];
+          sort_order: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          title: string;
+          short_description: string;
+          long_description: string;
+          hero_image_path: string;
+          target_category: string;
+          prep_label: string;
+          servings_label: string;
+          ingredients?: string[];
+          steps?: string[];
+          sort_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          title?: string;
+          short_description?: string;
+          long_description?: string;
+          hero_image_path?: string;
+          target_category?: string;
+          prep_label?: string;
+          servings_label?: string;
+          ingredients?: string[];
+          steps?: string[];
+          sort_order?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       purchase_order_items: {
         Row: {
           id: string;

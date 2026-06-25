@@ -235,11 +235,18 @@ function resolveHomeRecipes(): HomeRecipeHighlight[] {
 }
 
 export function getHomeContent(categoryCards: HomeCategoryCard[]): HomeContent {
+  return getHomeContentWithRecipes(categoryCards, resolveHomeRecipes());
+}
+
+export function getHomeContentWithRecipes(
+  categoryCards: HomeCategoryCard[],
+  recipeHighlights: HomeRecipeHighlight[],
+): HomeContent {
   return {
     sectionLinks,
     hero: resolveHero(),
     categoryCards,
-    recipeHighlights: resolveHomeRecipes(),
+    recipeHighlights,
   };
 }
 
@@ -253,4 +260,8 @@ export function getRecipeBySlug(products: Product[], slug: string) {
 
 export function getDefaultHomeHero() {
   return hero;
+}
+
+export function getFallbackHomeRecipeHighlights() {
+  return resolveHomeRecipes();
 }

@@ -9,6 +9,7 @@ export async function signInAdmin(formData: FormData) {
     redirect("/admin/login?reason=missing-config");
   }
 
+  const next = normalizeNextPath(formData.get("next"));
   const rawEmail = formData.get("email");
   const email = typeof rawEmail === "string" ? rawEmail.trim() : "";
   const rawPassword = formData.get("password");
@@ -33,5 +34,19 @@ export async function signInAdmin(formData: FormData) {
     redirect(`/admin/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect("/admin");
+  redirect(next);
+}
+
+function normalizeNextPath(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") {
+    return "/admin";
+  }
+
+  const trimmed = value.trim();
+
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//")) {
+    return "/admin";
+  }
+
+  return trimmed;
 }

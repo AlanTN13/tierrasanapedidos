@@ -2,8 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { RecipeProductCard } from "@/components/recipe-product-card";
-import { getCatalogProducts } from "@/lib/catalog-data";
-import { getRecipeBySlug, getRecipeHighlights } from "@/lib/home";
+import { getResolvedRecipeBySlug, getResolvedRecipes } from "@/lib/recipes-data";
 
 type RecipePageProps = {
   params: Promise<{
@@ -12,17 +11,14 @@ type RecipePageProps = {
 };
 
 export async function generateStaticParams() {
-  const products = await getCatalogProducts();
-
-  return getRecipeHighlights(products).map((recipe) => ({
+  return (await getResolvedRecipes()).map((recipe) => ({
     slug: recipe.slug,
   }));
 }
 
 export default async function RecipePage({ params }: RecipePageProps) {
-  const products = await getCatalogProducts();
   const { slug } = await params;
-  const recipe = getRecipeBySlug(products, slug);
+  const recipe = await getResolvedRecipeBySlug(slug);
 
   if (!recipe) {
     notFound();
