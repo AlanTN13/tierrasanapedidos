@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { saveRecipe } from "@/app/admin/actions";
+import { saveRecipe } from "@/app/admin/recipes/actions";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
 import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/lib/recipes-data";
