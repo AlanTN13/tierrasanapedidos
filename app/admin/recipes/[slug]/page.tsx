@@ -15,20 +15,25 @@ type EditRecipePageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<{
+    error?: string;
+    saved?: string;
+  }>;
 };
 
-export default function EditRecipePage({ params }: EditRecipePageProps) {
+export default function EditRecipePage({ params, searchParams }: EditRecipePageProps) {
   return (
     <Suspense fallback={<EditRecipeFallback />}>
-      <EditRecipeContent params={params} />
+      <EditRecipeContent params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function EditRecipeContent({ params }: EditRecipePageProps) {
+async function EditRecipeContent({ params, searchParams }: EditRecipePageProps) {
   await connection();
   await requireAuthenticatedUser("/admin/recipes");
   const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
   const [categories, productOptions, recipe] = await Promise.all([
     getRecipeCategoryOptions(),
     getRecipeProductOptions(),
@@ -53,6 +58,16 @@ async function EditRecipeContent({ params }: EditRecipePageProps) {
           </Link>
         }
       />
+      {resolvedSearchParams?.error ? (
+        <div className="rounded-[1.4rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
+      {resolvedSearchParams?.saved === "1" ? (
+        <div className="rounded-[1.4rem] border border-olive/12 bg-olive-soft/36 px-4 py-3 text-sm text-olive-dark">
+          Receta guardada.
+        </div>
+      ) : null}
       <RecipeForm
         categories={categories}
         productOptions={productOptions}

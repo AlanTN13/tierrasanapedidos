@@ -41,115 +41,146 @@ export async function saveRecipe(formData: FormData) {
     .getAll("productIds")
     .map((value) => readString(value))
     .filter(Boolean);
-  const heroImagePath = await resolveRecipeImagePath({
-    slug,
-    title,
-    imageFile,
-    existingImagePath,
-    removeExistingImage,
-  });
-
-  if (
-    !slug ||
-    !title ||
-    !shortDescription ||
-    !longDescription ||
-    !targetCategory ||
-    !prepLabel ||
-    !servingsLabel
-  ) {
-    throw new Error("La receta necesita título, descripciones, categoría, tiempo y rinde.");
-  }
-
-  if (ingredients.length === 0) {
-    throw new Error("La receta necesita al menos un ingrediente.");
-  }
-
-  if (steps.length === 0) {
-    throw new Error("La receta necesita al menos un paso.");
-  }
-
-  if (productIds.length === 0) {
-    throw new Error("La receta necesita al menos un producto sugerido.");
-  }
-
   let resolvedRecipeId = recipeId;
 
-  if (resolvedRecipeId) {
-    const { error } = await supabase
-      .from("recipes")
-      .update({
-        slug,
-        title,
-        short_description: shortDescription,
-        long_description: longDescription,
-        hero_image_path: heroImagePath,
-        target_category: targetCategory,
-        prep_label: prepLabel,
-        servings_label: servingsLabel,
-        ingredients,
-        steps,
-        sort_order: sortOrder,
-        is_active: isActive,
-      })
-      .eq("id", resolvedRecipeId);
+  try {
+    const heroImagePath = await resolveRecipeImagePath({
+      slug,
+      title,
+      imageFile,
+      existingImagePath,
+      removeExistingImage,
+    });
 
-    if (error) {
-      throw new Error(error.message);
-    }
-  } else {
-    const { data, error } = await supabase
-      .from("recipes")
-      .insert({
-        slug,
-        title,
-        short_description: shortDescription,
-        long_description: longDescription,
-        hero_image_path: heroImagePath,
-        target_category: targetCategory,
-        prep_label: prepLabel,
-        servings_label: servingsLabel,
-        ingredients,
-        steps,
-        sort_order: sortOrder,
-        is_active: isActive,
-      })
-      .select("id")
-      .single();
-
-    if (error || !data) {
-      throw new Error(error?.message ?? "No se pudo crear la receta.");
+    if (
+      !slug ||
+      !title ||
+      !shortDescription ||
+      !longDescription ||
+      !targetCategory ||
+      !prepLabel ||
+      !servingsLabel
+    ) {
+      throw new Error("La receta necesita título, descripciones, categoría, tiempo y rinde.");
     }
 
-    resolvedRecipeId = data.id;
-  }
+    if (ingredients.length === 0) {
+      throw new Error("La receta necesita al menos un ingrediente.");
+    }
 
-  const { error: deleteProductLinksError } = await supabase
-    .from("recipe_products")
-    .delete()
-    .eq("recipe_id", resolvedRecipeId);
+    if (steps.length === 0) {
+      throw new Error("La receta necesita al menos un paso.");
+    }
 
-  if (deleteProductLinksError) {
-    throw new Error(deleteProductLinksError.message);
-  }
+    if (productIds.length === 0) {
+      throw new Error("La receta necesita al menos un producto sugerido.");
+    }
 
-  const { error: insertProductLinksError } = await supabase
-    .from("recipe_products")
-    .insert(
-      productIds.map((productId, index) => ({
-        recipe_id: resolvedRecipeId,
-        product_id: productId,
-        sort_order: index,
-      })),
-    );
+    if (resolvedRecipeId) {
+      const { error } = await supabase
+        .from("recipes")
+        .update({
+          slug,
+          title,
+          short_description: shortDescription,
+          long_description: longDescription,
+          hero_image_path: heroImagePath,
+          target_category: targetCategory,
+          prep_label: prepLabel,
+          servings_label: servingsLabel,
+          ingredients,
+          steps,
+          sort_order: sortOrder,
+          is_active: isActive,
+        })
+        .eq("id", resolvedRecipeId);
 
-  if (insertProductLinksError) {
-    throw new Error(insertProductLinksError.message);
+      if (error) {
+        throw new Error(error.message);
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("recipes")
+        .insert({
+          slug,
+          title,
+          short_description: shortDescription,
+          long_description: longDescription,
+          hero_image_path: heroImagePath,
+          target_category: targetCategory,
+          prep_label: prepLabel,
+          servings_label: servingsLabel,
+          ingredients,
+          steps,
+          sort_order: sortOrder,
+          is_active: isActive,
+        })
+        .select("id")
+        .single();
+
+      if (error || !data) {
+        throw new Error(error?.message ?? "No se pudo crear la receta.");
+      }
+
+      resolvedRecipeId = data.id;
+    }
+
+    const { error: deleteProductLinksError } = await supabase
+      .from("recipe_products")
+      .delete()
+      .eq("recipe_id", resolvedRecipeId);
+
+    if (deleteProductLinksError) {
+      throw new Error(deleteProductLinksError.message);
+    }
+
+    const { error: insertProductLinksError } = await supabase
+      .from("recipe_products")
+      .insert(
+        productIds.map((productId, index) => ({
+          recipe_id: resolvedRecipeId,
+          product_id: productId,
+          sort_order: index,
+        })),
+      );
+
+    if (insertProductLinksError) {
+      throw new Error(insertProductLinksError.message);
+    }
+  } catch (error) {
+    redirect(buildRecipeErrorRedirectPath({ recipeId: resolvedRecipeId, slug, error }));
   }
 
   revalidateTag("recipes", "max");
   revalidateTag("home", "max");
   redirect(`/admin/recipes/${slug}?saved=1`);
+}
+
+function buildRecipeErrorRedirectPath({
+  recipeId,
+  slug,
+  error,
+}: {
+  recipeId: string;
+  slug: string;
+  error: unknown;
+}) {
+  const searchParams = new URLSearchParams();
+  searchParams.set("error", getErrorMessage(error));
+
+  if (recipeId && slug) {
+    return `/admin/recipes/${slug}?${searchParams.toString()}`;
+  }
+
+  return `/admin/recipes/new?${searchParams.toString()}`;
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return "No se pudo guardar la receta.";
 }
 
 async function resolveRecipeImagePath({

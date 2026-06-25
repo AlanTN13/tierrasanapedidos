@@ -6,17 +6,24 @@ import { PageHeader } from "@/components/admin/page-header";
 import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/app/admin/recipes/form-options";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
 
-export default function NewRecipePage() {
+type NewRecipePageProps = {
+  searchParams?: Promise<{
+    error?: string;
+  }>;
+};
+
+export default function NewRecipePage({ searchParams }: NewRecipePageProps) {
   return (
     <Suspense fallback={<RecipeEditorFallback title="Nueva receta" />}>
-      <NewRecipeContent />
+      <NewRecipeContent searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function NewRecipeContent() {
+async function NewRecipeContent({ searchParams }: NewRecipePageProps) {
   await connection();
   await requireAuthenticatedUser("/admin/recipes/new");
+  const resolvedSearchParams = await searchParams;
   const [categories, productOptions] = await Promise.all([
     getRecipeCategoryOptions(),
     getRecipeProductOptions(),
@@ -28,6 +35,11 @@ async function NewRecipeContent() {
         title="Nueva receta"
         description="Cargá contenido, imagen principal y productos vinculados."
       />
+      {resolvedSearchParams?.error ? (
+        <div className="rounded-[1.4rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {resolvedSearchParams.error}
+        </div>
+      ) : null}
       <RecipeForm
         categories={categories}
         productOptions={productOptions}
