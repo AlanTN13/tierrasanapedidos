@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
@@ -151,8 +151,11 @@ export async function saveRecipe(formData: FormData) {
     redirect(buildRecipeErrorRedirectPath({ recipeId: resolvedRecipeId, slug, error }));
   }
 
-  revalidateTag("recipes", "max");
-  revalidateTag("home", "max");
+  revalidatePath("/");
+  revalidatePath("/recetas");
+  revalidatePath(`/recetas/${slug}`);
+  revalidatePath("/admin/recipes");
+  revalidatePath(`/admin/recipes/${slug}`);
   redirect(`/admin/recipes/${slug}?saved=1`);
 }
 
