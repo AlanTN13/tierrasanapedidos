@@ -1,8 +1,8 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { refreshRecipesCache } from "@/lib/recipes-data";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -147,7 +147,8 @@ export async function saveRecipe(formData: FormData) {
     throw new Error(insertProductLinksError.message);
   }
 
-  await refreshRecipesCache();
+  revalidateTag("recipes", "max");
+  revalidateTag("home", "max");
   redirect(`/admin/recipes/${slug}?saved=1`);
 }
 

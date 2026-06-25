@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { saveRecipe } from "@/app/admin/recipes/actions";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
-import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/lib/recipes-data";
+import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/app/admin/recipes/form-options";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
 
 export default function NewRecipePage() {

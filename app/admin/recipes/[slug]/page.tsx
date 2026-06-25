@@ -3,12 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { saveRecipe } from "@/app/admin/recipes/actions";
+import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/app/admin/recipes/form-options";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
 import {
   getAdminRecipeBySlug,
-  getRecipeCategoryOptions,
-  getRecipeProductOptions,
 } from "@/lib/recipes-data";
 import { requireAuthenticatedUser } from "@/lib/supabase/admin";
 
