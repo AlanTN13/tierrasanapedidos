@@ -3,19 +3,26 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { PageHeader } from "@/components/admin/page-header";
 import { getAdminRecipeRecords } from "@/lib/recipes-data";
-import { requireAuthenticatedUser } from "@/lib/supabase/admin";
+import { requireAdminUser } from "@/lib/supabase/admin";
 
-export default function RecipesPage() {
+type RecipesPageProps = {
+  searchParams?: Promise<{
+    deleted?: string;
+  }>;
+};
+
+export default function RecipesPage({ searchParams }: RecipesPageProps) {
   return (
     <Suspense fallback={<RecipesPageFallback />}>
-      <RecipesPageContent />
+      <RecipesPageContent searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function RecipesPageContent() {
+async function RecipesPageContent({ searchParams }: RecipesPageProps) {
   await connection();
-  await requireAuthenticatedUser("/admin/recipes");
+  await requireAdminUser();
+  const resolvedSearchParams = await searchParams;
   const recipes = await getAdminRecipeRecords();
 
   return (
@@ -32,6 +39,12 @@ async function RecipesPageContent() {
           </Link>
         }
       />
+
+      {resolvedSearchParams?.deleted === "1" ? (
+        <div className="rounded-[1.4rem] border border-olive/12 bg-olive-soft/36 px-4 py-3 text-sm text-olive-dark">
+          Receta borrada.
+        </div>
+      ) : null}
 
       <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
         <div className="grid gap-px bg-olive/8">

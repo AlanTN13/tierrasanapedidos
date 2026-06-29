@@ -2,14 +2,15 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { saveRecipe } from "@/app/admin/recipes/actions";
+import { deleteRecipe, saveRecipe } from "@/app/admin/recipes/actions";
 import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/app/admin/recipes/form-options";
+import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
 import {
   getAdminRecipeBySlug,
 } from "@/lib/recipes-data";
-import { requireAuthenticatedUser } from "@/lib/supabase/admin";
+import { requireAdminUser } from "@/lib/supabase/admin";
 
 type EditRecipePageProps = {
   params: Promise<{
@@ -31,7 +32,7 @@ export default function EditRecipePage({ params, searchParams }: EditRecipePageP
 
 async function EditRecipeContent({ params, searchParams }: EditRecipePageProps) {
   await connection();
-  await requireAuthenticatedUser("/admin/recipes");
+  await requireAdminUser();
   const { slug } = await params;
   const resolvedSearchParams = await searchParams;
   const [categories, productOptions, recipe] = await Promise.all([
@@ -74,6 +75,21 @@ async function EditRecipeContent({ params, searchParams }: EditRecipePageProps) 
         recipe={recipe}
         action={saveRecipe}
       />
+      <section className="surface-panel organic-outline rounded-[1.8rem] p-5">
+        <h2 className="text-xl font-semibold text-olive-dark">Zona sensible</h2>
+        <p className="mt-2 text-sm leading-6 text-foreground/64">
+          Si esta receta es de prueba o ya no tiene que estar publicada, podés borrarla desde acá.
+        </p>
+        <div className="mt-4">
+          <DeleteRecordButton
+            action={deleteRecipe}
+            recordId={recipe.id}
+            recordLabel="receta"
+            submitLabel="Borrar receta"
+            confirmMessage={`Vas a borrar la receta ${recipe.title}. Esta acción no se puede deshacer.`}
+          />
+        </div>
+      </section>
     </div>
   );
 }

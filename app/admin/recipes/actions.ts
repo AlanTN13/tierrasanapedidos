@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAuthenticatedUser } from "@/lib/supabase/admin";
+import { requireAdminUser } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
 const PRODUCT_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "svg"] as const;
@@ -14,7 +14,7 @@ const RECIPE_IMAGE_PREFIX = "recipes";
 const RECIPE_IMAGE_PLACEHOLDER = "/recetas/trufas-fit.webp";
 
 export async function saveRecipe(formData: FormData) {
-  await requireAuthenticatedUser("/admin/recipes");
+  await requireAdminUser();
 
   if (!isSupabaseConfigured()) {
     throw new Error("Supabase no está configurado.");
@@ -159,6 +159,41 @@ export async function saveRecipe(formData: FormData) {
   revalidatePath("/admin/recipes");
   revalidatePath(`/admin/recipes/${slug}`);
   redirect(`/admin/recipes/${slug}?saved=1`);
+}
+
+export async function deleteRecipe(
+  _state: { error: string | null },
+  formData: FormData,
+) {
+  await requireAdminUser();
+
+  if (!isSupabaseConfigured()) {
+    return {
+      error: "Supabase no está configurado.",
+    };
+  }
+
+  const recordId = readString(formData.get("recordId"));
+
+  if (!recordId) {
+    return {
+      error: "No encontramos la receta a borrar.",
+    };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("recipes").delete().eq("id", recordId);
+
+  if (error) {
+    return {
+      error: error.message,
+    };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/recetas");
+  revalidatePath("/admin/recipes");
+  redirect("/admin/recipes?deleted=1");
 }
 
 function buildRecipeErrorRedirectPath({

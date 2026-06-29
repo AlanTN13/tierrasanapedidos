@@ -4,7 +4,7 @@ import { saveRecipe } from "@/app/admin/recipes/actions";
 import { RecipeForm } from "@/components/admin/recipe-form";
 import { PageHeader } from "@/components/admin/page-header";
 import { getRecipeCategoryOptions, getRecipeProductOptions } from "@/app/admin/recipes/form-options";
-import { requireAuthenticatedUser } from "@/lib/supabase/admin";
+import { requireAdminUser } from "@/lib/supabase/admin";
 
 type NewRecipePageProps = {
   searchParams?: Promise<{
@@ -22,7 +22,7 @@ export default function NewRecipePage({ searchParams }: NewRecipePageProps) {
 
 async function NewRecipeContent({ searchParams }: NewRecipePageProps) {
   await connection();
-  await requireAuthenticatedUser("/admin/recipes/new");
+  await requireAdminUser();
   const resolvedSearchParams = await searchParams;
   const [categories, productOptions] = await Promise.all([
     getRecipeCategoryOptions(),

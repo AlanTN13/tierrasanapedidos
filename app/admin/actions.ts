@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdminUser, requireAuthenticatedUser } from "@/lib/supabase/admin";
+import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
 import { refreshHomeCache } from "@/lib/home-data";
 import { refreshRecipesCache } from "@/lib/recipes-data";
@@ -436,7 +436,7 @@ export async function saveHomeSettings(formData: FormData) {
 }
 
 export async function saveRecipe(formData: FormData) {
-  await requireAuthenticatedUser("/admin/recipes");
+  await requireAdminUser();
 
   if (!isSupabaseConfigured()) {
     throw new Error("Supabase no está configurado.");
