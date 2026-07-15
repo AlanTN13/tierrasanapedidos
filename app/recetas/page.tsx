@@ -29,25 +29,25 @@ export default async function RecipesPage() {
       </section>
 
       <section className="container-shell">
-        <div className="grid gap-5 xl:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {recipes.map((recipe) => (
             <article
               key={recipe.slug}
-              className="organic-outline card-shadow overflow-hidden rounded-[1.8rem] bg-white/88"
+              className="organic-outline card-shadow overflow-hidden rounded-[1.45rem] bg-white/88"
             >
               <Link href={`/recetas/${recipe.slug}`} className="group block">
-                <div className="relative aspect-[1.12/1] overflow-hidden bg-olive-soft/30">
+                <div className="relative aspect-[1.35/1] overflow-hidden bg-olive-soft/30">
                   <Image
                     src={recipe.heroImage}
                     alt={recipe.title}
                     fill
-                    sizes="(max-width: 1280px) 100vw, 33vw"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
                     className="object-cover transition duration-300 group-hover:scale-[1.03]"
                   />
                 </div>
               </Link>
 
-              <div className="p-5">
+              <div className="p-4">
                 <div className="flex flex-wrap gap-2">
                   <span className="rounded-full bg-olive-soft/72 px-2.5 py-1 text-[11px] font-semibold text-olive-dark">
                     {recipe.prepLabel}
@@ -57,7 +57,7 @@ export default async function RecipesPage() {
                   </span>
                 </div>
 
-                <h2 className="mt-3 text-2xl leading-tight font-semibold text-olive-dark">
+                <h2 className="mt-3 text-xl leading-tight font-semibold text-olive-dark">
                   {recipe.title}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-foreground/66">
