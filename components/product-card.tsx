@@ -56,6 +56,10 @@ export function ProductCard({
     return () => window.clearTimeout(timeoutId);
   }, [justAdded]);
 
+  if (!selectedPresentation) {
+    return null;
+  }
+
   return (
     <>
       <article className="card-shadow organic-outline flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-card">

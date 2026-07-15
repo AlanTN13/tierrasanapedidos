@@ -423,7 +423,7 @@ function mapProductRowsToCatalog(
       destacado: row.is_featured,
       featuredOrder: row.featured_order,
     } satisfies Product;
-  });
+  }).filter((product) => product.presentaciones.length > 0);
 
   return {
     categories,
