@@ -1,14 +1,13 @@
 "use client";
 
 import {
-  startTransition,
   useCallback,
   useEffect,
   useRef,
   useState,
   type MutableRefObject,
 } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingCartButton } from "@/components/floating-cart-button";
@@ -64,7 +63,6 @@ function StorefrontContent({
   catalogUrl = null,
   hasCompleteCatalog: initialHasCompleteCatalog = false,
 }: StorefrontProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const [products, setProducts] = useState(initialProducts);
   const [hasCompleteCatalog, setHasCompleteCatalog] = useState(initialHasCompleteCatalog);
@@ -271,9 +269,7 @@ function StorefrontContent({
       void ensureFullCatalog();
     }
 
-    startTransition(() => {
-      router.replace(pathname, { scroll: false });
-    });
+    window.history.replaceState(null, "", pathname);
 
     requestAnimationFrame(() => {
       document.getElementById("productos")?.scrollIntoView({
@@ -297,11 +293,11 @@ function StorefrontContent({
     setDraftSearchQuery(nextQuery);
     setSubmittedSearchQuery(nextQuery);
 
-    startTransition(() => {
-      router.replace(params.size > 0 ? `${pathname}?${params.toString()}` : pathname, {
-        scroll: false,
-      });
-    });
+    window.history.replaceState(
+      null,
+      "",
+      params.size > 0 ? `${pathname}?${params.toString()}` : pathname,
+    );
 
     requestAnimationFrame(() => {
       document.getElementById("productos")?.scrollIntoView({
@@ -357,9 +353,7 @@ function StorefrontContent({
         onClearSearch={() => {
           setDraftSearchQuery("");
           setSubmittedSearchQuery("");
-          startTransition(() => {
-            router.replace(pathname, { scroll: false });
-          });
+          window.history.replaceState(null, "", pathname);
         }}
         totalItems={totalItems}
         onOpenCart={handleOpenCart}
@@ -374,9 +368,7 @@ function StorefrontContent({
             onClearSearch={() => {
               setDraftSearchQuery("");
               setSubmittedSearchQuery("");
-              startTransition(() => {
-                router.replace(pathname, { scroll: false });
-              });
+              window.history.replaceState(null, "", pathname);
             }}
           />
         ) : null}

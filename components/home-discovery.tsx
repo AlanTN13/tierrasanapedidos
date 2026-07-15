@@ -26,8 +26,11 @@ export function HomeDiscovery({
   const featuredRecipes = featuredRecipeSlugs
     .map((slug) => content.recipeHighlights.find((recipe) => recipe.slug === slug))
     .filter((recipe): recipe is NonNullable<typeof recipe> => Boolean(recipe));
-  const visibleRecipes =
-    featuredRecipes.length > 0 ? featuredRecipes : content.recipeHighlights.slice(0, 3);
+  const featuredRecipeSlugSet = new Set(featuredRecipes.map((recipe) => recipe.slug));
+  const visibleRecipes = [
+    ...featuredRecipes,
+    ...content.recipeHighlights.filter((recipe) => !featuredRecipeSlugSet.has(recipe.slug)),
+  ].slice(0, 3);
 
   return (
     <>
