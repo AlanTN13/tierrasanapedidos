@@ -33,7 +33,7 @@ export default async function RecipesPage() {
           {recipes.map((recipe) => (
             <article
               key={recipe.slug}
-              className="organic-outline card-shadow overflow-hidden rounded-[1.45rem] bg-white/88"
+              className="organic-outline card-shadow flex h-full flex-col overflow-hidden rounded-[1.45rem] bg-white/88"
             >
               <Link href={`/recetas/${recipe.slug}`} className="group block">
                 <div className="relative aspect-[1.35/1] overflow-hidden bg-olive-soft/30">
@@ -47,7 +47,7 @@ export default async function RecipesPage() {
                 </div>
               </Link>
 
-              <div className="p-4">
+              <div className="flex flex-1 flex-col p-4">
                 <div className="flex flex-wrap gap-2">
                   <span className="rounded-full bg-olive-soft/72 px-2.5 py-1 text-[11px] font-semibold text-olive-dark">
                     {recipe.prepLabel}
@@ -57,14 +57,14 @@ export default async function RecipesPage() {
                   </span>
                 </div>
 
-                <h2 className="mt-3 text-xl leading-tight font-semibold text-olive-dark">
+                <h2 className="mt-3 min-h-[3rem] line-clamp-2 text-xl leading-tight font-semibold text-olive-dark">
                   {recipe.title}
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-foreground/66">
+                <p className="mt-2 min-h-[4.5rem] line-clamp-3 text-sm leading-6 text-foreground/66">
                   {recipe.shortDescription}
                 </p>
 
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-4 flex min-h-[3.5rem] content-start flex-wrap gap-2">
                   {recipe.products.slice(0, 3).map((product) => (
                     <span
                       key={product.id}
@@ -75,7 +75,7 @@ export default async function RecipesPage() {
                   ))}
                 </div>
 
-                <div className="mt-5 flex flex-wrap gap-2.5">
+                <div className="mt-auto flex flex-wrap gap-2.5 pt-5">
                   <Link
                     href={`/recetas/${recipe.slug}`}
                     className="inline-flex items-center gap-2 rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white hover:bg-olive-dark"
