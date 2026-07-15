@@ -30,10 +30,7 @@ async function HomeContent({ searchParams }: HomeProps) {
     getResolvedHomeContent(),
   ]);
   const initialCategory = availableCategories[0] ?? "Destacados";
-  const shouldDeferFullCatalog = initialSearchQuery.length === 0;
-  const initialProducts = shouldDeferFullCatalog
-    ? filterProducts(products, initialCategory, "")
-    : products;
+  const initialProducts = filterProducts(products, initialCategory, "");
   return (
     <Storefront
       initialProducts={initialProducts}
@@ -41,8 +38,8 @@ async function HomeContent({ searchParams }: HomeProps) {
       homeContent={homeContent}
       initialCategory={initialCategory}
       initialSearchQuery={initialSearchQuery}
-      catalogUrl={shouldDeferFullCatalog ? "/api/catalog" : null}
-      hasCompleteCatalog={!shouldDeferFullCatalog}
+      catalogUrl="/api/catalog"
+      hasCompleteCatalog={false}
     />
   );
 }
