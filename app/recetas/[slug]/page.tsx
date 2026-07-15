@@ -136,7 +136,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
             {recipe.products.map((product) => (
               <RecipeProductCard key={product.id} product={product} />
             ))}

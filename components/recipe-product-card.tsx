@@ -36,50 +36,38 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
   }, [justAdded]);
 
   return (
-    <article className="organic-outline overflow-hidden rounded-[1.6rem] bg-white/86">
-      <div className="relative aspect-[1.18/1] overflow-hidden bg-olive-soft/35">
+    <article className="card-shadow organic-outline flex h-full flex-col overflow-hidden rounded-[1.15rem] bg-card">
+      <div className="relative aspect-square overflow-hidden bg-olive-soft/45">
         <Image
           src={product.imagen}
           alt={product.nombre}
           fill
-          sizes="(max-width: 1280px) 50vw, 33vw"
+          sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 20vw"
           className="object-cover"
         />
       </div>
 
-      <div className="p-4">
-        <p className="text-[0.7rem] font-bold tracking-[0.14em] text-earth uppercase">
+      <div className="flex flex-1 flex-col p-3">
+        <p className="text-[10px] font-bold tracking-[0.16em] text-earth uppercase">
           {getPrimaryCategory(product)}
         </p>
-        <h3 className="mt-2 text-xl font-semibold text-olive-dark">
+        <h3 className="mt-1 min-h-[2.5rem] line-clamp-2 text-[15px] leading-tight font-semibold text-olive-dark">
           {product.nombre}
         </h3>
-        <p className="mt-2 text-sm leading-6 text-foreground/66">
-          {product.descripcion}
-        </p>
 
-        <div className="mt-4 flex items-end justify-between gap-3">
+        <div className="mt-2 flex items-end justify-between gap-2">
           <div>
-            <p className="text-lg font-semibold text-olive-dark">
+            <p className="text-base font-semibold text-olive-dark">
               {formatARS(selectedPresentation.precio)}
             </p>
-            <p className="text-sm text-foreground/58">
+            <p className="mt-0.5 text-[11px] text-foreground/58">
               por {selectedPresentation.etiqueta}
             </p>
           </div>
-          <span className="rounded-full bg-olive-soft/76 px-3 py-1 text-xs font-semibold text-olive-dark">
-            {selectedPresentation.etiqueta}
-          </span>
         </div>
 
         {hasMultiplePresentations ? (
-          <div className="mt-4">
-            <label
-              htmlFor={`recipe-presentation-${product.id}`}
-              className="mb-2 block text-xs font-bold tracking-[0.14em] text-earth uppercase"
-            >
-              Elegí el peso
-            </label>
+          <div className="mt-2.5">
             <div className="relative">
               <select
                 id={`recipe-presentation-${product.id}`}
@@ -89,7 +77,8 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
                     event.target.value as ProductPresentation["etiqueta"],
                   )
                 }
-                className="w-full appearance-none rounded-2xl border border-olive/12 bg-white/84 px-4 py-3 pr-12 text-sm font-medium text-olive-dark outline-none focus:border-olive/28 focus:ring-2 focus:ring-olive/20"
+                className="w-full appearance-none rounded-[0.95rem] border border-olive/12 bg-white/84 px-3 py-2 pr-9 text-[12px] font-medium text-olive-dark outline-none focus:border-olive/28 focus:ring-2 focus:ring-olive/20"
+                aria-label={`Elegir peso para ${product.nombre}`}
               >
                 {product.presentaciones.map((presentation) => (
                   <option key={presentation.etiqueta} value={presentation.etiqueta}>
@@ -97,15 +86,22 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-olive-dark/70">
+              <span className="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-olive-dark/70">
                 <ChevronIcon />
               </span>
             </div>
           </div>
         ) : null}
 
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <div className="inline-flex items-center rounded-full border border-olive/12 bg-white/80 p-1">
+        <Link
+          href={`/?q=${encodeURIComponent(product.nombre)}`}
+          className="mt-3 rounded-full border border-olive/14 bg-white px-3 py-2 text-center text-[12px] font-semibold text-olive-dark hover:bg-olive-soft/36"
+        >
+          Ver en catálogo
+        </Link>
+
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="inline-flex w-full items-center justify-center rounded-full border border-olive/12 bg-white/80 p-0.5 sm:w-auto">
             <QuantityButton
               label={`Restar una unidad de ${product.nombre}`}
               onClick={() => setQuantity((current) => Math.max(1, current - 1))}
@@ -113,7 +109,7 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
               -
             </QuantityButton>
             <span
-              className="min-w-10 text-center text-sm font-semibold text-olive-dark"
+              className="min-w-7 text-center text-[12px] font-semibold text-olive-dark"
               aria-live="polite"
             >
               {quantity}
@@ -133,16 +129,10 @@ export function RecipeProductCard({ product }: RecipeProductCardProps) {
               setQuantity(1);
               setJustAdded(true);
             }}
-            className="inline-flex items-center justify-center rounded-full bg-olive px-4 py-2.5 text-sm font-semibold text-white hover:bg-olive-dark"
+            className="w-full min-w-0 rounded-full bg-olive px-3 py-2 text-[12px] font-semibold text-white hover:bg-olive-dark sm:flex-1 sm:w-auto"
           >
-            {justAdded ? "Agregado" : "Agregar al carrito"}
+            {justAdded ? "Agregado" : "Agregar"}
           </button>
-          <Link
-            href={`/?q=${encodeURIComponent(product.nombre)}`}
-            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-4 py-2.5 text-sm font-semibold text-olive-dark"
-          >
-            Ver en catálogo
-          </Link>
         </div>
       </div>
     </article>
@@ -175,7 +165,7 @@ function QuantityButton({ label, onClick, children }: QuantityButtonProps) {
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full text-lg font-semibold text-olive-dark hover:bg-olive-soft focus:outline-none focus:ring-2 focus:ring-olive/25"
+    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-base font-semibold text-olive-dark hover:bg-olive-soft focus:outline-none focus:ring-2 focus:ring-olive/25"
     >
       {children}
     </button>
