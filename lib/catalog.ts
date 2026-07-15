@@ -241,6 +241,22 @@ function getProductSearchScore(product: Product, query: string) {
     return 1000;
   }
 
+  if (query.length <= 2) {
+    if (hasExactTokenMatch(normalizedName, query)) {
+      return 900;
+    }
+
+    if (normalizedCategories.some((category) => hasExactTokenMatch(category, query))) {
+      return 600;
+    }
+
+    if (normalizedTags.some((tag) => hasExactTokenMatch(tag, query))) {
+      return 420;
+    }
+
+    return 0;
+  }
+
   if (normalizedName.startsWith(query)) {
     return 850;
   }
@@ -310,6 +326,10 @@ function getProductSearchTags(product: Product) {
 
 function hasTokenPrefixMatch(normalizedText: string, query: string) {
   return normalizedText.split(" ").some((token) => token.startsWith(query));
+}
+
+function hasExactTokenMatch(normalizedText: string, query: string) {
+  return normalizedText.split(/[^a-z0-9]+/).some((token) => token === query);
 }
 
 function hasLooseTokenMatch(chunks: string[], query: string) {
