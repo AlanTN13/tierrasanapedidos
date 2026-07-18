@@ -74,7 +74,7 @@ export function HomeDiscovery({
                     <div className="absolute inset-x-0 bottom-0 h-2/3 shadow-[inset_0_-32px_38px_rgba(8,10,7,0.3)]" />
                   </div>
                   <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-5">
-                    <p className="max-w-[10rem] text-[1.25rem] leading-[0.98] font-extrabold tracking-[-0.02em] text-white uppercase drop-shadow-[0_2px_7px_rgba(0,0,0,0.6)] sm:max-w-[15rem] sm:text-[1.8rem]">
+                    <p className="max-w-[10rem] text-[1.25rem] leading-[1.02] font-semibold tracking-[-0.01em] text-white uppercase drop-shadow-[0_2px_7px_rgba(0,0,0,0.6)] sm:max-w-[15rem] sm:text-[1.8rem]">
                       {card.title}
                     </p>
                     <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-olive-dark shadow-[0_8px_20px_rgba(0,0,0,0.18)] sm:mt-4 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
