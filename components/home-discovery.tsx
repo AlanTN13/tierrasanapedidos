@@ -58,10 +58,10 @@ export function HomeDiscovery({
                 key={card.category}
                 type="button"
                 onClick={() => onSelectCategory(card.category)}
-                className="group text-left"
+                className="group text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35 focus-visible:ring-offset-2"
                 aria-label={`Ver productos de ${card.title}`}
               >
-                <article className="organic-outline card-shadow relative overflow-hidden rounded-[1.35rem] bg-card sm:rounded-[1.9rem]">
+                <article className="organic-outline card-shadow relative overflow-hidden rounded-[1.35rem] bg-card shadow-[0_16px_30px_rgba(38,42,31,0.16)] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_20px_36px_rgba(38,42,31,0.2)] sm:rounded-[1.9rem]">
                   <div className="relative aspect-[0.95/1] overflow-hidden sm:aspect-[1.28/1]">
                     <Image
                       src={card.image}
@@ -70,13 +70,14 @@ export function HomeDiscovery({
                       sizes="(max-width: 640px) 50vw, (max-width: 1280px) 50vw, 25vw"
                       className="object-cover transition duration-300 group-hover:scale-[1.03]"
                     />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(47,51,40,0.04)_0%,rgba(47,51,40,0.58)_100%)]" />
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,22,17,0.02)_20%,rgba(20,22,17,0.22)_52%,rgba(16,18,14,0.92)_100%)]" />
+                    <div className="absolute inset-x-0 bottom-0 h-2/3 shadow-[inset_0_-32px_38px_rgba(8,10,7,0.3)]" />
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
-                    <p className="max-w-[9rem] text-lg leading-[1.02] font-semibold text-white sm:max-w-[13rem] sm:text-2xl">
+                  <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-5">
+                    <p className="max-w-[10rem] text-[1.25rem] leading-[0.98] font-extrabold tracking-[-0.02em] text-white uppercase drop-shadow-[0_2px_7px_rgba(0,0,0,0.6)] sm:max-w-[15rem] sm:text-[1.8rem]">
                       {card.title}
                     </p>
-                    <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-semibold text-olive-dark sm:mt-3 sm:gap-2 sm:px-3 sm:py-1.5 sm:text-xs">
+                    <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-olive-dark shadow-[0_8px_20px_rgba(0,0,0,0.18)] sm:mt-4 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
                       Ver productos
                       <ArrowUpRightIcon />
                     </span>
