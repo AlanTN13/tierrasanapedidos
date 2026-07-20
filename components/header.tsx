@@ -491,7 +491,7 @@ function SocialLinks({ compact = false }: { compact?: boolean }) {
         <WhatsAppIcon />
       </a>
       <a
-        href="https://www.instagram.com/tierrasanadietetica/"
+        href="https://www.instagram.com/tierrasana.dietetica/"
         target="_blank"
         rel="noopener noreferrer"
         className={linkClassName}
