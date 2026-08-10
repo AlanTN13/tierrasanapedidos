@@ -117,116 +117,63 @@ export function Header({
   return (
     <header className="sticky top-0 z-50 border-b border-olive/10 bg-background/88 backdrop-blur-xl">
       <div className="container-shell py-3 sm:py-4 lg:py-2">
-        <div className="flex items-center gap-1.5 sm:gap-3 lg:hidden">
-          <a href="#inicio" className="shrink-0">
-            <Image
-              src="/logo-tierra-sana-header.png"
-              alt="Tierra Sana Dietetica & Bienestar"
-              width={320}
-              height={140}
-              className="h-auto w-[48px] sm:w-[88px]"
-            />
-          </a>
-
-          <div className="hidden min-w-0 flex-1 items-center gap-6 lg:flex">
-            <nav
-              aria-label="Secciones principales"
-              className="flex items-center gap-6 text-sm font-medium text-foreground/72"
-            >
-              {sectionLinks.map((section) => (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="transition-colors hover:text-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/25"
-                >
-                  {section.label}
-                </a>
-              ))}
-            </nav>
-
-            <form
-              className="relative ml-auto w-full max-w-[24rem]"
-              role="search"
-              onSubmit={(event) => {
-                event.preventDefault();
-                onSubmitSearch();
-              }}
-            >
-              <label className="organic-outline card-shadow relative block">
-                <input
-                  type="search"
-                  value={safeSearchQuery}
-                  onChange={(event) => onSearchChange(event.target.value)}
-                  placeholder="Buscar productos..."
-                  className="w-full rounded-full bg-card px-11 py-2.5 pr-10 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:bg-white focus:ring-2 focus:ring-olive/25"
-                  aria-label="Buscar productos"
-                />
-                <button
-                  type="submit"
-                  className="absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58 focus:outline-none"
-                  aria-label="Buscar"
-                >
-                  <SearchIcon />
-                </button>
-                {safeSearchQuery ? (
-                  <button
-                    type="button"
-                    onClick={onClearSearch}
-                    className="absolute inset-y-0 right-3 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
-                    aria-label="Limpiar busqueda"
-                  >
-                    ✕
-                  </button>
-                ) : null}
-              </label>
-            </form>
-          </div>
-
-          <div className="ml-auto flex items-center gap-1.5 sm:gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsSearchOpen((current) => !current);
-              }}
-              className="organic-outline inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-olive-dark sm:h-11 sm:w-11 lg:hidden"
-              aria-label="Abrir buscador"
-              aria-expanded={isSearchOpen}
-              aria-controls={mobileSearchPanelId}
-            >
-              <SearchIcon />
-            </button>
-
-            <SocialLinks compact />
-
-            <button
-              type="button"
-              onClick={onOpenCart}
-              className="organic-outline card-shadow relative inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-sm font-semibold text-olive-dark hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35 sm:h-auto sm:w-auto sm:gap-2 sm:px-3 sm:py-2"
-              aria-label={`Abrir carrito con ${totalItems} productos`}
-              aria-haspopup="dialog"
-            >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
-                <CartIcon />
-              </span>
-              <span className="hidden sm:inline">Carrito</span>
-              <span className="absolute -top-1 -right-1 min-w-5 rounded-full bg-olive-soft px-1.5 py-0.5 text-[10px] font-bold text-olive-dark sm:static sm:px-2 sm:text-xs">
-                {totalItems}
-              </span>
-            </button>
-
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center pl-[max(0px,env(safe-area-inset-left))] pr-[max(0px,env(safe-area-inset-right))] lg:hidden">
+          <div className="flex min-w-0 items-center justify-start gap-1">
             <button
               type="button"
               onClick={() => {
                 setIsSearchOpen(false);
                 setIsMenuOpen((current) => !current);
               }}
-              className="organic-outline inline-flex h-10 w-10 items-center justify-center rounded-full bg-card text-olive-dark sm:h-11 sm:w-11 lg:hidden"
+              className="organic-outline inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-olive-dark"
               aria-label="Abrir menu de categorias"
               aria-expanded={isMenuOpen}
               aria-controls={mobileCategoryPanelId}
             >
               <HamburgerIcon />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(false);
+                setIsSearchOpen((current) => !current);
+              }}
+              className="organic-outline inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-olive-dark"
+              aria-label="Abrir buscador"
+              aria-expanded={isSearchOpen}
+              aria-controls={mobileSearchPanelId}
+            >
+              <SearchIcon />
+            </button>
+          </div>
+
+          <a href="#inicio" className="mx-1 flex shrink-0 items-center justify-center">
+            <Image
+              src="/logo-tierra-sana-header.png"
+              alt="Tierra Sana Dietetica & Bienestar"
+              width={320}
+              height={140}
+              className="h-auto w-[64px] sm:w-[88px]"
+            />
+          </a>
+
+          <div className="flex min-w-0 items-center justify-end gap-1">
+            <SocialLinks compact />
+
+            <button
+              type="button"
+              onClick={onOpenCart}
+              className="organic-outline card-shadow relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-sm font-semibold text-olive-dark hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
+              aria-label={`Abrir carrito con ${totalItems} productos`}
+              aria-haspopup="dialog"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
+                <CartIcon />
+              </span>
+              <span className="absolute -top-1 -right-1 min-w-5 rounded-full bg-olive-soft px-1.5 py-0.5 text-[10px] font-bold text-olive-dark">
+                {totalItems}
+              </span>
             </button>
           </div>
         </div>
@@ -468,37 +415,44 @@ export function Header({
       </div>
       <div
         aria-hidden="true"
-        className="h-[9px] w-full bg-[linear-gradient(180deg,#8fc9ec_0%,#8fc9ec_33.333%,#ffffff_33.333%,#ffffff_66.666%,#8fc9ec_66.666%,#8fc9ec_100%)]"
+        className="hidden h-[9px] w-full bg-[linear-gradient(180deg,#8fc9ec_0%,#8fc9ec_33.333%,#ffffff_33.333%,#ffffff_66.666%,#8fc9ec_66.666%,#8fc9ec_100%)] lg:block"
       />
     </header>
   );
 }
 
 function SocialLinks({ compact = false }: { compact?: boolean }) {
-  const linkClassName = `${
-    compact ? "h-8 w-8 sm:h-9 sm:w-9" : "h-10 w-10"
-  } inline-flex shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(72,82,50,0.12)] transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-olive/35`;
+  const linkClassName =
+    "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(72,82,50,0.12)] transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-olive/35";
+
+  const instagramLink = (
+    <a
+      href="https://www.instagram.com/tierrasana.dietetica/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className={linkClassName}
+      aria-label="Ver Tierra Sana en Instagram"
+    >
+      <InstagramIcon gradientId={compact ? "instagram-mobile-gradient" : "instagram-desktop-gradient"} />
+    </a>
+  );
+
+  const whatsappLink = (
+    <a
+      href="https://wa.me/5491164453032"
+      target="_blank"
+      rel="noopener noreferrer"
+      className={linkClassName}
+      aria-label="Contactar a Tierra Sana por WhatsApp"
+    >
+      <WhatsAppIcon />
+    </a>
+  );
 
   return (
     <div className={`flex items-center ${compact ? "gap-1.5" : "gap-2"}`} aria-label="Redes sociales">
-      <a
-        href="https://wa.me/5491164453032"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClassName}
-        aria-label="Contactar a Tierra Sana por WhatsApp"
-      >
-        <WhatsAppIcon />
-      </a>
-      <a
-        href="https://www.instagram.com/tierrasana.dietetica/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={linkClassName}
-        aria-label="Ver Tierra Sana en Instagram"
-      >
-        <InstagramIcon gradientId={compact ? "instagram-mobile-gradient" : "instagram-desktop-gradient"} />
-      </a>
+      {compact ? instagramLink : whatsappLink}
+      {compact ? whatsappLink : instagramLink}
     </div>
   );
 }
