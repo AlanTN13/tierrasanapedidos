@@ -10,7 +10,7 @@ import {
 import { usePathname } from "next/navigation";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
-import { FloatingCartButton } from "@/components/floating-cart-button";
+import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
 import { HomeDiscovery } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
@@ -450,11 +450,7 @@ function StorefrontContent({
 
       </main>
 
-      <FloatingCartButton
-        totalItems={totalItems}
-        subtotal={subtotal}
-        onOpenCart={handleOpenCart}
-      />
+      <FloatingWhatsAppButton />
 
       <CartDrawer
         items={items}
