@@ -7,6 +7,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "test:home-banner": "node --test --experimental-strip-types tests/home-banner.test.ts",
     "check:catalog": "node scripts/validate-catalog.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",
     "catalog:import": "node scripts/import-catalog-to-supabase.mjs",

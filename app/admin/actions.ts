@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
 import { refreshHomeCache } from "@/lib/home-data";
+import { resolveHomeBannerSavePaths } from "@/lib/home-banner";
 import { refreshRecipesCache } from "@/lib/recipes-data";
 import {
   calculateAmountInBaseUnits,
@@ -416,15 +417,33 @@ export async function saveHomeSettings(formData: FormData) {
 
   const supabase = await createClient();
   const existingHeroBannerPath = readString(formData.get("existingHeroBannerPath"));
-  const heroBannerFile = formData.get("heroBannerFile");
-  const heroBannerPath = await resolveHomeBannerPath({
+  const existingHeroBannerMobilePath = readString(
+    formData.get("existingHeroBannerMobilePath"),
+  );
+  const heroBannerFile = formData.get("heroBannerDesktopFile");
+  const heroBannerMobileFile = formData.get("heroBannerMobileFile");
+  const uploadedHeroBannerPath = await uploadHomeBanner({
     imageFile: heroBannerFile,
     existingImagePath: existingHeroBannerPath,
+    variant: "desktop",
+  });
+  const uploadedHeroBannerMobilePath = await uploadHomeBanner({
+    imageFile: heroBannerMobileFile,
+    existingImagePath: existingHeroBannerMobilePath,
+    variant: "mobile",
+  });
+  const heroBannerPaths = resolveHomeBannerSavePaths({
+    existingDesktopPath: existingHeroBannerPath,
+    existingMobilePath: existingHeroBannerMobilePath,
+    uploadedDesktopPath: uploadedHeroBannerPath,
+    uploadedMobilePath: uploadedHeroBannerMobilePath,
+    fallbackDesktopPath: HOME_BANNER_PLACEHOLDER,
   });
 
   const { error } = await supabase.from("home_settings").upsert({
     id: "main",
-    hero_banner_path: heroBannerPath,
+    hero_banner_path: heroBannerPaths.desktopPath,
+    hero_banner_mobile_path: heroBannerPaths.mobilePath,
   });
 
   if (error) {
@@ -764,21 +783,23 @@ async function resolveCategoryImagePath({
   return storagePath;
 }
 
-async function resolveHomeBannerPath({
+async function uploadHomeBanner({
   imageFile,
   existingImagePath,
+  variant,
 }: {
   imageFile: FormDataEntryValue | null;
   existingImagePath: string;
+  variant: "desktop" | "mobile";
 }) {
   if (!(imageFile instanceof File) || imageFile.size === 0) {
-    return existingImagePath || HOME_BANNER_PLACEHOLDER;
+    return undefined;
   }
 
   const extension = getOutputImageExtension(imageFile);
   const filePath = buildVersionedStorageObjectPath(
     HOME_IMAGE_PREFIX,
-    "banner-home",
+    `hero-${variant}`,
     extension,
   );
   const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);

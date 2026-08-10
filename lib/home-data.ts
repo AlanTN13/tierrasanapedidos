@@ -3,6 +3,7 @@ import "server-only";
 import { createClient as createPublicClient } from "@supabase/supabase-js";
 import { cacheTag, revalidateTag } from "next/cache";
 import { getCategoryCards } from "@/lib/catalog-data";
+import { resolveHomeBannerPaths } from "@/lib/home-banner";
 import { getDefaultHomeHero, getFallbackHomeRecipeHighlights, getHomeContentWithRecipes } from "@/lib/home";
 import { getHomeRecipeHighlights } from "@/lib/recipes-data";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
@@ -30,11 +31,17 @@ function createSupabaseClient() {
 
 function mapHeroSettings(row: HomeSettingsRow | null | undefined) {
   const fallbackHero = getDefaultHomeHero();
+  const bannerPaths = resolveHomeBannerPaths({
+    desktopPath: row?.hero_banner_path,
+    mobilePath: row?.hero_banner_mobile_path,
+    fallbackDesktopPath: fallbackHero.bannerDesktopImage,
+  });
 
   return {
     ...fallbackHero,
-    bannerImage: row?.hero_banner_path || fallbackHero.bannerImage,
-    bannerAlt: fallbackHero.bannerAlt,
+    bannerDesktopImage: bannerPaths.desktopPath,
+    bannerMobileImage: bannerPaths.mobilePath,
+    bannerAlt: row?.hero_banner_alt || fallbackHero.bannerAlt,
   };
 }
 
@@ -46,7 +53,7 @@ async function getRawHomeSettings() {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("home_settings")
-    .select("id, hero_banner_path, hero_banner_alt, created_at, updated_at")
+    .select("id, hero_banner_path, hero_banner_mobile_path, hero_banner_alt, created_at, updated_at")
     .eq("id", "main")
     .maybeSingle();
 
@@ -85,21 +92,23 @@ export async function getAdminHomeSettings() {
   if (!isSupabaseConfigured()) {
     return {
       id: "main",
-      heroBannerPath: fallbackHero.bannerImage,
+      heroBannerPath: fallbackHero.bannerDesktopImage,
+      heroBannerMobilePath: null,
     };
   }
 
   const supabase = await createServerSupabaseClient();
   const { data, error } = await supabase
     .from("home_settings")
-    .select("id, hero_banner_path, hero_banner_alt")
+    .select("id, hero_banner_path, hero_banner_mobile_path, hero_banner_alt")
     .eq("id", "main")
     .maybeSingle();
 
   if (error && isMissingRelationError(error.message)) {
     return {
       id: "main",
-      heroBannerPath: fallbackHero.bannerImage,
+      heroBannerPath: fallbackHero.bannerDesktopImage,
+      heroBannerMobilePath: null,
     };
   }
 
@@ -109,7 +118,8 @@ export async function getAdminHomeSettings() {
 
   return {
     id: data?.id ?? "main",
-    heroBannerPath: data?.hero_banner_path ?? fallbackHero.bannerImage,
+    heroBannerPath: data?.hero_banner_path ?? fallbackHero.bannerDesktopImage,
+    heroBannerMobilePath: data?.hero_banner_mobile_path ?? null,
   };
 }
 

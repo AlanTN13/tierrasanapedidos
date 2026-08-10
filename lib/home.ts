@@ -17,7 +17,8 @@ const sectionLinks: HomeSectionLink[] = [
 ];
 
 const hero: HomeHeroConfig = {
-  bannerImage: "/hero-optimized/banner-home.webp",
+  bannerDesktopImage: "/hero-optimized/banner-home.webp",
+  bannerMobileImage: "/hero-optimized/banner-home.webp",
   bannerAlt: "Armá tu pedido en 3 pasos",
   eyebrow: "Compra simple",
   title: "Elegí algo rico, sumalo al pedido y resolvelo fácil",
