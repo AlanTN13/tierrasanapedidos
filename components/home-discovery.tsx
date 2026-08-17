@@ -533,7 +533,7 @@ export function HomeShorts({
           setIsHoverPaused(false);
           pauseForInteraction();
         }}
-        className="mt-4 flex max-w-full cursor-grab gap-2 overflow-x-auto overscroll-x-contain select-none active:cursor-grabbing sm:mt-5 sm:gap-4 lg:max-w-5xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-4 flex max-w-full cursor-grab gap-2 overflow-x-auto overscroll-x-contain select-none active:cursor-grabbing sm:mt-5 sm:gap-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {SHORTS_LOOP_COPIES.flatMap((copy) =>
           shorts.map((recipe, index) => {
@@ -574,7 +574,7 @@ export function HomeShorts({
                     alt=""
                     fill
                     draggable={false}
-                    sizes="(max-width: 1023px) 50vw, 240px"
+                    sizes="(max-width: 1023px) 50vw, (max-width: 1800px) 25vw, 430px"
                     className="object-cover transition duration-500 group-hover:scale-[1.035]"
                   />
                   <span className="absolute inset-0 flex items-center justify-center">
@@ -593,7 +593,7 @@ export function HomeShorts({
       </div>
 
       {shorts.length > 1 ? (
-        <div className="mt-3 flex max-w-5xl items-center justify-between gap-3 pr-16 sm:mt-4 sm:pr-0">
+        <div className="mt-3 flex items-center justify-between gap-3 pr-16 sm:mt-4 sm:pr-0">
           <div className="flex items-center gap-1.5">
             <button
               type="button"
