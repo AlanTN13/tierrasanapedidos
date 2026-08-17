@@ -68,6 +68,7 @@ const recipeHighlights: RecipeHighlight[] = [
     targetCategory: "Dulces y untables",
     prepLabel: "12 a 15 min de horno",
     servingsLabel: "Varias cookies",
+    instagramUrl: null,
     ingredients: [
       "1 huevo grande",
       "1 taza de mantequilla de maní suave y natural sin azúcar",
@@ -96,6 +97,7 @@ const recipeHighlights: RecipeHighlight[] = [
     targetCategory: "Harinas y premezclas",
     prepLabel: "40 min de horno",
     servingsLabel: "1 budinera",
+    instagramUrl: null,
     ingredients: [
       "400 g de harina integral",
       "100 g de harina 0000",
@@ -125,6 +127,7 @@ const recipeHighlights: RecipeHighlight[] = [
     targetCategory: "Reposteria y endulzantes",
     prepLabel: "30 min de frío",
     servingsLabel: "Varias trufas",
+    instagramUrl: null,
     ingredients: [
       "3 cucharadas de pasta de maní",
       "1 taza de cacao amargo",
@@ -157,6 +160,7 @@ const recipeHighlights: RecipeHighlight[] = [
     targetCategory: "Reposteria y endulzantes",
     prepLabel: "10 min de horno",
     servingsLabel: "4 porciones",
+    instagramUrl: null,
     ingredients: [
       "1 huevo",
       "50 g de harina de avena",
@@ -197,6 +201,7 @@ const recipeHighlights: RecipeHighlight[] = [
     targetCategory: "Cereales y granolas",
     prepLabel: "30-60 min de frío",
     servingsLabel: "Varios bocaditos",
+    instagramUrl: null,
     ingredients: [
       "100 g de quinoa inflada",
       "150 g de chocolate semiamargo o 70% cacao",
@@ -227,12 +232,8 @@ function resolveHero(): ResolvedHomeHeroConfig {
   return hero;
 }
 
-function resolveHomeRecipes(): HomeRecipeHighlight[] {
-  return recipeHighlights.map((highlight) => {
-    const { productIds, ...homeRecipe } = highlight;
-    void productIds;
-    return homeRecipe;
-  });
+function resolveHomeRecipes(products: Product[] = []): HomeRecipeHighlight[] {
+  return resolveRecipes(products);
 }
 
 export function getHomeContent(categoryCards: HomeCategoryCard[]): HomeContent {
@@ -263,6 +264,6 @@ export function getDefaultHomeHero() {
   return hero;
 }
 
-export function getFallbackHomeRecipeHighlights() {
-  return resolveHomeRecipes();
+export function getFallbackHomeRecipeHighlights(products: Product[] = []) {
+  return resolveHomeRecipes(products);
 }

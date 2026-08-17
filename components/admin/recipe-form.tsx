@@ -82,6 +82,20 @@ export function RecipeForm({
             />
           </label>
 
+          <label className="space-y-2 md:col-span-2">
+            <span className="text-sm font-semibold text-olive-dark">Publicación de Instagram</span>
+            <input
+              name="instagramUrl"
+              type="url"
+              defaultValue={recipe?.instagramUrl ?? ""}
+              placeholder="https://www.instagram.com/p/..."
+              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+            />
+            <p className="text-xs leading-5 text-foreground/58">
+              Opcional. Si la completás, aparecerá un acceso a la publicación original.
+            </p>
+          </label>
+
           <label className="space-y-2">
             <span className="text-sm font-semibold text-olive-dark">Categoría sugerida</span>
             <select

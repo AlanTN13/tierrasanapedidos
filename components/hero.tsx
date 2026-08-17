@@ -1,4 +1,5 @@
 import { getImageProps } from "next/image";
+import Link from "next/link";
 import type { ResolvedHomeHeroConfig } from "@/types/home";
 
 type HeroProps = {
@@ -52,8 +53,8 @@ export function Hero({ content }: HeroProps) {
       </article>
 
       <div className="container-shell mt-3 sm:mt-4">
-        <a
-          href="#ideas"
+        <Link
+          href="/recetas"
           className="group flex items-center justify-between gap-4 rounded-[1.35rem] border border-olive/12 bg-[linear-gradient(110deg,rgba(230,237,210,0.95),rgba(255,253,248,0.98))] px-4 py-3.5 shadow-[0_8px_22px_rgba(72,82,50,0.08)] transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-olive/30 sm:px-5"
           aria-label="Ver recetas fáciles de Tierra Sana"
         >
@@ -76,7 +77,7 @@ export function Hero({ content }: HeroProps) {
           >
             →
           </span>
-        </a>
+        </Link>
       </div>
     </section>
   );

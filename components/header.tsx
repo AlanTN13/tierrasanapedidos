@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { FilterCategory } from "@/types/catalog";
 import type { HomeSectionLink } from "@/types/home";
 
@@ -148,7 +149,7 @@ export function Header({
             </button>
           </div>
 
-          <a href="#inicio" className="mx-1 flex shrink-0 items-center justify-center">
+          <Link href="/" className="mx-1 flex shrink-0 items-center justify-center">
             <Image
               src="/logo-tierra-sana-header.png"
               alt="Tierra Sana Dietetica & Bienestar"
@@ -156,7 +157,7 @@ export function Header({
               height={140}
               className="h-auto w-[64px] sm:w-[88px]"
             />
-          </a>
+          </Link>
 
           <div className="flex min-w-0 items-center justify-end gap-1">
             <InstagramLink variant="mobile" />
@@ -180,7 +181,7 @@ export function Header({
 
         <div className="hidden lg:grid lg:grid-cols-[160px_minmax(0,1fr)] lg:grid-rows-[auto_auto] lg:gap-x-5 xl:grid-cols-[170px_minmax(0,1fr)]">
           <div className="row-span-2 flex items-center justify-center self-stretch border-r border-olive/8 pr-5 xl:pr-6">
-            <a href="#inicio" className="flex h-full items-center">
+            <Link href="/" className="flex h-full items-center">
               <Image
                 src="/logo-tierra-sana-header.png"
                 alt="Tierra Sana Dietetica & Bienestar"
@@ -188,7 +189,7 @@ export function Header({
                 height={190}
                 className="h-auto w-[116px] xl:w-[130px]"
               />
-            </a>
+            </Link>
           </div>
 
           <div className="flex min-w-0 items-center gap-5 pb-2 xl:gap-6">

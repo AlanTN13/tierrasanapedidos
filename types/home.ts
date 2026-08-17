@@ -50,6 +50,7 @@ export type RecipeHighlight = {
   targetCategory: ProductCategory;
   prepLabel: string;
   servingsLabel: string;
+  instagramUrl: string | null;
   ingredients: string[];
   steps: string[];
   productIds: string[];
@@ -59,7 +60,7 @@ export type ResolvedRecipeHighlight = Omit<RecipeHighlight, "productIds"> & {
   products: Product[];
 };
 
-export type HomeRecipeHighlight = Omit<RecipeHighlight, "productIds">;
+export type HomeRecipeHighlight = ResolvedRecipeHighlight;
 
 export type HomeContent = {
   sectionLinks: HomeSectionLink[];

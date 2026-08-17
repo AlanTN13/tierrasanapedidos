@@ -2,7 +2,7 @@ import "server-only";
 
 import { createClient as createPublicClient } from "@supabase/supabase-js";
 import { cacheTag, revalidateTag } from "next/cache";
-import { getCategoryCards } from "@/lib/catalog-data";
+import { getCatalogProducts, getCategoryCards } from "@/lib/catalog-data";
 import { resolveHomeBannerPaths } from "@/lib/home-banner";
 import { getDefaultHomeHero, getFallbackHomeRecipeHighlights, getHomeContentWithRecipes } from "@/lib/home";
 import { getHomeRecipeHighlights } from "@/lib/recipes-data";
@@ -77,7 +77,9 @@ export async function getResolvedHomeContent(): Promise<HomeContent> {
   const [categoryCards, settings, recipeHighlights] = await Promise.all([
     getCategoryCards(),
     getRawHomeSettings().catch(() => null),
-    getHomeRecipeHighlights().catch(() => getFallbackHomeRecipeHighlights()),
+    getHomeRecipeHighlights().catch(async () =>
+      getFallbackHomeRecipeHighlights(await getCatalogProducts()),
+    ),
   ]);
 
   return {

@@ -30,6 +30,7 @@ export async function saveRecipe(formData: FormData) {
   const targetCategory = readString(formData.get("targetCategory"));
   const prepLabel = readString(formData.get("prepLabel"));
   const servingsLabel = readString(formData.get("servingsLabel"));
+  const instagramUrlValue = formData.get("instagramUrl");
   const sortOrder = readNumberOrDefault(formData.get("sortOrder"), 0);
   const isActive = formData.get("isActive") === "on";
   const existingImagePath = readString(formData.get("existingImagePath"));
@@ -44,6 +45,7 @@ export async function saveRecipe(formData: FormData) {
   let resolvedRecipeId = recipeId;
 
   try {
+    const instagramUrl = readOptionalInstagramUrl(instagramUrlValue);
     const heroImagePath = await resolveRecipeImagePath({
       slug,
       title,
@@ -90,6 +92,7 @@ export async function saveRecipe(formData: FormData) {
           target_category: targetCategory,
           prep_label: prepLabel,
           servings_label: servingsLabel,
+          instagram_url: instagramUrl,
           ingredients,
           steps,
           sort_order: sortOrder,
@@ -112,6 +115,7 @@ export async function saveRecipe(formData: FormData) {
           target_category: targetCategory,
           prep_label: prepLabel,
           servings_label: servingsLabel,
+          instagram_url: instagramUrl,
           ingredients,
           steps,
           sort_order: sortOrder,
@@ -159,6 +163,21 @@ export async function saveRecipe(formData: FormData) {
   revalidatePath("/admin/recipes");
   revalidatePath(`/admin/recipes/${slug}`);
   redirect(`/admin/recipes/${slug}?saved=1`);
+}
+
+function readOptionalInstagramUrl(value: FormDataEntryValue | null) {
+  const url = readString(value);
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+    if (!["instagram.com", "www.instagram.com"].includes(parsed.hostname)) {
+      throw new Error();
+    }
+    return parsed.toString();
+  } catch {
+    throw new Error("La URL de Instagram no es válida.");
+  }
 }
 
 export async function deleteRecipe(

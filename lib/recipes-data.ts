@@ -8,10 +8,15 @@ import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Product } from "@/types/catalog";
 import type { Database } from "@/types/database";
-import type { HomeRecipeHighlight, ResolvedRecipeHighlight } from "@/types/home";
+import type { ResolvedRecipeHighlight } from "@/types/home";
 
 type RecipeRow = Database["public"]["Tables"]["recipes"]["Row"];
 type RecipeProductRow = Database["public"]["Tables"]["recipe_products"]["Row"];
+
+const RECIPE_SELECT_WITH_INSTAGRAM =
+  "id, slug, title, short_description, long_description, hero_image_path, target_category, prep_label, servings_label, instagram_url, ingredients, steps, sort_order, is_active, created_at, updated_at";
+const RECIPE_SELECT_WITHOUT_INSTAGRAM =
+  "id, slug, title, short_description, long_description, hero_image_path, target_category, prep_label, servings_label, ingredients, steps, sort_order, is_active, created_at, updated_at";
 
 export type AdminRecipeRecord = {
   id: string;
@@ -25,6 +30,7 @@ export type AdminRecipeRecord = {
   sortOrder: number;
   isActive: boolean;
   productCount: number;
+  instagramUrl: string | null;
 };
 
 export type AdminRecipe = {
@@ -42,6 +48,7 @@ export type AdminRecipe = {
   sortOrder: number;
   isActive: boolean;
   productIds: string[];
+  instagramUrl: string | null;
 };
 
 function isMissingRelationError(message: string) {
@@ -52,6 +59,17 @@ function isMissingRelationError(message: string) {
     normalized.includes("could not find the table") ||
     normalized.includes("does not exist") ||
     normalized.includes("could not find the relation")
+  );
+}
+
+function isMissingInstagramUrlError(message: string) {
+  const normalized = message.toLowerCase();
+
+  return (
+    normalized.includes("instagram_url") &&
+    (normalized.includes("schema cache") ||
+      normalized.includes("does not exist") ||
+      normalized.includes("could not find"))
   );
 }
 
@@ -77,15 +95,21 @@ async function getRecipeRows(includeInactive: boolean) {
   const supabase = includeInactive
     ? await createServerSupabaseClient()
     : createSupabaseClient();
-  const query = supabase
+  let { data, error } = await supabase
     .from("recipes")
-    .select(
-      "id, slug, title, short_description, long_description, hero_image_path, target_category, prep_label, servings_label, ingredients, steps, sort_order, is_active, created_at, updated_at",
-    )
+    .select(RECIPE_SELECT_WITH_INSTAGRAM)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
-  const { data, error } = await query;
+  if (error && isMissingInstagramUrlError(error.message)) {
+    const retry = await supabase
+      .from("recipes")
+      .select(RECIPE_SELECT_WITHOUT_INSTAGRAM)
+      .order("sort_order", { ascending: true })
+      .order("title", { ascending: true });
+    data = retry.data?.map((recipe) => ({ ...recipe, instagram_url: null })) ?? null;
+    error = retry.error;
+  }
 
   if (error && isMissingRelationError(error.message)) {
     return null;
@@ -120,12 +144,6 @@ async function getRecipeProductRows(includeInactive: boolean) {
   }
 
   return (data ?? []) as RecipeProductRow[];
-}
-
-function mapHomeRecipeHighlight(recipe: ResolvedRecipeHighlight): HomeRecipeHighlight {
-  const { products, ...recipeHighlight } = recipe;
-  void products;
-  return recipeHighlight;
 }
 
 function resolveRecipeRows(
@@ -164,6 +182,7 @@ function resolveRecipeRows(
       targetCategory: recipeRow.target_category,
       prepLabel: recipeRow.prep_label,
       servingsLabel: recipeRow.servings_label,
+      instagramUrl: recipeRow.instagram_url,
       ingredients: recipeRow.ingredients ?? [],
       steps: recipeRow.steps ?? [],
       products: productIds
@@ -203,8 +222,7 @@ export async function getResolvedRecipeBySlug(slug: string) {
 }
 
 export async function getHomeRecipeHighlights() {
-  const recipes = await getResolvedRecipes();
-  return recipes.map(mapHomeRecipeHighlight);
+  return getResolvedRecipes();
 }
 
 export async function getAdminRecipeRecords(): Promise<AdminRecipeRecord[]> {
@@ -226,6 +244,7 @@ export async function getAdminRecipeRecords(): Promise<AdminRecipeRecord[]> {
       sortOrder: index,
       isActive: true,
       productCount: recipe.products.length,
+      instagramUrl: recipe.instagramUrl,
     }));
   }
 
@@ -250,6 +269,7 @@ export async function getAdminRecipeRecords(): Promise<AdminRecipeRecord[]> {
     sortOrder: recipe.sort_order,
     isActive: recipe.is_active,
     productCount: productCountByRecipeId.get(recipe.id) ?? 0,
+    instagramUrl: recipe.instagram_url,
   }));
 }
 
@@ -281,6 +301,7 @@ export async function getAdminRecipeBySlug(slug: string): Promise<AdminRecipe | 
       sortOrder: 0,
       isActive: true,
       productIds: recipe.products.map((product) => product.id),
+      instagramUrl: recipe.instagramUrl,
     };
   }
 
@@ -313,6 +334,7 @@ export async function getAdminRecipeBySlug(slug: string): Promise<AdminRecipe | 
       .filter((entry) => entry.recipe_id === recipe.id)
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((entry) => entry.product_id),
+    instagramUrl: recipe.instagram_url,
   };
 }
 

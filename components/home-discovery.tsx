@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useCart } from "@/components/cart-provider";
+import {
+  addRecipeCartItems,
+  getDefaultRecipeCartItems,
+} from "@/lib/recipe-cart";
 import type { FilterCategory } from "@/types/catalog";
 import type { HomeContent } from "@/types/home";
 
@@ -18,6 +23,7 @@ export function HomeDiscovery({
   showCategories = true,
   showIdeas = true,
 }: HomeDiscoveryProps) {
+  const { addItem, openCart } = useCart();
   const featuredRecipeSlugs = [
     "cookies-de-mantequilla-de-mani",
     "trufas-fit",
@@ -30,7 +36,16 @@ export function HomeDiscovery({
   const visibleRecipes = [
     ...featuredRecipes,
     ...content.recipeHighlights.filter((recipe) => !featuredRecipeSlugSet.has(recipe.slug)),
-  ].slice(0, 3);
+  ].slice(0, 6);
+
+  const addRecipeIngredients = (recipe: HomeContent["recipeHighlights"][number]) => {
+    const cartItems = getDefaultRecipeCartItems(recipe.products);
+
+    if (cartItems.length === 0) return;
+
+    addRecipeCartItems(cartItems, addItem);
+    openCart();
+  };
 
   return (
     <>
@@ -91,96 +106,113 @@ export function HomeDiscovery({
 
       {showIdeas ? (
         <section id="ideas" aria-labelledby="ideas-title" className="container-shell pb-10">
-          <div className="surface-panel organic-outline overflow-hidden rounded-[2rem] px-5 py-5 sm:px-6 sm:py-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <span className="section-kicker">Recetas e ideas</span>
-                <h2
-                  id="ideas-title"
-                  className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl"
-                >
-                  Recetas fáciles
-                </h2>
-              </div>
-              <p className="max-w-xl text-sm leading-6 text-foreground/64">
-                Recetas rápidas para inspirarte y descubrir nuevos ingredientes.
-              </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="section-kicker">Recetas e ideas</span>
+              <h2
+                id="ideas-title"
+                className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl"
+              >
+                Recetas fáciles
+              </h2>
             </div>
+            <p className="max-w-xl text-sm leading-6 text-foreground/64">
+              Recetas rápidas para inspirarte y descubrir nuevos ingredientes.
+            </p>
+          </div>
 
-            {visibleRecipes.length > 0 ? (
-              <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                {visibleRecipes.map((recipe) => (
+          {visibleRecipes.length > 0 ? (
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+              {visibleRecipes.map((recipe) => {
+                const hasPurchasableProducts = getDefaultRecipeCartItems(
+                  recipe.products,
+                ).length > 0;
+
+                return (
                   <article
                     key={recipe.slug}
-                    className="organic-outline card-shadow overflow-hidden rounded-[1.2rem] bg-white/90 sm:rounded-[1.45rem]"
+                    className="organic-outline card-shadow flex min-w-0 flex-col overflow-hidden rounded-[1.2rem] bg-white/90 sm:rounded-[1.45rem]"
                   >
-                    <Link href={`/recetas/${recipe.slug}`} className="group block">
-                      <div className="relative aspect-[1.6/1] overflow-hidden bg-olive-soft/35 sm:aspect-[1.45/1]">
+                    <Link
+                      href={`/recetas/${recipe.slug}`}
+                      className="group flex flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-olive/35"
+                      aria-label={`Ver receta ${recipe.title}`}
+                    >
+                      <div className="relative aspect-square overflow-hidden bg-olive-soft/35 sm:aspect-[1.35/1] lg:aspect-[1.55/1] xl:aspect-[1.8/1]">
                         <Image
                           src={recipe.heroImage}
                           alt={recipe.title}
                           fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                          className="object-cover transition duration-500 group-hover:scale-[1.05]"
+                          sizes="(max-width: 1023px) 50vw, 33vw"
+                          className="object-cover transition duration-500 group-hover:scale-[1.04]"
                         />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(47,51,40,0.04)_0%,rgba(47,51,40,0.5)_100%)]" />
-                      </div>
-                    </Link>
-
-                    <div className="p-3.5 sm:p-4">
-                      <h3 className="text-[1.15rem] leading-tight font-semibold text-olive-dark sm:text-[1.35rem]">
-                        {recipe.title}
-                      </h3>
-
-                      <p className="mt-2 text-[13px] leading-5 text-foreground/66 line-clamp-2 sm:text-sm sm:leading-6">
-                        {recipe.shortDescription}
-                      </p>
-
-                      <div className="mt-2.5 flex flex-wrap gap-2">
-                        <span className="rounded-full bg-olive-soft/72 px-2 py-1 text-[9px] font-semibold text-olive-dark sm:px-2.5 sm:text-[10px]">
-                          {recipe.prepLabel}
-                        </span>
-                        <span className="rounded-full bg-olive-soft/72 px-2 py-1 text-[9px] font-semibold text-olive-dark sm:px-2.5 sm:text-[10px]">
-                          {recipe.servingsLabel}
-                        </span>
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <Link
-                          href={`/recetas/${recipe.slug}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-olive px-3 py-2 text-[13px] font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/25 sm:gap-2 sm:px-3.5 sm:py-2.5 sm:text-sm"
+                        <span
+                          aria-hidden="true"
+                          className="absolute right-2.5 bottom-2.5 inline-flex items-center gap-1 rounded-full bg-white/92 px-2.5 py-1.5 text-[10px] font-semibold text-olive-dark shadow-[0_6px_18px_rgba(28,32,23,0.18)] backdrop-blur-sm transition group-hover:bg-white sm:right-3 sm:bottom-3 sm:px-3 sm:text-xs"
                         >
                           Ver receta
                           <ArrowUpRightIcon />
-                        </Link>
+                        </span>
+                      </div>
+                      <div className="flex flex-1 flex-col p-3 sm:p-4">
+                        <h3 className="line-clamp-2 min-h-[2.25rem] text-[0.95rem] leading-[1.18] font-semibold text-olive-dark sm:min-h-[2.8rem] sm:text-[1.2rem]">
+                          {recipe.title}
+                        </h3>
+                        <span className="mt-2 inline-flex items-center gap-1.5 text-[11px] text-foreground/58 sm:text-xs">
+                          <ClockIcon />
+                          {recipe.prepLabel}
+                        </span>
+                      </div>
+                    </Link>
+
+                    {hasPurchasableProducts ? (
+                      <div className="px-3 pb-3 sm:px-4 sm:pb-4">
                         <button
                           type="button"
-                          onClick={() => onSelectCategory(recipe.targetCategory)}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-olive/14 bg-white px-3 py-2 text-[13px] font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25 sm:gap-2 sm:px-3.5 sm:py-2.5 sm:text-sm"
+                          onClick={() => addRecipeIngredients(recipe)}
+                          className="inline-flex min-h-9 w-full items-center justify-center rounded-full border border-olive/14 bg-olive-soft/30 px-2.5 py-2 text-[11px] leading-tight font-semibold text-olive-dark transition hover:bg-olive-soft/55 focus:outline-none focus:ring-2 focus:ring-olive/25 sm:text-xs"
                           aria-label={`Comprar ingredientes para ${recipe.title}`}
                         >
                           Comprar ingredientes
                         </button>
                       </div>
-                    </div>
+                    ) : null}
                   </article>
-                ))}
-              </div>
-            ) : null}
-
-            <div className="mt-6 flex justify-center">
-              <Link
-                href="/recetas"
-                className="inline-flex items-center gap-2 rounded-full border border-olive/14 bg-white px-4 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25"
-              >
-                Ver más recetas
-                <ArrowUpRightIcon />
-              </Link>
+                );
+              })}
             </div>
+          ) : null}
+
+          <div className="mt-6 flex justify-center">
+            <Link
+              href="/recetas"
+              className="inline-flex items-center gap-2 rounded-full border border-olive/14 bg-white px-4 py-3 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36 focus:outline-none focus:ring-2 focus:ring-olive/25"
+            >
+              Ver todas las recetas
+              <ArrowUpRightIcon />
+            </Link>
           </div>
         </section>
       ) : null}
     </>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-3.5 w-3.5 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 8v4l2.5 1.5" />
+    </svg>
   );
 }
 
