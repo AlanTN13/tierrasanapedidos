@@ -9,13 +9,20 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import {
+  getContinuousCarouselDelta,
+  normalizeLoopScrollLeft,
+  shouldAnimateContinuousCarousel,
+} from "@/lib/continuous-carousel";
 import { getDefaultRecipeCartItems } from "@/lib/recipe-cart";
 import { getYouTubeEmbedUrl } from "@/lib/youtube";
 import type { HomeContent, HomeRecipeHighlight } from "@/types/home";
 
 const COLLAPSED_CATEGORY_COUNT = 12;
-const SHORTS_AUTOPLAY_INTERVAL_MS = 5000;
+const SHORTS_AUTOPLAY_SPEED_PX_PER_SECOND = 15;
 const SHORTS_INTERACTION_PAUSE_MS = 4000;
+const SHORTS_DRAG_THRESHOLD_PX = 8;
+const SHORTS_LOOP_COPIES = ["before", "primary", "after"] as const;
 
 export function HomeCategories({
   content,
@@ -99,23 +106,26 @@ export function HomeShorts({
         recipe.youtubeUrl && getYouTubeEmbedUrl(recipe.youtubeUrl),
     );
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
-  const [currentCarouselIndex, setCurrentCarouselIndex] = useState(0);
-  const [isCarouselScrollable, setIsCarouselScrollable] = useState(false);
+  const [loopCycleWidth, setLoopCycleWidth] = useState(0);
   const [isManuallyPaused, setIsManuallyPaused] = useState(false);
   const [isInteractionPaused, setIsInteractionPaused] = useState(false);
+  const [isHoverPaused, setIsHoverPaused] = useState(false);
+  const [isPointerActive, setIsPointerActive] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const activeTriggerRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
+  const loopCycleWidthRef = useRef(0);
+  const lastAnimationTimeRef = useRef<number | null>(null);
   const interactionResumeTimerRef = useRef<ReturnType<
     typeof setTimeout
   > | null>(null);
-  const currentCarouselIndexRef = useRef(0);
   const dragStateRef = useRef<{
     pointerId: number;
     startX: number;
     startScrollLeft: number;
+    hasCapture: boolean;
   } | null>(null);
   const didDragRef = useRef(false);
   const activeRecipe =
@@ -127,7 +137,11 @@ export function HomeShorts({
     ? getDefaultRecipeCartItems(activeRecipe.products).length
     : 0;
   const isCarouselPaused =
-    isManuallyPaused || isInteractionPaused || Boolean(activeSlug);
+    isManuallyPaused ||
+    isInteractionPaused ||
+    isHoverPaused ||
+    isPointerActive ||
+    Boolean(activeSlug);
 
   const pauseForInteraction = useCallback(() => {
     setIsInteractionPaused(true);
@@ -142,66 +156,88 @@ export function HomeShorts({
     }, SHORTS_INTERACTION_PAUSE_MS);
   }, [setIsInteractionPaused]);
 
-  const updateCarouselState = useCallback(() => {
+  const normalizeCarouselPosition = useCallback(() => {
+    const carousel = carouselRef.current;
+    const cycleWidth = loopCycleWidthRef.current;
+
+    if (!carousel || cycleWidth <= 0) {
+      return;
+    }
+
+    const normalizedScrollLeft = normalizeLoopScrollLeft(
+      carousel.scrollLeft,
+      cycleWidth,
+    );
+
+    if (Math.abs(normalizedScrollLeft - carousel.scrollLeft) > 0.5) {
+      carousel.scrollLeft = normalizedScrollLeft;
+    }
+  }, []);
+
+  const measureCarousel = useCallback(() => {
     const carousel = carouselRef.current;
 
-    if (!carousel) {
+    if (!carousel || shorts.length < 2) {
+      loopCycleWidthRef.current = 0;
+      setLoopCycleWidth(0);
       return;
     }
 
-    const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
-    const isScrollable = maxScrollLeft > 2;
-    setIsCarouselScrollable(isScrollable);
-
-    if (!isScrollable || shorts.length < 2) {
-      currentCarouselIndexRef.current = 0;
-      setCurrentCarouselIndex(0);
-      return;
-    }
-
-    const cardPositions = Array.from(
-      carousel.querySelectorAll<HTMLElement>("[data-short-index]"),
-    ).map((card) =>
-      Math.min(card.offsetLeft - carousel.offsetLeft, maxScrollLeft),
+    const primaryFirstCard = carousel.querySelector<HTMLElement>(
+      '[data-loop-copy="primary"][data-short-index="0"]',
     );
-    const nextIndex = cardPositions.reduce((closestIndex, position, index) => {
-      const closestDistance = Math.abs(
-        carousel.scrollLeft - cardPositions[closestIndex],
-      );
-      const distance = Math.abs(carousel.scrollLeft - position);
+    const afterFirstCard = carousel.querySelector<HTMLElement>(
+      '[data-loop-copy="after"][data-short-index="0"]',
+    );
+    const nextCycleWidth =
+      primaryFirstCard && afterFirstCard
+        ? afterFirstCard.offsetLeft - primaryFirstCard.offsetLeft
+        : 0;
 
-      return distance < closestDistance ? index : closestIndex;
-    }, 0);
-    currentCarouselIndexRef.current = nextIndex;
-    setCurrentCarouselIndex(nextIndex);
-  }, [setCurrentCarouselIndex, setIsCarouselScrollable, shorts.length]);
+    if (nextCycleWidth <= 0) {
+      return;
+    }
 
-  const scrollCarouselTo = useCallback(
-    (index: number) => {
+    loopCycleWidthRef.current = nextCycleWidth;
+    setLoopCycleWidth(nextCycleWidth);
+
+    const normalizedScrollLeft = normalizeLoopScrollLeft(
+      carousel.scrollLeft || nextCycleWidth,
+      nextCycleWidth,
+    );
+
+    if (Math.abs(normalizedScrollLeft - carousel.scrollLeft) > 0.5) {
+      carousel.scrollLeft = normalizedScrollLeft;
+    }
+  }, [setLoopCycleWidth, shorts.length]);
+
+  const moveCarousel = useCallback(
+    (direction: -1 | 1) => {
       const carousel = carouselRef.current;
+      const primaryCards = carousel?.querySelectorAll<HTMLElement>(
+        '[data-loop-copy="primary"][data-short-index]',
+      );
 
-      if (!carousel || shorts.length < 2) {
+      if (!carousel || !primaryCards || primaryCards.length === 0) {
         return;
       }
 
-      const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
-      const targetIndex = Math.min(Math.max(index, 0), shorts.length - 1);
-      const targetCard = carousel.querySelector<HTMLElement>(
-        `[data-short-index="${targetIndex}"]`,
-      );
-      const targetScrollLeft = targetCard
-        ? Math.min(targetCard.offsetLeft - carousel.offsetLeft, maxScrollLeft)
-        : maxScrollLeft * (targetIndex / (shorts.length - 1));
+      const firstCard = primaryCards[0];
+      const secondCard = primaryCards[1];
+      const cardStep = secondCard
+        ? secondCard.offsetLeft - firstCard.offsetLeft
+        : firstCard.offsetWidth;
 
-      carousel.scrollTo({
-        left: targetScrollLeft,
+      carousel.scrollBy({
+        left: cardStep * direction,
         behavior: prefersReducedMotion ? "auto" : "smooth",
       });
     },
-    [prefersReducedMotion, shorts.length],
+    [prefersReducedMotion],
   );
 
   const closeModal = useCallback((restoreFocus = true) => {
+    pauseForInteraction();
     setActiveSlug(null);
 
     if (restoreFocus) {
@@ -209,7 +245,7 @@ export function HomeShorts({
         activeTriggerRef.current?.focus({ preventScroll: true });
       });
     }
-  }, [setActiveSlug]);
+  }, [pauseForInteraction, setActiveSlug]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -226,14 +262,14 @@ export function HomeShorts({
   }, []);
 
   useEffect(() => {
-    const measureFrame = window.requestAnimationFrame(updateCarouselState);
-    window.addEventListener("resize", updateCarouselState);
+    const measureFrame = window.requestAnimationFrame(measureCarousel);
+    window.addEventListener("resize", measureCarousel);
 
     return () => {
       window.cancelAnimationFrame(measureFrame);
-      window.removeEventListener("resize", updateCarouselState);
+      window.removeEventListener("resize", measureCarousel);
     };
-  }, [updateCarouselState]);
+  }, [measureCarousel]);
 
   useEffect(() => {
     return () => {
@@ -244,26 +280,45 @@ export function HomeShorts({
   }, []);
 
   useEffect(() => {
-    if (
-      shorts.length < 2 ||
-      !isCarouselScrollable ||
-      prefersReducedMotion ||
-      isCarouselPaused
-    ) {
+    if (!shouldAnimateContinuousCarousel({
+      itemCount: shorts.length,
+      cycleWidth: loopCycleWidth,
+      prefersReducedMotion,
+      isPaused: isCarouselPaused,
+    })) {
+      lastAnimationTimeRef.current = null;
       return;
     }
 
-    const autoplayTimer = window.setInterval(() => {
-      const nextIndex = (currentCarouselIndexRef.current + 1) % shorts.length;
-      scrollCarouselTo(nextIndex);
-    }, SHORTS_AUTOPLAY_INTERVAL_MS);
+    let animationFrame = 0;
 
-    return () => window.clearInterval(autoplayTimer);
+    const animateCarousel = (currentTime: number) => {
+      const carousel = carouselRef.current;
+      const previousTime = lastAnimationTimeRef.current;
+      lastAnimationTimeRef.current = currentTime;
+
+      if (carousel && previousTime !== null) {
+        carousel.scrollLeft += getContinuousCarouselDelta(
+          currentTime - previousTime,
+          SHORTS_AUTOPLAY_SPEED_PX_PER_SECOND,
+        );
+        normalizeCarouselPosition();
+      }
+
+      animationFrame = window.requestAnimationFrame(animateCarousel);
+    };
+
+    animationFrame = window.requestAnimationFrame(animateCarousel);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      lastAnimationTimeRef.current = null;
+    };
   }, [
     isCarouselPaused,
-    isCarouselScrollable,
+    loopCycleWidth,
+    normalizeCarouselPosition,
     prefersReducedMotion,
-    scrollCarouselTo,
     shorts.length,
   ]);
 
@@ -335,14 +390,22 @@ export function HomeShorts({
     }
 
     pauseForInteraction();
-    activeTriggerRef.current = trigger;
+    const primaryTrigger = Array.from(
+      carouselRef.current?.querySelectorAll<HTMLButtonElement>(
+        '[data-loop-copy="primary"][data-short-slug]',
+      ) ?? [],
+    ).find((button) => button.dataset.shortSlug === recipe.slug);
+    activeTriggerRef.current = primaryTrigger ?? trigger;
     setActiveSlug(recipe.slug);
   }
 
   function handleTrackPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    setIsPointerActive(true);
     pauseForInteraction();
+    didDragRef.current = false;
 
     if (event.pointerType === "touch" || event.button !== 0) {
+      dragStateRef.current = null;
       return;
     }
 
@@ -350,9 +413,8 @@ export function HomeShorts({
       pointerId: event.pointerId,
       startX: event.clientX,
       startScrollLeft: event.currentTarget.scrollLeft,
+      hasCapture: false,
     };
-    didDragRef.current = false;
-    event.currentTarget.setPointerCapture(event.pointerId);
   }
 
   function handleTrackPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
@@ -364,23 +426,40 @@ export function HomeShorts({
 
     const distance = event.clientX - dragState.startX;
 
-    if (Math.abs(distance) > 4) {
+    if (
+      !didDragRef.current &&
+      Math.abs(distance) > SHORTS_DRAG_THRESHOLD_PX
+    ) {
       didDragRef.current = true;
+      dragState.hasCapture = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
     }
 
-    event.currentTarget.scrollLeft = dragState.startScrollLeft - distance;
+    if (didDragRef.current) {
+      event.preventDefault();
+      event.currentTarget.scrollLeft = dragState.startScrollLeft - distance;
+      normalizeCarouselPosition();
+    }
   }
 
   function handleTrackPointerUp(event: ReactPointerEvent<HTMLDivElement>) {
     const dragState = dragStateRef.current;
+    setIsPointerActive(false);
+    pauseForInteraction();
 
     if (!dragState || dragState.pointerId !== event.pointerId) {
+      window.setTimeout(() => {
+        didDragRef.current = false;
+      }, 0);
       return;
     }
 
     dragStateRef.current = null;
 
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+    if (
+      dragState.hasCapture &&
+      event.currentTarget.hasPointerCapture(event.pointerId)
+    ) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
 
@@ -389,9 +468,9 @@ export function HomeShorts({
     }, 0);
   }
 
-  function handleCarouselNavigation(index: number) {
+  function handleCarouselNavigation(direction: -1 | 1) {
     pauseForInteraction();
-    scrollCarouselTo(index);
+    moveCarousel(direction);
   }
 
   function toggleCarouselAutoplay() {
@@ -443,100 +522,95 @@ export function HomeShorts({
         role="group"
         aria-roledescription="carrusel"
         aria-label="Recetas en video"
-        onScroll={updateCarouselState}
+        onScroll={normalizeCarouselPosition}
         onPointerDown={handleTrackPointerDown}
         onPointerMove={handleTrackPointerMove}
         onPointerUp={handleTrackPointerUp}
         onPointerCancel={handleTrackPointerUp}
         onWheel={pauseForInteraction}
-        className="mt-4 flex max-w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain motion-safe:scroll-smooth sm:mt-5 sm:gap-4 lg:max-w-5xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        onMouseEnter={() => setIsHoverPaused(true)}
+        onMouseLeave={() => {
+          setIsHoverPaused(false);
+          pauseForInteraction();
+        }}
+        className="mt-4 flex max-w-full cursor-grab gap-2 overflow-x-auto overscroll-x-contain select-none active:cursor-grabbing sm:mt-5 sm:gap-4 lg:max-w-5xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {shorts.map((recipe, index) => (
-          <button
-            key={recipe.slug}
-            data-short-index={index}
-            type="button"
-            onClick={(event) => playShort(recipe, event.currentTarget)}
-            aria-label={`Reproducir ${recipe.title}`}
-            aria-pressed={recipe.slug === activeSlug}
-            className="group flex basis-[47%] shrink-0 snap-start flex-col overflow-hidden rounded-[1.2rem] bg-white text-left shadow-[0_10px_26px_rgba(47,51,40,0.11)] ring-1 ring-olive/8 transition select-none hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(47,51,40,0.14)] focus:outline-none focus-visible:ring-2 focus-visible:ring-olive focus-visible:ring-offset-2 sm:rounded-[1.45rem] lg:basis-[calc(25%-1rem)]"
-          >
-            <span className="relative block aspect-[4/5] w-full overflow-hidden bg-olive-soft/25">
-              <Image
-                src={recipe.heroImage}
-                alt=""
-                fill
-                draggable={false}
-                sizes="(max-width: 1023px) 50vw, 240px"
-                className="object-cover transition duration-500 group-hover:scale-[1.035]"
-              />
-              <span className="absolute inset-0 flex items-center justify-center">
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/94 text-olive-dark shadow-[0_10px_24px_rgba(0,0,0,0.2)] transition group-hover:scale-105 sm:h-13 sm:w-13">
-                  <PlayIcon />
+        {SHORTS_LOOP_COPIES.flatMap((copy) =>
+          shorts.map((recipe, index) => {
+            const isPrimaryCopy = copy === "primary";
+
+            return (
+              <button
+                key={`${copy}-${recipe.slug}`}
+                data-loop-copy={copy}
+                data-short-index={index}
+                data-short-slug={recipe.slug}
+                type="button"
+                tabIndex={isPrimaryCopy ? 0 : -1}
+                aria-hidden={isPrimaryCopy ? undefined : true}
+                onClick={(event) => playShort(recipe, event.currentTarget)}
+                onFocus={isPrimaryCopy ? pauseForInteraction : undefined}
+                onKeyDown={
+                  isPrimaryCopy
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          playShort(recipe, event.currentTarget);
+                        }
+                      }
+                    : undefined
+                }
+                aria-label={
+                  isPrimaryCopy ? `Reproducir ${recipe.title}` : undefined
+                }
+                aria-pressed={
+                  isPrimaryCopy ? recipe.slug === activeSlug : undefined
+                }
+                className="group flex basis-[47%] shrink-0 flex-col overflow-hidden rounded-[1.2rem] bg-white text-left shadow-[0_10px_26px_rgba(47,51,40,0.11)] ring-1 ring-olive/8 transition select-none hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(47,51,40,0.14)] focus:outline-none focus-visible:ring-2 focus-visible:ring-olive focus-visible:ring-offset-2 sm:rounded-[1.45rem] lg:basis-[calc(25%-1rem)]"
+              >
+                <span className="relative block aspect-[4/5] w-full overflow-hidden bg-olive-soft/25">
+                  <Image
+                    src={recipe.heroImage}
+                    alt=""
+                    fill
+                    draggable={false}
+                    sizes="(max-width: 1023px) 50vw, 240px"
+                    className="object-cover transition duration-500 group-hover:scale-[1.035]"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/94 text-olive-dark shadow-[0_10px_24px_rgba(0,0,0,0.2)] transition group-hover:scale-105 sm:h-13 sm:w-13">
+                      <PlayIcon />
+                    </span>
+                  </span>
                 </span>
-              </span>
-            </span>
-            <span className="line-clamp-2 min-h-[3.75rem] px-3 py-3 text-[13px] leading-[1.15rem] font-semibold text-olive-dark sm:min-h-[4.25rem] sm:px-4 sm:py-3.5 sm:text-base sm:leading-5">
-              {recipe.title}
-            </span>
-          </button>
-        ))}
-        {shorts.length > 1 ? (
-          <span aria-hidden="true" className="basis-[18%] shrink-0 lg:hidden" />
-        ) : null}
+                <span className="line-clamp-2 min-h-[3.75rem] px-3 py-3 text-[13px] leading-[1.15rem] font-semibold text-olive-dark sm:min-h-[4.25rem] sm:px-4 sm:py-3.5 sm:text-base sm:leading-5">
+                  {recipe.title}
+                </span>
+              </button>
+            );
+          }),
+        )}
       </div>
 
-      {isCarouselScrollable ? (
+      {shorts.length > 1 ? (
         <div className="mt-3 flex max-w-5xl items-center justify-between gap-3 pr-16 sm:mt-4 sm:pr-0">
           <div className="flex items-center gap-1.5">
             <button
               type="button"
-              onClick={() =>
-                handleCarouselNavigation(currentCarouselIndex - 1)
-              }
-              disabled={currentCarouselIndex === 0}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35 disabled:cursor-not-allowed disabled:opacity-35"
-              aria-label="Short anterior"
+              onClick={() => handleCarouselNavigation(-1)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
+              aria-label="Mover carrusel a la izquierda"
             >
               <ChevronIcon direction="left" />
             </button>
             <button
               type="button"
-              onClick={() =>
-                handleCarouselNavigation(currentCarouselIndex + 1)
-              }
-              disabled={currentCarouselIndex === shorts.length - 1}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35 disabled:cursor-not-allowed disabled:opacity-35"
-              aria-label="Short siguiente"
+              onClick={() => handleCarouselNavigation(1)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
+              aria-label="Mover carrusel a la derecha"
             >
               <ChevronIcon direction="right" />
             </button>
-          </div>
-
-          <div
-            className="flex items-center justify-center gap-0.5"
-            role="group"
-            aria-label="Posición del carrusel"
-          >
-            {shorts.map((recipe, index) => (
-              <button
-                key={recipe.slug}
-                type="button"
-                onClick={() => handleCarouselNavigation(index)}
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
-                aria-label={`Ir al Short ${index + 1}: ${recipe.title}`}
-                aria-current={currentCarouselIndex === index ? "true" : undefined}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`h-1.5 rounded-full transition-all ${
-                    currentCarouselIndex === index
-                      ? "w-4 bg-olive"
-                      : "w-1.5 bg-olive/28"
-                  }`}
-                />
-              </button>
-            ))}
           </div>
 
           {prefersReducedMotion ? (
@@ -558,10 +632,6 @@ export function HomeShorts({
               {isManuallyPaused ? <CarouselPlayIcon /> : <PauseIcon />}
             </button>
           )}
-
-          <span className="sr-only" aria-live="polite">
-            Short {currentCarouselIndex + 1} de {shorts.length}
-          </span>
         </div>
       ) : null}
 
