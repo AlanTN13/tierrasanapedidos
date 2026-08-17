@@ -3,14 +3,13 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { FilterCategory } from "@/types/catalog";
+import type { CatalogCategory } from "@/types/catalog";
 import type { HomeSectionLink } from "@/types/home";
 
 type HeaderProps = {
   sectionLinks: HomeSectionLink[];
-  categories: FilterCategory[];
-  activeCategory: FilterCategory;
-  onChangeCategory: (category: FilterCategory) => void;
+  categories: CatalogCategory[];
+  activeCategory: string | null;
   searchQuery: string;
   onSearchChange: (value: string) => void;
   onSubmitSearch: () => void;
@@ -23,7 +22,6 @@ export function Header({
   sectionLinks,
   categories,
   activeCategory,
-  onChangeCategory,
   searchQuery = "",
   onSearchChange,
   onSubmitSearch,
@@ -133,20 +131,6 @@ export function Header({
             >
               <HamburgerIcon />
             </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsSearchOpen((current) => !current);
-              }}
-              className="organic-outline inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-olive-dark"
-              aria-label="Abrir buscador"
-              aria-expanded={isSearchOpen}
-              aria-controls={mobileSearchPanelId}
-            >
-              <SearchIcon />
-            </button>
           </div>
 
           <Link href="/" className="mx-1 flex shrink-0 items-center justify-center">
@@ -160,6 +144,20 @@ export function Header({
           </Link>
 
           <div className="flex min-w-0 items-center justify-end gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(false);
+                setIsSearchOpen((current) => !current);
+              }}
+              className="organic-outline inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-olive-dark"
+              aria-label="Abrir buscador"
+              aria-expanded={isSearchOpen}
+              aria-controls={mobileSearchPanelId}
+            >
+              <SearchIcon />
+            </button>
+
             <InstagramLink variant="mobile" />
 
             <button
@@ -302,27 +300,28 @@ export function Header({
               >
                 <div className="flex min-w-max items-center gap-4 pr-4 text-sm font-medium text-foreground/72 xl:gap-5">
                   {categories.map((category) => {
-                    const isActive = category === activeCategory;
+                    const isActive = category.name === activeCategory;
 
                     return (
-                      <button
-                        key={category}
-                        type="button"
-                        onClick={() => onChangeCategory(category)}
+                      <Link
+                        key={category.id}
+                        href={`/categoria/${category.slug}`}
                         className={`shrink-0 transition-colors ${isActive ? "text-olive-dark" : "hover:text-olive-dark"}`}
-                        aria-pressed={isActive}
+                        aria-current={isActive ? "page" : undefined}
                       >
-                        {category}
-                      </button>
+                        {category.name}
+                      </Link>
                     );
                   })}
                 </div>
               </div>
             </div>
 
-            <div className="shrink-0 rounded-full bg-olive-soft px-3 py-1.5 text-xs font-semibold text-olive-dark">
-              Filtro: {activeCategory}
-            </div>
+            {activeCategory ? (
+              <div className="shrink-0 rounded-full bg-olive-soft px-3 py-1.5 text-xs font-semibold text-olive-dark">
+                Categoría: {activeCategory}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -381,20 +380,19 @@ export function Header({
                   Nuestras categorias
                 </p>
                 <span className="rounded-full bg-olive-soft px-3 py-1 text-xs font-semibold text-olive-dark">
-                  {activeCategory}
+                  {activeCategory ?? "Categorías"}
                 </span>
               </div>
 
               <div className="mt-4 grid gap-2">
                 {categories.map((category) => {
-                  const isActive = category === activeCategory;
+                  const isActive = category.name === activeCategory;
 
                   return (
-                    <button
-                      key={category}
-                      type="button"
+                    <Link
+                      key={category.id}
+                      href={`/categoria/${category.slug}`}
                       onClick={() => {
-                        onChangeCategory(category);
                         setIsMenuOpen(false);
                       }}
                       className={`flex items-center justify-between rounded-[1rem] border px-4 py-3 text-left text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-olive/35 ${
@@ -402,11 +400,11 @@ export function Header({
                           ? "border-olive bg-olive text-white"
                           : "border-olive/12 bg-white/90 text-olive-dark"
                       }`}
-                      aria-pressed={isActive}
+                      aria-current={isActive ? "page" : undefined}
                     >
-                      <span>{category}</span>
+                      <span>{category.name}</span>
                       <span aria-hidden="true">{isActive ? "•" : "→"}</span>
-                    </button>
+                    </Link>
                   );
                 })}
               </div>
@@ -423,8 +421,9 @@ export function Header({
 }
 
 function InstagramLink({ variant = "desktop" }: { variant?: "desktop" | "mobile" }) {
-  const linkClassName =
-    "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_rgba(72,82,50,0.12)] transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-olive/35";
+  const linkClassName = `${
+    variant === "mobile" ? "organic-outline h-11 w-11 bg-card" : "h-10 w-10 bg-white"
+  } inline-flex shrink-0 items-center justify-center rounded-full text-olive-dark shadow-[0_4px_14px_rgba(72,82,50,0.12)] transition-transform hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35`;
 
   return (
     <a
@@ -434,26 +433,26 @@ function InstagramLink({ variant = "desktop" }: { variant?: "desktop" | "mobile"
       className={linkClassName}
       aria-label="Ver Tierra Sana en Instagram"
     >
-      <InstagramIcon gradientId={`instagram-${variant}-gradient`} />
+      <InstagramIcon />
     </a>
   );
 }
 
-function InstagramIcon({ gradientId }: { gradientId: string }) {
+function InstagramIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 32 32" className="h-6 w-6">
-      <defs>
-        <radialGradient id={gradientId} cx="30%" cy="100%" r="120%">
-          <stop offset="0" stopColor="#FFD600" />
-          <stop offset="0.35" stopColor="#FF7A00" />
-          <stop offset="0.65" stopColor="#FF0169" />
-          <stop offset="1" stopColor="#D300C5" />
-        </radialGradient>
-      </defs>
-      <rect width="30" height="30" x="1" y="1" rx="8" fill={`url(#${gradientId})`} />
-      <rect width="17" height="17" x="7.5" y="7.5" rx="5" fill="none" stroke="#fff" strokeWidth="2.2" />
-      <circle cx="16" cy="16" r="4" fill="none" stroke="#fff" strokeWidth="2.2" />
-      <circle cx="22.2" cy="9.9" r="1.4" fill="#fff" />
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.4" cy="6.7" r="0.85" fill="currentColor" stroke="none" />
     </svg>
   );
 }

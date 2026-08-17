@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   addRecipeCartItems,
   getDefaultRecipeCartItems,
+  purchaseRecipeIngredients,
 } from "../lib/recipe-cart.ts";
 import type { Product, ProductPresentation } from "../types/catalog.ts";
 
@@ -112,4 +113,47 @@ test("agrega cada producto una sola vez y omite productos sin presentación", ()
 
 test("una receta sin productos no genera ninguna acción de carrito", () => {
   assert.deepEqual(getDefaultRecipeCartItems([]), []);
+});
+
+test("comprar ingredientes agrega tres productos en cantidad 1 y abre solo el carrito", () => {
+  const products = [
+    product("chia", "Chía", "Semillas", [presentation("250g", 2100)]),
+    product("lentejas", "Lentejas", "Legumbres", [presentation("500g", 1600)]),
+    product("cacao", "Cacao", "Repostería", [presentation("100g", 1800)]),
+  ];
+  const added: Array<{ productId: string; quantity: number }> = [];
+  let cartOpenCount = 0;
+
+  const addedCount = purchaseRecipeIngredients(
+    products,
+    (itemProduct, _itemPresentation, quantity) => {
+      added.push({ productId: itemProduct.id, quantity });
+    },
+    () => {
+      cartOpenCount += 1;
+    },
+  );
+
+  assert.equal(addedCount, 3);
+  assert.deepEqual(added, [
+    { productId: "chia", quantity: 1 },
+    { productId: "lentejas", quantity: 1 },
+    { productId: "cacao", quantity: 1 },
+  ]);
+  assert.equal(cartOpenCount, 1);
+});
+
+test("comprar ingredientes sin productos no abre el carrito", () => {
+  let cartOpenCount = 0;
+
+  const addedCount = purchaseRecipeIngredients(
+    [],
+    () => assert.fail("No debe agregar productos"),
+    () => {
+      cartOpenCount += 1;
+    },
+  );
+
+  assert.equal(addedCount, 0);
+  assert.equal(cartOpenCount, 0);
 });

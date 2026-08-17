@@ -69,6 +69,7 @@ const recipeHighlights: RecipeHighlight[] = [
     prepLabel: "12 a 15 min de horno",
     servingsLabel: "Varias cookies",
     instagramUrl: null,
+    youtubeUrl: null,
     ingredients: [
       "1 huevo grande",
       "1 taza de mantequilla de maní suave y natural sin azúcar",
@@ -98,6 +99,7 @@ const recipeHighlights: RecipeHighlight[] = [
     prepLabel: "40 min de horno",
     servingsLabel: "1 budinera",
     instagramUrl: null,
+    youtubeUrl: null,
     ingredients: [
       "400 g de harina integral",
       "100 g de harina 0000",
@@ -128,6 +130,7 @@ const recipeHighlights: RecipeHighlight[] = [
     prepLabel: "30 min de frío",
     servingsLabel: "Varias trufas",
     instagramUrl: null,
+    youtubeUrl: null,
     ingredients: [
       "3 cucharadas de pasta de maní",
       "1 taza de cacao amargo",
@@ -161,6 +164,7 @@ const recipeHighlights: RecipeHighlight[] = [
     prepLabel: "10 min de horno",
     servingsLabel: "4 porciones",
     instagramUrl: null,
+    youtubeUrl: null,
     ingredients: [
       "1 huevo",
       "50 g de harina de avena",
@@ -202,6 +206,7 @@ const recipeHighlights: RecipeHighlight[] = [
     prepLabel: "30-60 min de frío",
     servingsLabel: "Varios bocaditos",
     instagramUrl: null,
+    youtubeUrl: null,
     ingredients: [
       "100 g de quinoa inflada",
       "150 g de chocolate semiamargo o 70% cacao",

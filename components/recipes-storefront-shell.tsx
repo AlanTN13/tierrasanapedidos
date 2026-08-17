@@ -6,13 +6,13 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
-import type { FilterCategory } from "@/types/catalog";
+import type { CatalogCategory } from "@/types/catalog";
 
 export function RecipesStorefrontShell({
   categories,
   children,
 }: {
-  categories: FilterCategory[];
+  categories: CatalogCategory[];
   children: React.ReactNode;
 }) {
   return (
@@ -26,19 +26,21 @@ function RecipesStorefrontContent({
   categories,
   children,
 }: {
-  categories: FilterCategory[];
+  categories: CatalogCategory[];
   children: React.ReactNode;
 }) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const cart = useCart();
-  const activeCategory = categories[0] ?? "Destacados";
+  const activeCategory = categories[0]?.name ?? null;
 
-  function goToCatalog(query = "", category?: FilterCategory) {
-    const searchParams = new URLSearchParams();
-    const catalogQuery = query.trim() || (category !== "Destacados" ? category : "");
-    if (catalogQuery) searchParams.set("q", catalogQuery);
-    router.push(`/${searchParams.size ? `?${searchParams.toString()}` : ""}#productos`);
+  function goToCatalog(query = "") {
+    const catalogQuery = query.trim();
+    router.push(
+      catalogQuery
+        ? `/catalogo?q=${encodeURIComponent(catalogQuery)}`
+        : "/catalogo",
+    );
   }
 
   return (
@@ -50,7 +52,6 @@ function RecipesStorefrontContent({
         ]}
         categories={categories}
         activeCategory={activeCategory}
-        onChangeCategory={(category) => goToCatalog("", category)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onSubmitSearch={() => goToCatalog(searchQuery)}

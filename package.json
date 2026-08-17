@@ -7,6 +7,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit --incremental false",
+    "test": "node --test --experimental-strip-types tests/*.test.ts",
     "test:home-banner": "node --test --experimental-strip-types tests/home-banner.test.ts",
     "check:catalog": "node scripts/validate-catalog.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",

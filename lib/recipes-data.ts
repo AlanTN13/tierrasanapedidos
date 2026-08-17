@@ -13,9 +13,11 @@ import type { ResolvedRecipeHighlight } from "@/types/home";
 type RecipeRow = Database["public"]["Tables"]["recipes"]["Row"];
 type RecipeProductRow = Database["public"]["Tables"]["recipe_products"]["Row"];
 
-const RECIPE_SELECT_WITH_INSTAGRAM =
+const RECIPE_SELECT_WITH_YOUTUBE =
+  "id, slug, title, short_description, long_description, hero_image_path, target_category, prep_label, servings_label, instagram_url, youtube_url, ingredients, steps, sort_order, is_active, created_at, updated_at";
+const RECIPE_SELECT_WITHOUT_YOUTUBE =
   "id, slug, title, short_description, long_description, hero_image_path, target_category, prep_label, servings_label, instagram_url, ingredients, steps, sort_order, is_active, created_at, updated_at";
-const RECIPE_SELECT_WITHOUT_INSTAGRAM =
+const RECIPE_SELECT_LEGACY =
   "id, slug, title, short_description, long_description, hero_image_path, target_category, prep_label, servings_label, ingredients, steps, sort_order, is_active, created_at, updated_at";
 
 export type AdminRecipeRecord = {
@@ -31,6 +33,7 @@ export type AdminRecipeRecord = {
   isActive: boolean;
   productCount: number;
   instagramUrl: string | null;
+  youtubeUrl: string | null;
 };
 
 export type AdminRecipe = {
@@ -49,6 +52,7 @@ export type AdminRecipe = {
   isActive: boolean;
   productIds: string[];
   instagramUrl: string | null;
+  youtubeUrl: string | null;
 };
 
 function isMissingRelationError(message: string) {
@@ -67,6 +71,17 @@ function isMissingInstagramUrlError(message: string) {
 
   return (
     normalized.includes("instagram_url") &&
+    (normalized.includes("schema cache") ||
+      normalized.includes("does not exist") ||
+      normalized.includes("could not find"))
+  );
+}
+
+function isMissingYouTubeUrlError(message: string) {
+  const normalized = message.toLowerCase();
+
+  return (
+    normalized.includes("youtube_url") &&
     (normalized.includes("schema cache") ||
       normalized.includes("does not exist") ||
       normalized.includes("could not find"))
@@ -95,19 +110,52 @@ async function getRecipeRows(includeInactive: boolean) {
   const supabase = includeInactive
     ? await createServerSupabaseClient()
     : createSupabaseClient();
-  let { data, error } = await supabase
+  let recipeQuery = supabase
     .from("recipes")
-    .select(RECIPE_SELECT_WITH_INSTAGRAM)
+    .select(RECIPE_SELECT_WITH_YOUTUBE)
     .order("sort_order", { ascending: true })
     .order("title", { ascending: true });
 
-  if (error && isMissingInstagramUrlError(error.message)) {
-    const retry = await supabase
+  if (!includeInactive) {
+    recipeQuery = recipeQuery.eq("is_active", true);
+  }
+
+  let { data, error } = await recipeQuery;
+
+  if (error && isMissingYouTubeUrlError(error.message)) {
+    let retryQuery = supabase
       .from("recipes")
-      .select(RECIPE_SELECT_WITHOUT_INSTAGRAM)
+      .select(RECIPE_SELECT_WITHOUT_YOUTUBE)
       .order("sort_order", { ascending: true })
       .order("title", { ascending: true });
-    data = retry.data?.map((recipe) => ({ ...recipe, instagram_url: null })) ?? null;
+
+    if (!includeInactive) {
+      retryQuery = retryQuery.eq("is_active", true);
+    }
+
+    const retry = await retryQuery;
+    data = retry.data?.map((recipe) => ({ ...recipe, youtube_url: null })) ?? null;
+    error = retry.error;
+  }
+
+  if (error && isMissingInstagramUrlError(error.message)) {
+    let legacyQuery = supabase
+      .from("recipes")
+      .select(RECIPE_SELECT_LEGACY)
+      .order("sort_order", { ascending: true })
+      .order("title", { ascending: true });
+
+    if (!includeInactive) {
+      legacyQuery = legacyQuery.eq("is_active", true);
+    }
+
+    const retry = await legacyQuery;
+    data =
+      retry.data?.map((recipe) => ({
+        ...recipe,
+        instagram_url: null,
+        youtube_url: null,
+      })) ?? null;
     error = retry.error;
   }
 
@@ -183,6 +231,7 @@ function resolveRecipeRows(
       prepLabel: recipeRow.prep_label,
       servingsLabel: recipeRow.servings_label,
       instagramUrl: recipeRow.instagram_url,
+      youtubeUrl: recipeRow.youtube_url,
       ingredients: recipeRow.ingredients ?? [],
       steps: recipeRow.steps ?? [],
       products: productIds
@@ -245,6 +294,7 @@ export async function getAdminRecipeRecords(): Promise<AdminRecipeRecord[]> {
       isActive: true,
       productCount: recipe.products.length,
       instagramUrl: recipe.instagramUrl,
+      youtubeUrl: recipe.youtubeUrl,
     }));
   }
 
@@ -270,6 +320,7 @@ export async function getAdminRecipeRecords(): Promise<AdminRecipeRecord[]> {
     isActive: recipe.is_active,
     productCount: productCountByRecipeId.get(recipe.id) ?? 0,
     instagramUrl: recipe.instagram_url,
+    youtubeUrl: recipe.youtube_url,
   }));
 }
 
@@ -302,6 +353,7 @@ export async function getAdminRecipeBySlug(slug: string): Promise<AdminRecipe | 
       isActive: true,
       productIds: recipe.products.map((product) => product.id),
       instagramUrl: recipe.instagramUrl,
+      youtubeUrl: recipe.youtubeUrl,
     };
   }
 
@@ -335,6 +387,7 @@ export async function getAdminRecipeBySlug(slug: string): Promise<AdminRecipe | 
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((entry) => entry.product_id),
     instagramUrl: recipe.instagram_url,
+    youtubeUrl: recipe.youtube_url,
   };
 }
 

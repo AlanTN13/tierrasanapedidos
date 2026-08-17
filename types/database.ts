@@ -118,6 +118,7 @@ export type Database = {
           prep_label: string;
           servings_label: string;
           instagram_url: string | null;
+          youtube_url: string | null;
           ingredients: string[];
           steps: string[];
           sort_order: number;
@@ -136,6 +137,7 @@ export type Database = {
           prep_label: string;
           servings_label: string;
           instagram_url?: string | null;
+          youtube_url?: string | null;
           ingredients?: string[];
           steps?: string[];
           sort_order?: number;
@@ -154,6 +156,7 @@ export type Database = {
           prep_label?: string;
           servings_label?: string;
           instagram_url?: string | null;
+          youtube_url?: string | null;
           ingredients?: string[];
           steps?: string[];
           sort_order?: number;

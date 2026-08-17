@@ -1,4 +1,5 @@
 import type { Product, ProductPresentation } from "../types/catalog";
+import { getDefaultProductPresentation } from "./product-purchase.ts";
 
 export type RecipeCartItem = {
   product: Product;
@@ -13,22 +14,7 @@ type AddCartItem = (
 ) => void;
 
 export function getDefaultRecipePresentation(product: Product) {
-  const preferredByCategory: Record<
-    string,
-    ProductPresentation["etiqueta"]
-  > = {
-    Legumbres: "500g",
-    Semillas: "250g",
-  };
-
-  const primaryCategory = product.categorias?.[0] ?? product.categoria;
-
-  return (
-    product.presentaciones.find(
-      ({ etiqueta }) =>
-        etiqueta === preferredByCategory[primaryCategory],
-    ) ?? product.presentaciones[0] ?? null
-  );
+  return getDefaultProductPresentation(product);
 }
 
 export function getDefaultRecipeCartItems(products: Product[]) {
@@ -48,4 +34,20 @@ export function addRecipeCartItems(
   for (const { product, presentation, quantity } of items) {
     addItem(product, presentation, quantity);
   }
+}
+
+export function purchaseRecipeIngredients(
+  products: Product[],
+  addItem: AddCartItem,
+  openCart: () => void,
+) {
+  const items = getDefaultRecipeCartItems(products);
+
+  if (items.length === 0) {
+    return 0;
+  }
+
+  addRecipeCartItems(items, addItem);
+  openCart();
+  return items.length;
 }

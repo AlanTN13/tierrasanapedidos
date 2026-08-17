@@ -36,7 +36,7 @@ export function Hero({ content }: HeroProps) {
   });
 
   return (
-    <section id="inicio" className="pb-6 sm:pb-9 lg:pb-7.5">
+    <section id="inicio" className="pb-4 sm:pb-6">
       <article className="relative w-full overflow-hidden bg-white/55">
         <picture>
           <source media="(min-width: 768px)" srcSet={desktopSrcSet} />
@@ -47,12 +47,13 @@ export function Hero({ content }: HeroProps) {
             alt={content.bannerAlt}
             width={undefined}
             height={undefined}
+            loading="eager"
             className="block h-auto w-full"
           />
         </picture>
       </article>
 
-      <div className="container-shell mt-3 sm:mt-4">
+      <div className="container-shell mt-2 sm:mt-3">
         <Link
           href="/recetas"
           className="group flex items-center justify-between gap-4 rounded-[1.35rem] border border-olive/12 bg-[linear-gradient(110deg,rgba(230,237,210,0.95),rgba(255,253,248,0.98))] px-4 py-3.5 shadow-[0_8px_22px_rgba(72,82,50,0.08)] transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-olive/30 sm:px-5"

@@ -96,6 +96,22 @@ export function RecipeForm({
             </p>
           </label>
 
+          <label className="space-y-2 md:col-span-2">
+            <span className="text-sm font-semibold text-olive-dark">
+              YouTube Short / video
+            </span>
+            <input
+              name="youtubeUrl"
+              type="url"
+              defaultValue={recipe?.youtubeUrl ?? ""}
+              placeholder="https://www.youtube.com/shorts/..."
+              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+            />
+            <p className="text-xs leading-5 text-foreground/58">
+              Opcional. Acepta enlaces de Shorts, videos de YouTube y youtu.be.
+            </p>
+          </label>
+
           <label className="space-y-2">
             <span className="text-sm font-semibold text-olive-dark">Categoría sugerida</span>
             <select

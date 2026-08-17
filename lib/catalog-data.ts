@@ -493,18 +493,45 @@ export async function getCatalogProducts() {
   return snapshot.products;
 }
 
-export async function getAvailableCategories() {
-  const snapshot = await getCachedCatalogSnapshot();
-  return snapshot.categories.map((category) => category.name);
+export async function getCatalogProductBySlug(slug: string) {
+  const products = await getCatalogProducts();
+  const normalizedSlug = slugify(slug);
+
+  return (
+    products.find(
+      (product) =>
+        product.id === slug || slugify(product.id) === normalizedSlug,
+    ) ?? null
+  );
 }
 
-export async function getCategoryCards() {
+export async function getAvailableCategories() {
+  return (await getCatalogCategories()).map((category) => category.name);
+}
+
+export async function getCatalogCategories() {
   const snapshot = await getCachedCatalogSnapshot();
   return snapshot.categories
     .filter((category) => category.isActive)
-    .sort(bySortOrder)
-    .map((category) => ({
+    .sort(bySortOrder);
+}
+
+export async function getCatalogCategoryBySlug(slug: string) {
+  const categories = await getCatalogCategories();
+  const normalizedSlug = slugify(slug);
+
+  return (
+    categories.find(
+      (category) =>
+        category.slug === slug || slugify(category.slug) === normalizedSlug,
+    ) ?? null
+  );
+}
+
+export async function getCategoryCards() {
+  return (await getCatalogCategories()).map((category) => ({
       category: category.name,
+      slug: category.slug,
       title: category.name,
       image: category.image,
     }));

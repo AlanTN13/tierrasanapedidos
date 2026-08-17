@@ -31,6 +31,7 @@ export type ResolvedHomeHeroConfig = HomeHeroConfig;
 
 export type HomeCategoryCard = {
   category: ProductCategory;
+  slug: string;
   title: string;
   image: string;
 };
@@ -51,6 +52,7 @@ export type RecipeHighlight = {
   prepLabel: string;
   servingsLabel: string;
   instagramUrl: string | null;
+  youtubeUrl: string | null;
   ingredients: string[];
   steps: string[];
   productIds: string[];

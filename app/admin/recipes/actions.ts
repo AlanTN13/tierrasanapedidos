@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { normalizeOptionalYouTubeUrl } from "@/lib/youtube";
 
 const PRODUCT_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "svg"] as const;
 const PRODUCT_IMAGE_MAX_DIMENSION = 1600;
@@ -31,6 +32,7 @@ export async function saveRecipe(formData: FormData) {
   const prepLabel = readString(formData.get("prepLabel"));
   const servingsLabel = readString(formData.get("servingsLabel"));
   const instagramUrlValue = formData.get("instagramUrl");
+  const youtubeUrlValue = formData.get("youtubeUrl");
   const sortOrder = readNumberOrDefault(formData.get("sortOrder"), 0);
   const isActive = formData.get("isActive") === "on";
   const existingImagePath = readString(formData.get("existingImagePath"));
@@ -46,6 +48,7 @@ export async function saveRecipe(formData: FormData) {
 
   try {
     const instagramUrl = readOptionalInstagramUrl(instagramUrlValue);
+    const youtubeUrl = normalizeOptionalYouTubeUrl(readString(youtubeUrlValue));
     const heroImagePath = await resolveRecipeImagePath({
       slug,
       title,
@@ -80,49 +83,69 @@ export async function saveRecipe(formData: FormData) {
       throw new Error("La receta necesita al menos un producto sugerido.");
     }
 
+    const recipeValues = {
+      slug,
+      title,
+      short_description: shortDescription,
+      long_description: longDescription,
+      hero_image_path: heroImagePath,
+      target_category: targetCategory,
+      prep_label: prepLabel,
+      servings_label: servingsLabel,
+      instagram_url: instagramUrl,
+      youtube_url: youtubeUrl,
+      ingredients,
+      steps,
+      sort_order: sortOrder,
+      is_active: isActive,
+    };
+    const { youtube_url, ...legacyRecipeValues } = recipeValues;
+
     if (resolvedRecipeId) {
-      const { error } = await supabase
+      let { error } = await supabase
         .from("recipes")
-        .update({
-          slug,
-          title,
-          short_description: shortDescription,
-          long_description: longDescription,
-          hero_image_path: heroImagePath,
-          target_category: targetCategory,
-          prep_label: prepLabel,
-          servings_label: servingsLabel,
-          instagram_url: instagramUrl,
-          ingredients,
-          steps,
-          sort_order: sortOrder,
-          is_active: isActive,
-        })
+        .update(recipeValues)
         .eq("id", resolvedRecipeId);
+
+      if (error && isMissingYouTubeUrlError(error.message)) {
+        if (youtube_url) {
+          throw new Error(
+            "La base todavía no tiene youtube_url. Aplicá la migración en el entorno correspondiente antes de guardar un video.",
+          );
+        }
+
+        const retry = await supabase
+          .from("recipes")
+          .update(legacyRecipeValues)
+          .eq("id", resolvedRecipeId);
+        error = retry.error;
+      }
 
       if (error) {
         throw new Error(error.message);
       }
     } else {
-      const { data, error } = await supabase
+      let result = await supabase
         .from("recipes")
-        .insert({
-          slug,
-          title,
-          short_description: shortDescription,
-          long_description: longDescription,
-          hero_image_path: heroImagePath,
-          target_category: targetCategory,
-          prep_label: prepLabel,
-          servings_label: servingsLabel,
-          instagram_url: instagramUrl,
-          ingredients,
-          steps,
-          sort_order: sortOrder,
-          is_active: isActive,
-        })
+        .insert(recipeValues)
         .select("id")
         .single();
+
+      if (result.error && isMissingYouTubeUrlError(result.error.message)) {
+        if (youtube_url) {
+          throw new Error(
+            "La base todavía no tiene youtube_url. Aplicá la migración en el entorno correspondiente antes de guardar un video.",
+          );
+        }
+
+        result = await supabase
+          .from("recipes")
+          .insert(legacyRecipeValues)
+          .select("id")
+          .single();
+      }
+
+      const { data, error } = result;
 
       if (error || !data) {
         throw new Error(error?.message ?? "No se pudo crear la receta.");
@@ -163,6 +186,17 @@ export async function saveRecipe(formData: FormData) {
   revalidatePath("/admin/recipes");
   revalidatePath(`/admin/recipes/${slug}`);
   redirect(`/admin/recipes/${slug}?saved=1`);
+}
+
+function isMissingYouTubeUrlError(message: string) {
+  const normalized = message.toLowerCase();
+
+  return (
+    normalized.includes("youtube_url") &&
+    (normalized.includes("schema cache") ||
+      normalized.includes("does not exist") ||
+      normalized.includes("could not find"))
+  );
 }
 
 function readOptionalInstagramUrl(value: FormDataEntryValue | null) {

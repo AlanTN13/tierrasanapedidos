@@ -1,45 +1,33 @@
 import { Suspense } from "react";
 import { Storefront } from "@/components/storefront";
 import {
-  getAvailableCategories,
+  getCatalogCategories,
   getCatalogProducts,
 } from "@/lib/catalog-data";
-import { filterProducts } from "@/lib/catalog";
+import { getFeaturedProducts } from "@/lib/catalog";
 import { getResolvedHomeContent } from "@/lib/home-data";
 
-type HomeProps = {
-  searchParams?: Promise<{
-    q?: string;
-  }>;
-};
-
-export default async function Home({ searchParams }: HomeProps) {
+export default async function Home() {
   return (
     <Suspense fallback={<HomeFallback />}>
-      <HomeContent searchParams={searchParams} />
+      <HomeContent />
     </Suspense>
   );
 }
 
-async function HomeContent({ searchParams }: HomeProps) {
-  const resolvedSearchParams = await searchParams;
-  const initialSearchQuery = resolvedSearchParams?.q?.trim() ?? "";
-  const [products, availableCategories, homeContent] = await Promise.all([
+async function HomeContent() {
+  const [products, categories, homeContent] = await Promise.all([
     getCatalogProducts(),
-    getAvailableCategories(),
+    getCatalogCategories(),
     getResolvedHomeContent(),
   ]);
-  const initialCategory = availableCategories[0] ?? "Destacados";
-  const initialProducts = filterProducts(products, initialCategory, "");
+  const featuredProducts = getFeaturedProducts(products);
+
   return (
     <Storefront
-      initialProducts={initialProducts}
-      availableCategories={availableCategories}
+      featuredProducts={featuredProducts}
+      categories={categories}
       homeContent={homeContent}
-      initialCategory={initialCategory}
-      initialSearchQuery={initialSearchQuery}
-      catalogUrl="/api/catalog"
-      hasCompleteCatalog={false}
     />
   );
 }

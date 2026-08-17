@@ -1,91 +1,55 @@
 "use client";
 
 import {
-  useCallback,
   useEffect,
   useRef,
   useState,
   type MutableRefObject,
 } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
+import { FeaturedProducts } from "@/components/featured-products";
 import { Header } from "@/components/header";
-import { HomeDiscovery } from "@/components/home-discovery";
+import { HomeCategories, HomeShorts } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
-import { ProductCard, ProductDetailDialog } from "@/components/product-card";
-import { filterProducts, normalizeSearchText } from "@/lib/catalog";
-import type { FilterCategory, Product } from "@/types/catalog";
+import { purchaseRecipeIngredients } from "@/lib/recipe-cart";
+import type { CatalogCategory, Product } from "@/types/catalog";
 import type { HomeContent } from "@/types/home";
 
 type StorefrontProps = {
-  initialProducts: Product[];
-  availableCategories: FilterCategory[];
+  featuredProducts: Product[];
+  categories: CatalogCategory[];
   homeContent: HomeContent;
-  initialCategory: FilterCategory;
-  initialSearchQuery?: string;
-  catalogUrl?: string | null;
-  hasCompleteCatalog?: boolean;
 };
 
 export function Storefront({
-  initialProducts,
-  availableCategories,
+  featuredProducts,
+  categories,
   homeContent,
-  initialCategory,
-  initialSearchQuery = "",
-  catalogUrl = null,
-  hasCompleteCatalog = false,
 }: StorefrontProps) {
   return (
     <CartProvider>
       <StorefrontContent
-        key={initialSearchQuery}
-        initialProducts={initialProducts}
-        availableCategories={availableCategories}
+        featuredProducts={featuredProducts}
+        categories={categories}
         homeContent={homeContent}
-        initialCategory={initialCategory}
-        initialSearchQuery={initialSearchQuery}
-        catalogUrl={catalogUrl}
-        hasCompleteCatalog={hasCompleteCatalog}
       />
     </CartProvider>
   );
 }
 
 function StorefrontContent({
-  initialProducts,
-  availableCategories,
+  featuredProducts,
+  categories,
   homeContent,
-  initialCategory,
-  initialSearchQuery = "",
-  catalogUrl = null,
-  hasCompleteCatalog: initialHasCompleteCatalog = false,
 }: StorefrontProps) {
-  const pathname = usePathname();
-  const [products, setProducts] = useState(initialProducts);
-  const [hasCompleteCatalog, setHasCompleteCatalog] = useState(initialHasCompleteCatalog);
-  const [isCatalogLoading, setIsCatalogLoading] = useState(false);
-  const catalogRequestRef = useRef<Promise<void> | null>(null);
-  const [activeCategory, setActiveCategory] = useState<FilterCategory>(initialCategory);
-  const [draftSearchQuery, setDraftSearchQuery] = useState(initialSearchQuery);
-  const [submittedSearchQuery, setSubmittedSearchQuery] = useState(initialSearchQuery);
+  const router = useRouter();
+  const [draftSearchQuery, setDraftSearchQuery] = useState("");
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [recentlyAddedLabel, setRecentlyAddedLabel] = useState<string | null>(null);
-  const [detailState, setDetailState] = useState<{
-    product: Product;
-    presentation: Product["presentaciones"][number];
-    primaryCategory: string;
-  } | null>(null);
-  const normalizedSearchQuery = normalizeSearchText(submittedSearchQuery);
-  const visibleSectionLinks = normalizedSearchQuery
-    ? [{ id: "productos", label: "Resultados" }]
-    : homeContent.sectionLinks;
-  const visibleProducts = filterProducts(products, activeCategory, submittedSearchQuery);
-  const activeCategoryLabel = normalizedSearchQuery
-    ? `Resultados para ${submittedSearchQuery.trim()}`
-    : activeCategory;
+  const [recipeCartFeedback, setRecipeCartFeedback] = useState<string | null>(null);
 
   const {
     items,
@@ -101,49 +65,9 @@ function StorefrontContent({
   } = useCart();
   const lastCartTriggerRef = useRef<HTMLElement | null>(null);
   const lastShippingTriggerRef = useRef<HTMLElement | null>(null);
-  const lastDetailTriggerRef = useRef<HTMLElement | null>(null);
   const shippingCloseButtonRef = useRef<HTMLButtonElement | null>(null);
   const previousCartOpenRef = useRef(isOpen);
   const previousShippingOpenRef = useRef(isShippingOpen);
-  const previousDetailOpenRef = useRef(false);
-
-  const ensureFullCatalog = useCallback(async () => {
-    if (hasCompleteCatalog || !catalogUrl) {
-      return;
-    }
-
-    if (catalogRequestRef.current) {
-      await catalogRequestRef.current;
-      return;
-    }
-
-    const request = (async () => {
-      setIsCatalogLoading(true);
-
-      try {
-        const response = await fetch(catalogUrl, { credentials: "same-origin" });
-
-        if (!response.ok) {
-          throw new Error(`Catalog request failed with ${response.status}`);
-        }
-
-        const data = (await response.json()) as { products?: Product[] };
-
-        if (Array.isArray(data.products)) {
-          setProducts(data.products);
-          setHasCompleteCatalog(true);
-        }
-      } catch (error) {
-        console.error("No se pudo completar la carga diferida del catálogo.", error);
-      } finally {
-        setIsCatalogLoading(false);
-        catalogRequestRef.current = null;
-      }
-    })();
-
-    catalogRequestRef.current = request;
-    await request;
-  }, [catalogUrl, hasCompleteCatalog]);
 
   useEffect(() => {
     if (!recentlyAddedLabel) {
@@ -154,6 +78,13 @@ function StorefrontContent({
 
     return () => window.clearTimeout(timeoutId);
   }, [recentlyAddedLabel]);
+
+  useEffect(() => {
+    if (!recipeCartFeedback) return;
+
+    const timeoutId = window.setTimeout(() => setRecipeCartFeedback(null), 3200);
+    return () => window.clearTimeout(timeoutId);
+  }, [recipeCartFeedback]);
 
   useEffect(() => {
     if (!isShippingOpen) {
@@ -177,48 +108,6 @@ function StorefrontContent({
   }, [isShippingOpen]);
 
   useEffect(() => {
-    if (!detailState) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setDetailState(null);
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [detailState]);
-
-  useEffect(() => {
-    if (hasCompleteCatalog || !catalogUrl) {
-      return;
-    }
-
-    if ("requestIdleCallback" in window) {
-      const idleHandle = window.requestIdleCallback(() => {
-        void ensureFullCatalog();
-      }, { timeout: 1600 });
-
-      return () => window.cancelIdleCallback(idleHandle);
-    }
-
-    const timeoutId = globalThis.setTimeout(() => {
-      void ensureFullCatalog();
-    }, 900);
-
-    return () => globalThis.clearTimeout(timeoutId);
-  }, [catalogUrl, ensureFullCatalog, hasCompleteCatalog]);
-
-  useEffect(() => {
     if (previousCartOpenRef.current && !isOpen) {
       lastCartTriggerRef.current?.focus();
     }
@@ -233,16 +122,6 @@ function StorefrontContent({
 
     previousShippingOpenRef.current = isShippingOpen;
   }, [isShippingOpen]);
-
-  useEffect(() => {
-    const isDetailOpen = Boolean(detailState);
-
-    if (previousDetailOpenRef.current && !isDetailOpen) {
-      lastDetailTriggerRef.current?.focus();
-    }
-
-    previousDetailOpenRef.current = isDetailOpen;
-  }, [detailState]);
 
   function rememberActiveElement(targetRef: MutableRefObject<HTMLElement | null>) {
     const activeElement = document.activeElement;
@@ -260,55 +139,14 @@ function StorefrontContent({
     setIsShippingOpen(true);
   }
 
-  function handleCategoryChange(category: FilterCategory) {
-    setActiveCategory(category);
-    setDraftSearchQuery("");
-    setSubmittedSearchQuery("");
-
-    if (!hasCompleteCatalog && category !== initialCategory) {
-      void ensureFullCatalog();
-    }
-
-    window.history.replaceState(null, "", pathname);
-
-    requestAnimationFrame(() => {
-      document.getElementById("productos")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
-  }
-
-  function submitSearch(nextRawQuery: string) {
-    const nextQuery = nextRawQuery.trim();
-    const params = new URLSearchParams();
-
-    if (nextQuery) {
-      params.set("q", nextQuery);
-      if (!hasCompleteCatalog) {
-        void ensureFullCatalog();
-      }
-    }
-
-    setDraftSearchQuery(nextQuery);
-    setSubmittedSearchQuery(nextQuery);
-
-    window.history.replaceState(
-      null,
-      "",
-      params.size > 0 ? `${pathname}?${params.toString()}` : pathname,
-    );
-
-    requestAnimationFrame(() => {
-      document.getElementById("productos")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
-  }
-
   function handleSubmitSearch() {
-    submitSearch(draftSearchQuery);
+    const query = draftSearchQuery.trim();
+
+    if (!query) {
+      return;
+    }
+
+    router.push(`/catalogo?q=${encodeURIComponent(query)}`);
   }
 
   function handleAddItem(
@@ -322,132 +160,56 @@ function StorefrontContent({
     );
   }
 
-  function handleOpenDetail(
-    product: Product,
-    presentation: Product["presentaciones"][number],
-    primaryCategory: string,
+  function handleBuyRecipeIngredients(
+    recipe: HomeContent["recipeHighlights"][number],
   ) {
-    rememberActiveElement(lastDetailTriggerRef);
-    setDetailState({
-      product,
-      presentation,
-      primaryCategory,
-    });
+    const addedCount = purchaseRecipeIngredients(
+      recipe.products,
+      addItem,
+      handleOpenCart,
+    );
+
+    if (addedCount > 0) {
+      setRecipeCartFeedback(
+        `${addedCount} producto${addedCount === 1 ? "" : "s"} agregado${addedCount === 1 ? "" : "s"} al carrito`,
+      );
+    }
   }
 
-  const isAwaitingFullCatalog =
-    !hasCompleteCatalog &&
-    (Boolean(normalizedSearchQuery) || activeCategory !== initialCategory);
-
   return (
-    <div className="pb-28">
+    <div className="min-h-screen bg-[#fffdf9] pb-20">
       <ShippingTicker onOpenShipping={handleOpenShipping} />
       <Header
-        sectionLinks={visibleSectionLinks}
-        categories={availableCategories}
-        activeCategory={activeCategory}
-        onChangeCategory={handleCategoryChange}
+        sectionLinks={[
+          { id: "categorias", label: "Nuestras categorías" },
+          { id: "destacados", label: "Los más elegidos" },
+          { id: "ideas", label: "Mirá y descubrí" },
+        ]}
+        categories={categories}
+        activeCategory={null}
         searchQuery={draftSearchQuery}
         onSearchChange={setDraftSearchQuery}
         onSubmitSearch={handleSubmitSearch}
         onClearSearch={() => {
           setDraftSearchQuery("");
-          setSubmittedSearchQuery("");
-          window.history.replaceState(null, "", pathname);
         }}
         totalItems={totalItems}
         onOpenCart={handleOpenCart}
       />
       <main id="main-content">
-        {!normalizedSearchQuery ? (
-          <Hero
-            content={homeContent.hero}
-            searchQuery={draftSearchQuery}
-            onSearchChange={setDraftSearchQuery}
-            onSubmitSearch={handleSubmitSearch}
-            onClearSearch={() => {
-              setDraftSearchQuery("");
-              setSubmittedSearchQuery("");
-              window.history.replaceState(null, "", pathname);
-            }}
-          />
-        ) : null}
-        {!normalizedSearchQuery ? (
-          <HomeDiscovery
-            content={homeContent}
-            onSelectCategory={handleCategoryChange}
-            showIdeas={false}
-          />
-        ) : null}
-
-        <section
-          id="productos"
-          aria-labelledby="productos-title"
-          className="container-shell pb-12"
-        >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <span className="section-kicker">Catalogo</span>
-              <h2
-                id="productos-title"
-                className="mt-3 font-display text-3xl font-semibold text-olive-dark sm:text-4xl"
-              >
-                {activeCategoryLabel}
-              </h2>
-            </div>
-            <p className="text-sm leading-6 text-foreground/62" role="status" aria-live="polite">
-              {isAwaitingFullCatalog || isCatalogLoading
-                ? "Actualizando catálogo completo..."
-                : `${visibleProducts.length} productos disponibles con el filtro actual.`}
-            </p>
-          </div>
-
-          {isAwaitingFullCatalog ? (
-            <div className="mt-6 rounded-[1.8rem] border border-olive/14 bg-white/72 p-8 text-center">
-              <p className="text-lg font-semibold text-olive-dark">
-                Cargando catálogo completo
-              </p>
-              <p className="mt-2 text-sm leading-6 text-foreground/62">
-                Estamos trayendo todos los productos para mostrar resultados precisos.
-              </p>
-            </div>
-          ) : visibleProducts.length > 0 ? (
-            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-              {visibleProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  hideFeaturedBadge={false}
-                  compact
-                  onOpenDetail={handleOpenDetail}
-                  onAdd={handleAddItem}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-6 rounded-[1.8rem] border border-dashed border-olive/18 bg-white/72 p-8 text-center">
-              <p className="text-lg font-semibold text-olive-dark">
-                {normalizedSearchQuery
-                  ? "No encontramos productos con esa busqueda."
-                  : "No encontramos productos para esa categoria."}
-              </p>
-              <p className="mt-2 text-sm leading-6 text-foreground/62">
-                {normalizedSearchQuery
-                  ? "Probá con otro nombre o categoría."
-                  : "Prueba con otro filtro para seguir armando tu pedido."}
-              </p>
-            </div>
-          )}
-        </section>
-
-        {!normalizedSearchQuery ? (
-          <HomeDiscovery
-            content={homeContent}
-            onSelectCategory={handleCategoryChange}
-            showCategories={false}
-          />
-        ) : null}
-
+        <Hero
+          content={homeContent.hero}
+          searchQuery={draftSearchQuery}
+          onSearchChange={setDraftSearchQuery}
+          onSubmitSearch={handleSubmitSearch}
+          onClearSearch={() => setDraftSearchQuery("")}
+        />
+        <HomeCategories content={homeContent} />
+        <FeaturedProducts products={featuredProducts} onAdd={handleAddItem} />
+        <HomeShorts
+          content={homeContent}
+          onBuyIngredients={handleBuyRecipeIngredients}
+        />
       </main>
 
       <FloatingWhatsAppButton />
@@ -461,16 +223,6 @@ function StorefrontContent({
         onRemove={removeItem}
         onUpdateQuantity={updateQuantity}
       />
-
-      {detailState ? (
-        <ProductDetailDialog
-          product={detailState.product}
-          selectedPresentation={detailState.presentation}
-          primaryCategory={detailState.primaryCategory}
-          isOpen
-          onClose={() => setDetailState(null)}
-        />
-      ) : null}
 
       {isShippingOpen ? (
         <div className="fixed inset-0 z-[60] transition lg:hidden">
@@ -556,6 +308,19 @@ function StorefrontContent({
           </div>
         </div>
       ) : null}
+
+      {recipeCartFeedback ? (
+        <div
+          className="fixed right-4 bottom-24 z-[80] w-[min(92vw,26rem)] sm:right-6 sm:bottom-28"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="rounded-[1.4rem] bg-[#fffdf9]/98 px-4 py-3 text-sm font-semibold text-olive-dark shadow-[0_16px_40px_rgba(47,51,40,0.16)] ring-1 ring-olive/10 backdrop-blur">
+            {recipeCartFeedback}
+          </div>
+        </div>
+      ) : null}
+
     </div>
   );
 }
