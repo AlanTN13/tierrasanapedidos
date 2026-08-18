@@ -20,7 +20,7 @@ import { getYouTubeEmbedUrl } from "@/lib/youtube";
 import type { HomeContent, HomeRecipeHighlight } from "@/types/home";
 
 const COLLAPSED_CATEGORY_COUNT = 12;
-const SHORTS_AUTOPLAY_SPEED_PX_PER_SECOND = 15;
+const SHORTS_AUTOPLAY_SPEED_PX_PER_SECOND = 24;
 const SHORTS_INTERACTION_PAUSE_MS = 4000;
 const SHORTS_DRAG_THRESHOLD_PX = 8;
 const SHORTS_LOOP_COPIES = ["before", "primary", "after"] as const;
