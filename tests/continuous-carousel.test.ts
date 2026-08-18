@@ -4,6 +4,7 @@ import {
   getContinuousCarouselDelta,
   normalizeLoopScrollLeft,
   shouldAnimateContinuousCarousel,
+  shouldHoldContinuousCarouselPointer,
 } from "../lib/continuous-carousel.ts";
 
 test("sólo anima cuando hay loop, movimiento permitido y ninguna pausa", () => {
@@ -30,6 +31,13 @@ test("sólo anima cuando hay loop, movimiento permitido y ninguna pausa", () => 
     shouldAnimateContinuousCarousel({ ...readyState, itemCount: 1 }),
     false,
   );
+});
+
+test("sólo mantiene la pausa activa durante un drag real de mouse", () => {
+  assert.equal(shouldHoldContinuousCarouselPointer("mouse", 0), true);
+  assert.equal(shouldHoldContinuousCarouselPointer("mouse", 1), false);
+  assert.equal(shouldHoldContinuousCarouselPointer("touch", 0), false);
+  assert.equal(shouldHoldContinuousCarouselPointer("pen", 0), false);
 });
 
 test("calcula un avance continuo proporcional al tiempo", () => {

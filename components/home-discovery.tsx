@@ -13,6 +13,7 @@ import {
   getContinuousCarouselDelta,
   normalizeLoopScrollLeft,
   shouldAnimateContinuousCarousel,
+  shouldHoldContinuousCarouselPointer,
 } from "@/lib/continuous-carousel";
 import { getDefaultRecipeCartItems } from "@/lib/recipe-cart";
 import { getYouTubeEmbedUrl } from "@/lib/youtube";
@@ -400,11 +401,20 @@ export function HomeShorts({
   }
 
   function handleTrackPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    setIsPointerActive(true);
+    const shouldHoldPointer = shouldHoldContinuousCarouselPointer(
+      event.pointerType,
+      event.button,
+    );
+
+    setIsPointerActive(shouldHoldPointer);
     pauseForInteraction();
     didDragRef.current = false;
 
-    if (event.pointerType === "touch" || event.button !== 0) {
+    if (event.pointerType !== "mouse") {
+      setIsHoverPaused(false);
+    }
+
+    if (!shouldHoldPointer) {
       dragStateRef.current = null;
       return;
     }
@@ -528,7 +538,13 @@ export function HomeShorts({
         onPointerUp={handleTrackPointerUp}
         onPointerCancel={handleTrackPointerUp}
         onWheel={pauseForInteraction}
-        onMouseEnter={() => setIsHoverPaused(true)}
+        onMouseEnter={() => {
+          if (
+            window.matchMedia("(hover: hover) and (pointer: fine)").matches
+          ) {
+            setIsHoverPaused(true);
+          }
+        }}
         onMouseLeave={() => {
           setIsHoverPaused(false);
           pauseForInteraction();
@@ -566,7 +582,7 @@ export function HomeShorts({
                 aria-pressed={
                   isPrimaryCopy ? recipe.slug === activeSlug : undefined
                 }
-                className="group flex basis-[47%] shrink-0 flex-col overflow-hidden rounded-[1.2rem] bg-white text-left shadow-[0_10px_26px_rgba(47,51,40,0.11)] ring-1 ring-olive/8 transition select-none hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(47,51,40,0.14)] focus:outline-none focus-visible:ring-2 focus-visible:ring-olive focus-visible:ring-offset-2 sm:rounded-[1.45rem] lg:basis-[calc(25%-1rem)]"
+                className="group flex basis-[47%] shrink-0 flex-col overflow-hidden rounded-[1.2rem] bg-white text-left shadow-[0_10px_26px_rgba(47,51,40,0.11)] ring-1 ring-olive/8 transition select-none hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(47,51,40,0.14)] focus:outline-none focus-visible:ring-2 focus-visible:ring-olive focus-visible:ring-offset-2 sm:rounded-[1.45rem] lg:basis-[240px] xl:basis-[260px]"
               >
                 <span className="relative block aspect-[4/5] w-full overflow-hidden bg-olive-soft/25">
                   <Image
@@ -574,7 +590,7 @@ export function HomeShorts({
                     alt=""
                     fill
                     draggable={false}
-                    sizes="(max-width: 1023px) 50vw, (max-width: 1800px) 25vw, 430px"
+                    sizes="(max-width: 1023px) 50vw, 260px"
                     className="object-cover transition duration-500 group-hover:scale-[1.035]"
                   />
                   <span className="absolute inset-0 flex items-center justify-center">

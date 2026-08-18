@@ -19,6 +19,13 @@ export function shouldAnimateContinuousCarousel({
   );
 }
 
+export function shouldHoldContinuousCarouselPointer(
+  pointerType: string,
+  button: number,
+) {
+  return pointerType === "mouse" && button === 0;
+}
+
 export function getContinuousCarouselDelta(
   elapsedMs: number,
   pixelsPerSecond: number,
