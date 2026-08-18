@@ -1,4 +1,3 @@
-import { getImageProps } from "next/image";
 import Link from "next/link";
 import type { ResolvedHomeHeroConfig } from "@/types/home";
 
@@ -11,43 +10,18 @@ type HeroProps = {
 };
 
 export function Hero({ content }: HeroProps) {
-  const common = {
-    alt: content.bannerAlt,
-    sizes: "100vw",
-    fetchPriority: "high" as const,
-  };
-  const {
-    props: { srcSet: desktopSrcSet },
-  } = getImageProps({
-    ...common,
-    src: content.bannerDesktopImage,
-    width: 1920,
-    height: 720,
-    quality: 82,
-  });
-  const {
-    props: { srcSet: mobileSrcSet, ...imageProps },
-  } = getImageProps({
-    ...common,
-    src: content.bannerMobileImage,
-    width: 1080,
-    height: 1350,
-    quality: 82,
-  });
-
   return (
     <section id="inicio" className="pb-4 sm:pb-6">
       <article className="relative w-full overflow-hidden bg-white/55">
         <picture>
-          <source media="(min-width: 768px)" srcSet={desktopSrcSet} />
-          <source media="(max-width: 767px)" srcSet={mobileSrcSet} />
+          <source media="(min-width: 768px)" srcSet={content.bannerDesktopImage} />
+          <source media="(max-width: 767px)" srcSet={content.bannerMobileImage} />
           {/* Dimensions are intentionally omitted: uploaded banners retain their natural ratio. */}
           <img
-            {...imageProps}
+            src={content.bannerMobileImage}
             alt={content.bannerAlt}
-            width={undefined}
-            height={undefined}
             loading="eager"
+            fetchPriority="high"
             className="block h-auto w-full"
           />
         </picture>
