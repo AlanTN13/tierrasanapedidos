@@ -1,38 +1,18 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { randomUUID } from "node:crypto";
+import { AdminInputError, productErrorResult, type AdminFormResult } from "@/lib/admin-form-result";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
 import { refreshHomeCache } from "@/lib/home-data";
 import { resolveHomeBannerSavePaths } from "@/lib/home-banner";
 import { refreshRecipesCache } from "@/lib/recipes-data";
-import {
-  calculateAmountInBaseUnits,
-  formatPresentationLabel,
-  normalizeMeasurementUnitForKind,
-  parseMeasurementValue,
-  type PresentationMeasurementKind,
-  type PresentationMeasurementUnit,
-} from "@/lib/presentation";
-import {
-  generateBaseSku,
-  generatePresentationSku,
-  normalizeManualSku,
-} from "@/lib/sku";
+import { generateBaseSku, normalizeManualSku } from "@/lib/sku";
+import { parsePresentations, validateProductIdentity } from "@/lib/product-form-validation";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
-type ParsedPresentation = {
-  id: string | undefined;
-  sku: string;
-  label: string;
-  measurementKind: PresentationMeasurementKind;
-  amountValue: number;
-  amountUnit: PresentationMeasurementUnit;
-  amountInBaseUnits: number;
-  priceCents: number;
-  sortOrder: number;
-};
 
 const PRODUCT_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp", "svg"] as const;
 const PRODUCT_IMAGE_MAX_DIMENSION = 1600;
@@ -62,228 +42,178 @@ export async function signOutAdmin() {
   redirect("/admin/login?signedOut=1");
 }
 
-export async function saveProduct(formData: FormData) {
+export async function saveProduct(formData: FormData): Promise<AdminFormResult | void> {
+  // Authentication redirects remain framework control flow, outside error conversion.
   await requireAdminUser();
+  let resolvedProductId = "";
+  let imagePath = "";
+  let previousImagePath = "";
+  let hasWrittenProduct = false;
+  let slug = "";
 
-  if (!isSupabaseConfigured()) {
-    throw new Error("Supabase no está configurado.");
-  }
-
-  const supabase = await createClient();
-  const productId = readString(formData.get("productId"));
-  const name = readString(formData.get("name"));
-  const submittedSlug = readString(formData.get("slug"));
-  const slug = slugify(submittedSlug || name);
-  const baseSku = normalizeManualSku(readString(formData.get("baseSku"))) || generateBaseSku(slug, name);
-  const description = readString(formData.get("description"));
-  const existingImagePath = readString(formData.get("existingImagePath"));
-  const removeExistingImage = readBooleanFlag(formData.get("removeExistingImage"));
-  const imageFile = formData.get("imageFile");
-  const tags = readString(formData.get("tags"))
-    .split(",")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
-  const isFeatured = formData.get("isFeatured") === "on";
-  const isActive = formData.get("isActive") === "on";
-  const featuredOrder = readNullableNumber(formData.get("featuredOrder"));
-  const categoryIds = formData
-    .getAll("categoryIds")
-    .map((value) => readString(value))
-    .filter(Boolean);
-  const presentations = parsePresentations(formData, baseSku);
-  const imagePath = await resolveProductImagePath({
-    slug,
-    name,
-    imageFile,
-    existingImagePath,
-    removeExistingImage,
-  });
-
-  if (!slug || !name || !description || !imagePath) {
-    throw new Error("Faltan campos obligatorios del producto.");
-  }
-
-  if (categoryIds.length === 0) {
-    throw new Error("El producto necesita al menos una categoría.");
-  }
-
-  if (presentations.length === 0) {
-    throw new Error("El producto necesita al menos una presentación.");
-  }
-
-  let resolvedProductId = productId;
-
-  if (resolvedProductId) {
-    const productPayload = {
-      slug,
-      base_sku: baseSku,
-      name,
-      description,
-      image_path: imagePath,
-      tags,
-      is_featured: isFeatured,
-      featured_order: featuredOrder,
-      is_active: isActive,
-    };
-    const { error } = await supabase
-      .from("products")
-      .update(productPayload)
-      .eq("id", resolvedProductId);
-
-    if (error && isMissingColumnError(error.message)) {
-      const { error: legacyError } = await supabase
-        .from("products")
-        .update({
-          slug,
-          name,
-          description,
-          image_path: imagePath,
-          tags,
-          is_featured: isFeatured,
-          featured_order: featuredOrder,
-          is_active: isActive,
-        })
-        .eq("id", resolvedProductId);
-
-      if (legacyError) {
-        throw new Error(legacyError.message);
-      }
-    } else if (error) {
-      throw new Error(error.message);
+  try {
+    if (!isSupabaseConfigured()) {
+      throw new Error("Supabase no está configurado.");
     }
-  } else {
-    const productPayload = {
-      slug,
-      base_sku: baseSku,
-      name,
-      description,
-      image_path: imagePath,
-      tags,
-      is_featured: isFeatured,
-      featured_order: featuredOrder,
-      is_active: isActive,
-    };
-    const { data, error } = await supabase
-      .from("products")
-      .insert(productPayload)
-      .select("id")
-      .single();
 
-    if (error && isMissingColumnError(error.message)) {
-      const { data: legacyData, error: legacyError } = await supabase
-        .from("products")
-        .insert({
-          slug,
-          name,
-          description,
-          image_path: imagePath,
-          tags,
-          is_featured: isFeatured,
-          featured_order: featuredOrder,
-          is_active: isActive,
-        })
-        .select("id")
-        .single();
+    const supabase = await createClient();
+    const productId = readString(formData.get("productId"));
+    resolvedProductId = productId;
+    const name = readString(formData.get("name"));
+    const submittedSlug = readString(formData.get("slug"));
+    slug = slugify(submittedSlug || name);
+    const baseSku = normalizeManualSku(readString(formData.get("baseSku"))) || generateBaseSku(slug, name);
+    const description = readString(formData.get("description"));
+    const existingImagePath = readString(formData.get("existingImagePath"));
+    previousImagePath = existingImagePath;
+    const removeExistingImage = readBooleanFlag(formData.get("removeExistingImage"));
+    const imageFile = formData.get("imageFile");
+    const tags = readString(formData.get("tags"))
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+    const isFeatured = formData.get("isFeatured") === "on";
+    const isActive = formData.get("isActive") === "on";
+    const featuredOrder = readNullableNumber(formData.get("featuredOrder"));
+    const categoryIds = formData
+      .getAll("categoryIds")
+      .map((value) => readString(value))
+      .filter(Boolean);
+    const presentations = parsePresentations(formData, baseSku);
 
-      if (legacyError || !legacyData) {
-        throw new Error(legacyError?.message ?? "No se pudo crear el producto.");
-      }
-
-      resolvedProductId = legacyData.id;
-    } else if (error || !data) {
-      throw new Error(error?.message ?? "No se pudo crear el producto.");
-    } else {
-      resolvedProductId = data.id;
+    if (!slug || !name || !description) {
+      throw new AdminInputError("Completá el slug, nombre y descripción del producto.", !slug ? "slug" : !name ? "name" : "description");
     }
-  }
-
-  const { data: existingPresentations, error: existingPresentationsError } = await supabase
-    .from("product_presentations")
-    .select("id")
-    .eq("product_id", resolvedProductId);
-
-  if (existingPresentationsError) {
-    throw new Error(existingPresentationsError.message);
-  }
-
-  const submittedPresentationIds = presentations
-    .map((presentation) => presentation.id)
-    .filter((value): value is string => Boolean(value));
-  const existingPresentationIds = (existingPresentations ?? []).map((item) => item.id);
-  const presentationIdsToDeactivate = existingPresentationIds.filter(
-    (id) => !submittedPresentationIds.includes(id),
-  );
-
-  if (presentationIdsToDeactivate.length > 0) {
-    const { error } = await supabase
-      .from("product_presentations")
-      .update({
-        is_active: false,
-      })
-      .in("id", presentationIdsToDeactivate);
-
-    if (error) {
-      throw new Error(error.message);
+    if (categoryIds.length === 0) {
+      throw new AdminInputError("Elegí al menos una categoría para el producto.", "categoryIds");
     }
-  }
+    if (presentations.length === 0) {
+      throw new AdminInputError("Agregá al menos una presentación con contenido y precio.", "presentationPrice");
+    }
 
-  for (const presentation of presentations) {
-    if (presentation.id) {
-      const presentationPayload = {
-        sku: presentation.sku,
-        label: presentation.label,
-        measurement_kind: presentation.measurementKind,
-        amount_value: String(presentation.amountValue),
-        amount_unit: presentation.amountUnit,
-        amount_in_base_units: String(presentation.amountInBaseUnits),
-        price_cents: presentation.priceCents,
-        sort_order: presentation.sortOrder,
-        is_active: true,
+    await validateProductIdentity(supabase, { productId, slug, baseSku, presentations });
+    imagePath = await resolveProductImagePath({ slug, name, imageFile, existingImagePath, removeExistingImage });
+
+    if (resolvedProductId) {
+      const productPayload = {
+        slug,
+        base_sku: baseSku,
+        name,
+        description,
+        image_path: imagePath,
+        tags,
+        is_featured: isFeatured,
+        featured_order: featuredOrder,
+        is_active: isActive,
       };
       const { error } = await supabase
-        .from("product_presentations")
-        .update(presentationPayload)
-        .eq("id", presentation.id);
+        .from("products")
+        .update(productPayload)
+        .eq("id", resolvedProductId);
 
       if (error && isMissingColumnError(error.message)) {
         const { error: legacyError } = await supabase
-          .from("product_presentations")
+          .from("products")
           .update({
-            label: presentation.label,
-            measurement_kind: presentation.measurementKind,
-            amount_value: String(presentation.amountValue),
-            amount_unit: presentation.amountUnit,
-            amount_in_base_units: String(presentation.amountInBaseUnits),
-            price_cents: presentation.priceCents,
-            sort_order: presentation.sortOrder,
-            is_active: true,
+            slug,
+            name,
+            description,
+            image_path: imagePath,
+            tags,
+            is_featured: isFeatured,
+            featured_order: featuredOrder,
+            is_active: isActive,
           })
-          .eq("id", presentation.id);
+          .eq("id", resolvedProductId);
 
         if (legacyError) {
-          throw new Error(legacyError.message);
+          throw legacyError;
         }
       } else if (error) {
-        throw new Error(error.message);
+        throw error;
       }
     } else {
-      const presentationPayload = {
-        product_id: resolvedProductId,
-        sku: presentation.sku,
-        label: presentation.label,
-        measurement_kind: presentation.measurementKind,
-        amount_value: String(presentation.amountValue),
-        amount_unit: presentation.amountUnit,
-        amount_in_base_units: String(presentation.amountInBaseUnits),
-        price_cents: presentation.priceCents,
-        sort_order: presentation.sortOrder,
-        is_active: true,
+      const productPayload = {
+        slug,
+        base_sku: baseSku,
+        name,
+        description,
+        image_path: imagePath,
+        tags,
+        is_featured: isFeatured,
+        featured_order: featuredOrder,
+        is_active: isActive,
       };
-      const { error } = await supabase.from("product_presentations").insert(presentationPayload);
+      const { data, error } = await supabase
+        .from("products")
+        .insert(productPayload)
+        .select("id")
+        .single();
 
       if (error && isMissingColumnError(error.message)) {
-        const { error: legacyError } = await supabase.from("product_presentations").insert({
-          product_id: resolvedProductId,
+        const { data: legacyData, error: legacyError } = await supabase
+          .from("products")
+          .insert({
+            slug,
+            name,
+            description,
+            image_path: imagePath,
+            tags,
+            is_featured: isFeatured,
+            featured_order: featuredOrder,
+            is_active: isActive,
+          })
+          .select("id")
+          .single();
+
+        if (legacyError || !legacyData) {
+          throw legacyError ?? new Error("No se pudo crear el producto.");
+        }
+
+        resolvedProductId = legacyData.id;
+      } else if (error || !data) {
+        throw error ?? new Error("No se pudo crear el producto.");
+      } else {
+        resolvedProductId = data.id;
+      }
+    }
+
+    hasWrittenProduct = true;
+
+    const { data: existingPresentations, error: existingPresentationsError } = await supabase
+      .from("product_presentations")
+      .select("id")
+      .eq("product_id", resolvedProductId);
+
+    if (existingPresentationsError) {
+      throw existingPresentationsError;
+    }
+
+    const submittedPresentationIds = presentations
+      .map((presentation) => presentation.id)
+      .filter((value): value is string => Boolean(value));
+    const existingPresentationIds = (existingPresentations ?? []).map((item) => item.id);
+    const presentationIdsToDeactivate = existingPresentationIds.filter(
+      (id) => !submittedPresentationIds.includes(id),
+    );
+
+    if (presentationIdsToDeactivate.length > 0) {
+      const { error } = await supabase
+        .from("product_presentations")
+        .update({
+          is_active: false,
+        })
+        .in("id", presentationIdsToDeactivate);
+
+      if (error) {
+        throw error;
+      }
+    }
+
+    for (const presentation of presentations) {
+      if (presentation.id) {
+        const presentationPayload = {
+          sku: presentation.sku,
           label: presentation.label,
           measurement_kind: presentation.measurementKind,
           amount_value: String(presentation.amountValue),
@@ -292,43 +222,119 @@ export async function saveProduct(formData: FormData) {
           price_cents: presentation.priceCents,
           sort_order: presentation.sortOrder,
           is_active: true,
-        });
+        };
+        const { error } = await supabase
+          .from("product_presentations")
+          .update(presentationPayload)
+          .eq("id", presentation.id);
 
-        if (legacyError) {
-          throw new Error(legacyError.message);
+        if (error && isMissingColumnError(error.message)) {
+          const { error: legacyError } = await supabase
+            .from("product_presentations")
+            .update({
+              label: presentation.label,
+              measurement_kind: presentation.measurementKind,
+              amount_value: String(presentation.amountValue),
+              amount_unit: presentation.amountUnit,
+              amount_in_base_units: String(presentation.amountInBaseUnits),
+              price_cents: presentation.priceCents,
+              sort_order: presentation.sortOrder,
+              is_active: true,
+            })
+            .eq("id", presentation.id);
+
+          if (legacyError) {
+            throw legacyError;
+          }
+        } else if (error) {
+          throw error;
         }
-      } else if (error) {
-        throw new Error(error.message);
+      } else {
+        const presentationPayload = {
+          product_id: resolvedProductId,
+          sku: presentation.sku,
+          label: presentation.label,
+          measurement_kind: presentation.measurementKind,
+          amount_value: String(presentation.amountValue),
+          amount_unit: presentation.amountUnit,
+          amount_in_base_units: String(presentation.amountInBaseUnits),
+          price_cents: presentation.priceCents,
+          sort_order: presentation.sortOrder,
+          is_active: true,
+        };
+        const { error } = await supabase.from("product_presentations").insert(presentationPayload);
+
+        if (error && isMissingColumnError(error.message)) {
+          const { error: legacyError } = await supabase.from("product_presentations").insert({
+            product_id: resolvedProductId,
+            label: presentation.label,
+            measurement_kind: presentation.measurementKind,
+            amount_value: String(presentation.amountValue),
+            amount_unit: presentation.amountUnit,
+            amount_in_base_units: String(presentation.amountInBaseUnits),
+            price_cents: presentation.priceCents,
+            sort_order: presentation.sortOrder,
+            is_active: true,
+          });
+
+          if (legacyError) {
+            throw legacyError;
+          }
+        } else if (error) {
+          throw error;
+        }
       }
     }
+
+    const { error: deleteCategoriesError } = await supabase
+      .from("product_categories")
+      .delete()
+      .eq("product_id", resolvedProductId);
+
+    if (deleteCategoriesError) {
+      throw deleteCategoriesError;
+    }
+
+    const { error: insertCategoriesError } = await supabase
+      .from("product_categories")
+      .insert(
+        categoryIds.map((categoryId, index) => ({
+          product_id: resolvedProductId,
+          category_id: categoryId,
+          sort_order: index,
+        })),
+      );
+
+    if (insertCategoriesError) {
+      throw insertCategoriesError;
+    }
+
+    await refreshCatalogCache();
+  } catch (error) {
+    const result = productErrorResult(error);
+    if (hasWrittenProduct && resolvedProductId) {
+      // Multi-step saves can fail after the product exists. Reuse its ID on retry.
+      result.resume = { productId: resolvedProductId, existingImagePath: imagePath };
+      result.error += " Algunos cambios pueden haberse guardado; al corregir y guardar continuaremos sobre el mismo producto.";
+    }
+    if (!(error instanceof AdminInputError)) {
+      result.reference = randomUUID().slice(0, 8);
+      console.error("[admin:saveProduct]", { reference: result.reference, error });
+    }
+    return result;
   }
 
-  const { error: deleteCategoriesError } = await supabase
-    .from("product_categories")
-    .delete()
-    .eq("product_id", resolvedProductId);
-
-  if (deleteCategoriesError) {
-    throw new Error(deleteCategoriesError.message);
+  // Never remove the previous image before the complete product save succeeds.
+  if (previousImagePath && previousImagePath !== imagePath) {
+    try {
+      await removeStoredImageAtPath(previousImagePath);
+    } catch (error) {
+      console.error("[admin:saveProduct:image-cleanup]", error);
+    }
   }
-
-  const { error: insertCategoriesError } = await supabase
-    .from("product_categories")
-    .insert(
-      categoryIds.map((categoryId, index) => ({
-        product_id: resolvedProductId,
-        category_id: categoryId,
-        sort_order: index,
-      })),
-    );
-
-  if (insertCategoriesError) {
-    throw new Error(insertCategoriesError.message);
-  }
-
-  await refreshCatalogCache();
   redirect(`/admin/products/${slug}?saved=1`);
 }
+
 
 export async function saveCategory(formData: FormData) {
   await requireAdminUser();
@@ -592,92 +598,6 @@ export async function saveRecipe(formData: FormData) {
   redirect(`/admin/recipes/${slug}?saved=1`);
 }
 
-function parsePresentations(formData: FormData, baseSku: string): ParsedPresentation[] {
-  const ids = formData.getAll("presentationId").map((value) => readString(value));
-  const skuOverrides = formData
-    .getAll("presentationSkuOverride")
-    .map((value) => readString(value));
-  const measurementKinds = formData
-    .getAll("presentationMeasurementKind")
-    .map((value) => readString(value));
-  const amountValues = formData
-    .getAll("presentationAmountValue")
-    .map((value) => readString(value));
-  const amountUnits = formData
-    .getAll("presentationAmountUnit")
-    .map((value) => readString(value));
-  const prices = formData.getAll("presentationPrice").map((value) => readString(value));
-  const sortOrders = formData
-    .getAll("presentationSortOrder")
-    .map((value) => readString(value));
-
-  const parsedPresentations = amountValues
-    .map((rawAmountValue, index) => {
-      const price = prices[index] ?? "";
-      const rawMeasurementKind = measurementKinds[index] ?? "unit";
-      const rawAmountUnit = amountUnits[index] ?? "unit";
-
-      if (!rawAmountValue || !price) {
-        return null;
-      }
-
-      const measurementKind = parseMeasurementKind(rawMeasurementKind);
-      const amountValue = parseMeasurementValue(rawAmountValue);
-      const amountUnit = normalizeMeasurementUnitForKind(
-        measurementKind,
-        rawAmountUnit,
-      );
-      const amountInBaseUnits = calculateAmountInBaseUnits({
-        amountValue,
-        amountUnit,
-      });
-
-      return {
-        id: ids[index] || undefined,
-        sku:
-          normalizeManualSku(skuOverrides[index] ?? "") ||
-          generatePresentationSku({
-            baseSku,
-            measurementKind,
-            amountValue,
-            amountUnit,
-          }),
-        label: formatPresentationLabel({
-          measurementKind,
-          amountValue,
-          amountUnit,
-        }),
-        measurementKind,
-        amountValue,
-        amountUnit,
-        amountInBaseUnits,
-        priceCents: parseCurrencyToCents(price),
-        sortOrder: Number.parseInt(sortOrders[index] || String(index), 10) || index,
-      };
-    })
-    .filter((value): value is ParsedPresentation => Boolean(value));
-
-  return parsedPresentations;
-}
-
-function parseMeasurementKind(value: string): PresentationMeasurementKind {
-  if (value === "weight" || value === "volume") {
-    return value;
-  }
-
-  return "unit";
-}
-
-function parseCurrencyToCents(value: string) {
-  const normalized = value.replace(/\./g, "").replace(",", ".").trim();
-  const amount = Number.parseFloat(normalized);
-
-  if (Number.isNaN(amount)) {
-    throw new Error(`Precio inválido: ${value}`);
-  }
-
-  return Math.round(amount * 100);
-}
 
 async function resolveProductImagePath({
   slug,
@@ -697,7 +617,6 @@ async function resolveProductImagePath({
   }
 
   if (removeExistingImage && (!(imageFile instanceof File) || imageFile.size === 0)) {
-    await removeStoredImageAtPath(existingImagePath);
     return PRODUCT_IMAGE_PLACEHOLDER;
   }
 
@@ -715,7 +634,6 @@ async function resolveProductImagePath({
   const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
 
   await uploadImageToStorage(imageFile, filePath);
-  await removeStoredImageAtPath(existingImagePath);
 
   return storagePath;
 }
