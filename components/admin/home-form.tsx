@@ -1,11 +1,13 @@
 "use client";
 
+import { AdminForm } from "@/components/admin/admin-form";
+import type { AdminFormAction } from "@/lib/admin-form-result";
 import { useEffect, useState } from "react";
 import type { AdminHomeSettings } from "@/types/admin-home";
 
 type HomeFormProps = {
   settings: AdminHomeSettings;
-  action: (formData: FormData) => Promise<void>;
+  action: AdminFormAction;
 };
 
 type BannerUploadProps = {
@@ -22,7 +24,7 @@ export function HomeForm({ settings, action }: HomeFormProps) {
   const mobilePreviewPath = settings.heroBannerMobilePath || settings.heroBannerPath;
 
   return (
-    <form action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-6">
       <input type="hidden" name="existingHeroBannerPath" value={settings.heroBannerPath} />
       <input
         type="hidden"
@@ -69,7 +71,7 @@ export function HomeForm({ settings, action }: HomeFormProps) {
       >
         Guardar banners
       </button>
-    </form>
+    </AdminForm>
   );
 }
 

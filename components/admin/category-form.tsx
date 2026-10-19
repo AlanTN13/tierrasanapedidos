@@ -1,14 +1,16 @@
+import { AdminForm } from "@/components/admin/admin-form";
+import type { AdminFormAction } from "@/lib/admin-form-result";
 import type { AdminCatalogCategory } from "@/lib/catalog-data";
 import { ImageUploadField } from "@/components/admin/image-upload-field";
 
 type CategoryFormProps = {
   category?: AdminCatalogCategory | null;
-  action: (formData: FormData) => Promise<void>;
+  action: AdminFormAction;
 };
 
 export function CategoryForm({ category, action }: CategoryFormProps) {
   return (
-    <form action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-6">
       <input type="hidden" name="categoryId" value={category?.id ?? ""} />
       <input type="hidden" name="existingImagePath" value={category?.imagePath ?? ""} />
 
@@ -90,6 +92,6 @@ export function CategoryForm({ category, action }: CategoryFormProps) {
           Guardar categoría
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }

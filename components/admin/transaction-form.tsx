@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminForm } from "@/components/admin/admin-form";
+import type { AdminFormAction } from "@/lib/admin-form-result";
 import { useDeferredValue, useState } from "react";
 import type {
   AdminPresentationOption,
@@ -10,7 +12,7 @@ import { formatARS, formatQuantity, toDateTimeLocalValue } from "@/lib/format";
 type TransactionFormProps = {
   mode: "purchase" | "sale";
   options: AdminPresentationOption[] | AdminPurchaseProductOption[];
-  action: (formData: FormData) => Promise<void>;
+  action: AdminFormAction;
 };
 
 type TransactionRow = {
@@ -74,7 +76,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
   }, 0);
 
   return (
-    <form action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-6">
       <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
         <div className="grid gap-4 md:grid-cols-2">
           {isSale ? (
@@ -395,7 +397,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
           {isSale ? "Guardar venta" : "Guardar compra"}
         </button>
       </div>
-    </form>
+    </AdminForm>
   );
 }
 

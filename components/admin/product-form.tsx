@@ -1,3 +1,5 @@
+import { AdminForm } from "@/components/admin/admin-form";
+import type { AdminFormAction } from "@/lib/admin-form-result";
 import Link from "next/link";
 import type { AdminCatalogProduct } from "@/lib/catalog-data";
 import { formatPresentationLabel } from "@/lib/presentation";
@@ -7,7 +9,7 @@ import { ImageUploadField } from "@/components/admin/image-upload-field";
 type ProductFormProps = {
   categories: CatalogCategory[];
   product?: AdminCatalogProduct | null;
-  action: (formData: FormData) => Promise<void>;
+  action: AdminFormAction;
 };
 
 export function ProductForm({
@@ -37,7 +39,7 @@ export function ProductForm({
   ];
 
   return (
-    <form action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-6">
       <input type="hidden" name="productId" value={product?.uuid ?? ""} />
       <input type="hidden" name="existingImagePath" value={product?.imagePath ?? ""} />
 
@@ -315,6 +317,6 @@ export function ProductForm({
           Volver
         </Link>
       </div>
-    </form>
+    </AdminForm>
   );
 }
