@@ -1,5 +1,7 @@
 import "server-only";
 
+import { costState } from "@/lib/admin-display";
+
 import { createClient as createServerSupabaseClient } from "@/lib/supabase/server";
 import { getAdminProducts } from "@/lib/catalog-data";
 import { formatSaleCode } from "@/lib/format";
@@ -194,6 +196,9 @@ export type AdminDashboardMetrics = {
   salesTotalCents: number;
   salesMarginCents: number;
   salesCount: number;
+  salesWithMissingCostCount: number;
+  salesWithEstimatedCostCount: number;
+  periodStart: string;
   stockLowCount: number;
   topRotationProducts: Array<{
     productPresentationId: string;
@@ -1040,6 +1045,9 @@ export async function getAdminDashboardMetrics(periodDays = DASHBOARD_PERIOD_DAY
     salesTotalCents: salesInPeriod.reduce((sum, sale) => sum + sale.totalCents, 0),
     salesMarginCents: salesInPeriod.reduce((sum, sale) => sum + sale.totalMarginCents, 0),
     salesCount: salesInPeriod.length,
+    salesWithMissingCostCount: salesInPeriod.filter((sale) => costState(sale.items) === "missing").length,
+    salesWithEstimatedCostCount: salesInPeriod.filter((sale) => costState(sale.items) === "estimated").length,
+    periodStart: periodStart.toISOString(),
     stockLowCount: inventorySummary.filter((item) => item.isLowStock).length,
     topRotationProducts: [...topRotationByPresentation.entries()]
       .map(([productPresentationId, item]) => ({

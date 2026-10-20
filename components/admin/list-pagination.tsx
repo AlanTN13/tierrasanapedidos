@@ -35,7 +35,7 @@ export function ListPagination({
           <select
             value={pageSize}
             onChange={(event) => onPageSizeChange(Number(event.target.value))}
-            className="rounded-2xl border border-olive/14 bg-white px-3 py-2 text-sm font-semibold text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+            className="rounded-lg border border-olive/14 bg-white px-3 py-2 text-sm font-semibold text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
           >
             {PAGE_SIZE_OPTIONS.map((option) => (
               <option key={option} value={option}>
@@ -45,7 +45,7 @@ export function ListPagination({
           </select>
         </label>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => onPageChange(Math.max(1, page - 1))}
@@ -54,7 +54,7 @@ export function ListPagination({
           >
             Anterior
           </button>
-          <div className="min-w-24 text-center text-sm font-semibold text-olive-dark">
+          <div className="min-w-0 text-center text-sm font-semibold text-olive-dark">
             Página {page} de {totalPages}
           </div>
           <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef } from "react";
 
 export type AlertProductItem = {
   id: string;
@@ -28,14 +28,15 @@ export function AlertProductsModal({
   items,
   tone = "default",
 }: AlertProductsModalProps) {
-  const [open, setOpen] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        className="surface-panel organic-outline block w-full rounded-[1.8rem] p-5 text-left transition hover:bg-white/90"
+        onClick={() => dialog.current?.showModal()}
+        className="admin-metric text-left"
       >
         <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
         <p className={`mt-2 text-3xl font-semibold ${tone === "warn" ? "text-red-700" : "text-olive-dark"}`}>
@@ -44,26 +45,24 @@ export function AlertProductsModal({
         <p className="mt-2 text-sm text-foreground/64">{description}</p>
       </button>
 
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-olive-dark/30 p-4">
-          <div className="surface-panel organic-outline max-h-[85vh] w-full max-w-2xl overflow-hidden rounded-[2rem]">
+      <dialog ref={dialog} className="admin-dialog" aria-labelledby={titleId} onClick={(event) => { if (event.target === event.currentTarget) { const rect = event.currentTarget.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.current?.close(); } }}>
             <div className="flex items-center justify-between gap-4 border-b border-olive/10 px-5 py-4">
               <div>
-                <h2 className="text-xl font-semibold text-olive-dark">{title}</h2>
+                <h2 id={titleId} className="text-xl font-semibold text-olive-dark">{title}</h2>
                 <p className="mt-1 text-sm text-foreground/64">
                   {items.length} producto{items.length === 1 ? "" : "s"} en esta alerta
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => dialog.current?.close()}
                 className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-4 py-2 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
               >
                 Cerrar
               </button>
             </div>
 
-            <div className="max-h-[65vh] overflow-auto">
+            <div className="admin-dialog-body">
               {items.length > 0 ? (
                 <div className="grid gap-px bg-olive/8">
                   {items.map((item) => (
@@ -80,9 +79,7 @@ export function AlertProductsModal({
                 <div className="px-5 py-10 text-sm text-foreground/64">{emptyText}</div>
               )}
             </div>
-          </div>
-        </div>
-      ) : null}
+      </dialog>
     </>
   );
 }

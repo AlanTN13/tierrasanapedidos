@@ -20,7 +20,7 @@ async function SalesPageContent() {
   const sales = await getSales();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Ventas"
         description={`${sales.length} ventas registradas. Guardá ventas, medí margen y descontá stock base real aunque vendas por presentación.`}

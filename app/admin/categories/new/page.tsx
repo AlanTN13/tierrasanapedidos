@@ -18,7 +18,7 @@ async function NewCategoryContent() {
   await requireAdminUser();
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-5xl space-y-4">
       <PageHeader
         title="Nueva categoría"
         description="Definí el nombre visible, la imagen y el orden en catálogo."

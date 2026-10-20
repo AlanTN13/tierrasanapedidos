@@ -39,11 +39,11 @@ export function ProductForm({
   ];
 
   return (
-    <AdminForm action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-4">
       <input type="hidden" name="productId" value={product?.uuid ?? ""} />
       <input type="hidden" name="existingImagePath" value={product?.imagePath ?? ""} />
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-olive-dark">Slug</span>
@@ -52,7 +52,7 @@ export function ProductForm({
               defaultValue={product?.slug ?? ""}
               placeholder="harina-de-almendras"
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -63,7 +63,7 @@ export function ProductForm({
               defaultValue={product?.name ?? ""}
               placeholder="Harina de almendras"
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -73,7 +73,7 @@ export function ProductForm({
               name="baseSku"
               defaultValue={product?.baseSku ?? ""}
               placeholder="AZUCAR-IMPALPABLE"
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm uppercase text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm uppercase text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
             <p className="text-xs leading-5 text-foreground/58">
               Si lo dejás vacío, se genera desde el slug o nombre.
@@ -98,7 +98,7 @@ export function ProductForm({
               defaultValue={product?.description ?? ""}
               rows={4}
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -108,7 +108,7 @@ export function ProductForm({
               name="tags"
               defaultValue={(product?.tags ?? []).join(", ")}
               placeholder="sin tacc, premium, desayuno"
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -120,7 +120,7 @@ export function ProductForm({
               min="0"
               step="1"
               defaultValue={product?.featuredOrder ?? ""}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -148,7 +148,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-semibold text-olive-dark">Categorías</h2>
@@ -162,7 +162,7 @@ export function ProductForm({
           {categories.map((category) => (
             <label
               key={category.id}
-              className="flex items-start gap-3 rounded-2xl border border-olive/14 bg-white/90 px-4 py-3 text-sm text-olive-dark"
+              className="flex items-start gap-3 rounded-lg border border-olive/14 bg-white/90 px-4 py-3 text-sm text-olive-dark"
             >
               <input
                 type="checkbox"
@@ -177,7 +177,7 @@ export function ProductForm({
         </div>
       </section>
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div>
           <h2 className="text-xl font-semibold text-olive-dark">Presentaciones</h2>
           <p className="text-sm text-foreground/64">
@@ -189,7 +189,7 @@ export function ProductForm({
           {presentationRows.map((presentation, index) => (
             <div
               key={`${presentation.id ?? "new"}-${index}`}
-              className="grid gap-3 rounded-2xl border border-olive/12 bg-white/90 p-4 md:grid-cols-[1fr_150px_1fr_110px]"
+              className="grid gap-3 rounded-lg border border-olive/12 bg-white/90 p-4 md:grid-cols-[1fr_150px_1fr_110px]"
             >
               <input
                 type="hidden"
@@ -205,7 +205,7 @@ export function ProductForm({
                   defaultValue={presentation.amountValue > 0 ? presentation.amountValue : ""}
                   placeholder="500"
                   inputMode="decimal"
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
                 <p className="text-xs leading-5 text-foreground/58">
                   {presentation.etiqueta
@@ -220,7 +220,7 @@ export function ProductForm({
                 <select
                   name="presentationMeasurementKind"
                   defaultValue={presentation.measurementKind}
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 >
                   <option value="unit">Unidades</option>
                   <option value="weight">Peso</option>
@@ -234,7 +234,7 @@ export function ProductForm({
                 <select
                   name="presentationAmountUnit"
                   defaultValue={presentation.amountUnit}
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 >
                   <option value="unit">unidad</option>
                   <option value="g">g</option>
@@ -253,7 +253,7 @@ export function ProductForm({
                   min="0"
                   step="1"
                   defaultValue={presentation.sortOrder ?? index}
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
               <label className="space-y-2 md:col-span-2">
@@ -265,7 +265,7 @@ export function ProductForm({
                   defaultValue={presentation.precio > 0 ? presentation.precio : ""}
                   placeholder="7500"
                   inputMode="decimal"
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
               <label className="space-y-2 md:col-span-2">
@@ -276,13 +276,13 @@ export function ProductForm({
                   name="presentationSkuOverride"
                   defaultValue={presentation.sku ?? ""}
                   placeholder="AZUCAR-IMPALPABLE-250G"
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm uppercase text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm uppercase text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
                 <p className="text-xs leading-5 text-foreground/58">
                   Si queda vacío, se regenera con el SKU base y la equivalencia.
                 </p>
               </label>
-              <div className="rounded-2xl border border-olive/10 bg-olive-soft/24 px-4 py-3 md:col-span-2">
+              <div className="rounded-lg border border-olive/10 bg-olive-soft/24 px-4 py-3 md:col-span-2">
                 <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
                   Etiqueta visible
                 </p>

@@ -1,3 +1,4 @@
+import { formatAdminDateTime as formatDateTime } from "@/lib/admin-display";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,7 +7,7 @@ import { DeleteRecordButton } from "@/components/admin/delete-record-button";
 import { PageHeader } from "@/components/admin/page-header";
 import { deletePurchaseOrder } from "@/app/admin/operations/actions";
 import { getPurchaseOrderById } from "@/lib/admin-operations";
-import { formatARS, formatDateTime } from "@/lib/format";
+import {formatARS} from "@/lib/format";
 import { requireAdminUser } from "@/lib/supabase/admin";
 
 type PurchaseDetailPageProps = {
@@ -34,7 +35,7 @@ async function PurchaseDetailContent({ params }: PurchaseDetailPageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         kicker="Compra"
         title={purchaseOrder.supplierName}
@@ -70,7 +71,7 @@ async function PurchaseDetailContent({ params }: PurchaseDetailPageProps) {
         <InfoCard label="Comprobante" value={purchaseOrder.referenceNumber || "Sin número"} />
       </section>
 
-      <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
+      <section className="surface-panel organic-outline overflow-hidden rounded-xl">
         <div className="grid gap-px bg-olive/8">
           {purchaseOrder.items.map((item) => (
             <article
@@ -90,7 +91,7 @@ async function PurchaseDetailContent({ params }: PurchaseDetailPageProps) {
       </section>
 
       {purchaseOrder.notes ? (
-        <section className="surface-panel organic-outline rounded-[1.8rem] p-5">
+        <section className="surface-panel organic-outline rounded-xl p-5">
           <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">Notas</p>
           <p className="mt-3 text-sm leading-6 text-foreground/68">{purchaseOrder.notes}</p>
         </section>
@@ -101,7 +102,7 @@ async function PurchaseDetailContent({ params }: PurchaseDetailPageProps) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
+    <div className="surface-panel organic-outline rounded-xl p-5">
       <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
       <p className="mt-2 text-3xl font-semibold text-olive-dark">{value}</p>
     </div>
@@ -110,7 +111,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
 
 function MiniInfo({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-olive/10 bg-olive-soft/26 px-3 py-2 text-sm text-olive-dark">
+    <div className="rounded-lg border border-olive/10 bg-olive-soft/26 px-3 py-2 text-sm text-olive-dark">
       <strong>{label}</strong>
       <div>{value}</div>
     </div>

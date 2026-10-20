@@ -29,7 +29,7 @@ async function StockMovementsPageContent() {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Movimientos de stock"
         description="Registrá ajustes manuales con trazabilidad para corregir diferencias físicas, mermas, roturas, devoluciones y otros desvíos."

@@ -74,7 +74,7 @@ async function AdminLoginContent({
           </p>
 
           {!isConfigured ? (
-            <div className="mt-5 rounded-[1.4rem] border border-earth/15 bg-earth/8 p-4 text-sm text-olive-dark">
+            <div className="mt-4 rounded-lg border border-earth/15 bg-earth/8 p-4 text-sm text-olive-dark">
               Configuración pendiente: definí
               <code className="mx-1 rounded bg-white px-1.5 py-0.5 text-xs">
                 NEXT_PUBLIC_SUPABASE_URL
@@ -88,19 +88,19 @@ async function AdminLoginContent({
           ) : null}
 
           {reason ? (
-            <div className="mt-5 rounded-[1.4rem] border border-earth/15 bg-earth/8 p-4 text-sm text-olive-dark">
+            <div className="mt-4 rounded-lg border border-earth/15 bg-earth/8 p-4 text-sm text-olive-dark">
               {reason}
             </div>
           ) : null}
 
           {error ? (
-            <div className="mt-5 rounded-[1.4rem] border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
               {error}
             </div>
           ) : null}
 
           {signedOut ? (
-            <div className="mt-5 rounded-[1.4rem] border border-olive/12 bg-olive-soft/36 p-4 text-sm text-olive-dark">
+            <div className="mt-4 rounded-lg border border-olive/12 bg-olive-soft/36 p-4 text-sm text-olive-dark">
               Sesión cerrada.
             </div>
           ) : null}
@@ -115,7 +115,7 @@ async function AdminLoginContent({
                 required
                 placeholder="tierrasanadietetica@gmail.com"
                 autoComplete="email"
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
               />
             </label>
 
@@ -127,7 +127,7 @@ async function AdminLoginContent({
                 required
                 placeholder="Tu contraseña"
                 autoComplete="current-password"
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
               />
             </label>
 
@@ -140,7 +140,7 @@ async function AdminLoginContent({
             </button>
           </form>
 
-          <p className="mt-5 text-xs leading-5 text-foreground/58">
+          <p className="mt-4 text-xs leading-5 text-foreground/58">
             Si en el futuro usás recovery o magic link, mantené la confirmación de
             Supabase apuntando a
             <code className="mx-1 rounded bg-olive-soft/50 px-1.5 py-0.5">

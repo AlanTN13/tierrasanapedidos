@@ -2,7 +2,7 @@
 
 import { AdminForm } from "@/components/admin/admin-form";
 import type { AdminFormAction } from "@/lib/admin-form-result";
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import type {
   AdminPresentationOption,
   AdminPurchaseProductOption,
@@ -23,10 +23,18 @@ type TransactionRow = {
   unitAmount: string;
 };
 
-const INITIAL_ROW_COUNT = 3;
+const INITIAL_ROW_COUNT = 1;
 
 export function TransactionForm({ mode, options, action }: TransactionFormProps) {
-  const [rows, setRows] = useState<TransactionRow[]>(createInitialRows());
+  const [rows, setRows] = useState<TransactionRow[]>(createInitialRows);
+  const dateInput = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    // Initialize the native input after hydration in the operator's local time.
+    // Keep it uncontrolled so a failed save retains the chosen date.
+    if (dateInput.current && !dateInput.current.value) {
+      dateInput.current.value = toDateTimeLocalValue(new Date().toISOString());
+    }
+  }, []);
   const [activeRowKey, setActiveRowKey] = useState<string | null>(null);
   const isSale = mode === "sale";
   const deferredRows = useDeferredValue(rows);
@@ -52,6 +60,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
         : "",
     });
     setActiveRowKey(null);
+    requestAnimationFrame(() => document.getElementById(`quantity-${key}`)?.focus());
   }
 
   function handleSearchChange(key: string, value: string) {
@@ -76,8 +85,8 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
   }, 0);
 
   return (
-    <AdminForm action={action} className="space-y-6">
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+    <AdminForm action={action} className="transaction-form">
+      <section className="transaction-info surface-panel p-4">
         <div className="grid gap-4 md:grid-cols-2">
           {isSale ? (
             <>
@@ -86,8 +95,9 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                 <input
                   name="soldAt"
                   type="datetime-local"
-                  defaultValue={toDateTimeLocalValue(new Date().toISOString())}
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  ref={dateInput}
+                  defaultValue=""
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
 
@@ -98,7 +108,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                 <input
                   name="channel"
                   placeholder="Ej: Juan Perez"
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
             </>
@@ -110,7 +120,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                   name="supplierName"
                   placeholder="Distribuidora Natural"
                   required
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
 
@@ -119,7 +129,7 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                 <input
                   name="referenceNumber"
                   placeholder="FAC-000123"
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
 
@@ -128,8 +138,9 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                 <input
                   name="purchasedAt"
                   type="datetime-local"
-                  defaultValue={toDateTimeLocalValue(new Date().toISOString())}
-                  className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                  ref={dateInput}
+                  defaultValue=""
+                  className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 />
               </label>
             </>
@@ -139,19 +150,19 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
             <span className="text-sm font-semibold text-olive-dark">Notas</span>
             <textarea
               name="notes"
-              rows={3}
+              rows={2}
               placeholder={
                 isSale
                   ? "Opcional: aclaraciones sobre la venta."
                   : "Opcional: forma de entrega, observaciones o condiciones."
               }
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
         </div>
       </section>
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="transaction-items surface-panel p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-olive-dark">
@@ -202,39 +213,50 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
             return (
               <div
                 key={row.key}
-                className="grid gap-3 rounded-2xl border border-olive/12 bg-white/90 p-4 md:grid-cols-[minmax(0,1.3fr)_130px_140px_160px]"
+                className="transaction-line"
               >
-                <label className="relative space-y-2">
-                  <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-                    Producto
-                  </span>
+                <div className="relative space-y-2">
+                  <label htmlFor={`search-${row.key}`} className="text-xs font-semibold text-earth">Producto / presentación</label>
                   <input
+                    id={`search-${row.key}`}
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded={activeRowKey === row.key}
+                    aria-controls={`suggestions-${row.key}`}
+                    onKeyDown={(event) => {
+                      if(event.key === "Escape") setActiveRowKey(null);
+                      if(event.key === "ArrowDown") { event.preventDefault(); setActiveRowKey(row.key); requestAnimationFrame(() => document.getElementById(`suggestions-${row.key}`)?.querySelector("button")?.focus()); }
+                      if(event.key === "Enter" && activeRowKey === row.key) { event.preventDefault(); if(filteredOptions.length === 1) handleOptionChange(row.key, filteredOptions[0].id); }
+                    }}
                     value={row.searchTerm}
                     onChange={(event) => handleSearchChange(row.key, event.target.value)}
                     onFocus={() => setActiveRowKey(row.key)}
-                    onBlur={() => {
-                      window.setTimeout(() => {
-                        setActiveRowKey((currentKey) => (currentKey === row.key ? null : currentKey));
-                      }, 150);
+                    onBlur={(event) => {
+                      if (!event.currentTarget.parentElement?.contains(event.relatedTarget as Node | null)) setActiveRowKey(null);
                     }}
                     placeholder={isSale ? "Buscar presentación" : "Buscar producto"}
-                    className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                    className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                   />
                   <input
                     type="hidden"
                     name={isSale ? "linePresentationId" : "lineProductId"}
                     value={row.optionId}
                   />
-                  {activeRowKey === row.key && filteredOptions.length > 0 ? (
-                    <div className="absolute top-[5.4rem] z-20 max-h-64 w-full overflow-auto rounded-[1.4rem] border border-olive/14 bg-white p-2 shadow-[0_20px_40px_rgba(63,74,47,0.12)]">
+                  {activeRowKey === row.key ? (
+                    <div id={`suggestions-${row.key}`} role="listbox" aria-label="Presentaciones y productos encontrados" className="transaction-suggestions"
+                      onBlur={(event) => { if (!event.currentTarget.parentElement?.contains(event.relatedTarget as Node | null)) setActiveRowKey(null); }}
+                      onKeyDown={(event) => {
+                        if(event.key === "Escape") { event.preventDefault(); document.getElementById(`search-${row.key}`)?.focus(); setActiveRowKey(null); }
+                        if(event.key === "ArrowDown" || event.key === "ArrowUp") { event.preventDefault(); const buttons=Array.from(event.currentTarget.querySelectorAll("button")); const index=buttons.indexOf(event.target as HTMLButtonElement); buttons[(index+(event.key==="ArrowDown"?1:-1)+buttons.length)%buttons.length]?.focus(); }
+                      }}>
+                      {!filteredOptions.length ? <p className="p-3 text-sm">No encontramos resultados. Probá con nombre o SKU.</p> : null}
                       {filteredOptions.map((item) => (
                         <button
                           key={item.id}
                           type="button"
-                          onMouseDown={(event) => {
-                            event.preventDefault();
-                            handleOptionChange(row.key, item.id);
-                          }}
+                          role="option"
+                          aria-selected={row.optionId === item.id}
+                          onClick={() => handleOptionChange(row.key, item.id)}
                           className="block w-full rounded-[1rem] px-3 py-3 text-left hover:bg-olive-soft/36"
                         >
                           <div className="text-sm font-semibold text-olive-dark">
@@ -246,19 +268,16 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                               ? `Precio ${formatARS(
                                   (item as AdminPresentationOption).salePriceCents / 100,
                                 )}`
-                              : `Último costo ${formatARS(
-                                  ((item as AdminPurchaseProductOption).lastPurchaseUnitCostCents ??
-                                    0) / 100,
-                                )} por ${(item as AdminPurchaseProductOption).purchaseUnitLabel}`}
+                              : purchaseCostLabel(item as AdminPurchaseProductOption)}
                           </div>
                         </button>
                       ))}
                     </div>
                   ) : null}
-                  <div className="min-h-9 text-xs leading-5 text-foreground/58">
+                  <div className="transaction-options-detail">
                     {option ? (
                       isSale ? (
-                        <>
+                        <details><summary>Ver stock y equivalencias</summary>
                           <div>
                             SKU: {(option as AdminPresentationOption).presentationSku}
                           </div>
@@ -286,9 +305,9 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                               (option as AdminPresentationOption).salePriceCents / 100,
                             )}
                           </div>
-                        </>
+                        </details>
                       ) : (
-                        <>
+                        <details><summary>Ver stock y unidad de compra</summary>
                           <div>Producto base: {(option as AdminPurchaseProductOption).productName}.</div>
                           <div>SKU base: {(option as AdminPurchaseProductOption).baseSku}</div>
                           <div>
@@ -301,32 +320,28 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                             Cargá la compra en {(option as AdminPurchaseProductOption).purchaseUnitLabel}.
                           </div>
                           <div>
-                            Último costo:{" "}
-                            {formatARS(
-                              (((option as AdminPurchaseProductOption).lastPurchaseUnitCostCents ??
-                                0) || 0) / 100,
-                            )}{" "}
-                            por {(option as AdminPurchaseProductOption).purchaseUnitLabel}
+                            {purchaseCostLabel(option as AdminPurchaseProductOption)}
                           </div>
-                        </>
+                        </details>
                       )
                     ) : (
                       <span>Fila {index + 1}. Dejala vacía si no la necesitás.</span>
                     )}
                   </div>
-                </label>
+                </div>
 
                 <label className="space-y-2">
                   <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
                     {quantityLabel}
                   </span>
                   <input
+                    id={`quantity-${row.key}`}
                     name="lineQuantity"
                     value={row.quantity}
                     onChange={(event) => updateRow(row.key, { quantity: event.target.value })}
                     placeholder="1"
                     inputMode="decimal"
-                    className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                    className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                   />
                   <p className="text-xs leading-5 text-foreground/58">
                     {isSale
@@ -349,18 +364,19 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
                     onChange={(event) => updateRow(row.key, { unitAmount: event.target.value })}
                     placeholder={isSale ? "9500" : "6200"}
                     inputMode="decimal"
-                    className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                    className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                   />
                 </label>
 
-                <div className="space-y-2">
+                <div className="transaction-line-total space-y-2">
                   <span className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
                     Total línea
                   </span>
-                  <div className="rounded-2xl border border-olive/10 bg-olive-soft/24 px-4 py-3 text-sm font-semibold text-olive-dark">
+                  <div className="rounded-lg border border-olive/10 bg-olive-soft/24 px-4 py-3 text-sm font-semibold text-olive-dark">
                     {lineTotal > 0 ? formatARS(lineTotal / 100) : "Sin datos"}
                   </div>
                 </div>
+                <button type="button" className="transaction-remove admin-button" aria-label={`Quitar fila ${index+1}`} onClick={()=>setRows((current)=>current.filter((item)=>item.key!==row.key))}>×</button>
               </div>
             );
           })}
@@ -376,38 +392,23 @@ export function TransactionForm({ mode, options, action }: TransactionFormProps)
           </button>
         </div>
 
-        <div className="mt-5 flex flex-col gap-3 rounded-[1.6rem] border border-olive/10 bg-olive-soft/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
-              Resumen
-            </p>
-            <p className="mt-1 text-sm text-foreground/66">
-              {filledRows.length} filas completas listas para guardar.
-            </p>
-          </div>
-          <p className="text-lg font-semibold text-olive-dark">{formatARS(totalCents / 100)}</p>
-        </div>
       </section>
-
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark"
-        >
-          {isSale ? "Guardar venta" : "Guardar compra"}
-        </button>
-      </div>
+      <aside className="transaction-summary surface-panel" aria-label="Resumen de la operación">
+        <div><p className="text-xs font-semibold text-earth">Total de la {isSale ? "venta" : "compra"}</p><p className="mt-1 text-2xl font-semibold" aria-live="polite">{formatARS(totalCents / 100)}</p><p className="admin-muted">{filledRows.length} filas completas</p></div>
+        <p className="admin-muted hidden xl:block">Revisá producto, unidad y cantidad antes de guardar. El stock se actualiza al confirmar la operación.</p>
+        <button type="submit" className="admin-button admin-button--primary">{isSale ? "Guardar venta" : "Guardar compra"}</button>
+      </aside>
     </AdminForm>
   );
 }
 
 function createInitialRows() {
-  return Array.from({ length: INITIAL_ROW_COUNT }, () => createRow());
+  return Array.from({ length: INITIAL_ROW_COUNT }, (_, index) => createRow(`initial-${index}`));
 }
 
-function createRow(): TransactionRow {
+function createRow(key?: string): TransactionRow {
   return {
-    key: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    key: key ?? `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     optionId: "",
     searchTerm: "",
     quantity: "",
@@ -477,4 +478,10 @@ function normalizeSearchText(value: string) {
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase()
     .trim();
+}
+
+function purchaseCostLabel(option: AdminPurchaseProductOption) {
+  return option.lastPurchaseUnitCostCents != null && option.lastPurchaseUnitCostCents > 0
+    ? `Último costo ${formatARS(option.lastPurchaseUnitCostCents / 100)} por ${option.purchaseUnitLabel}`
+    : "Sin costo registrado";
 }

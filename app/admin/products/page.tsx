@@ -29,7 +29,7 @@ async function ProductsPageContent() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Productos"
         description="Gestioná catálogo con SKU base, stock real por producto y presentaciones derivadas para compras, ventas y alertas."

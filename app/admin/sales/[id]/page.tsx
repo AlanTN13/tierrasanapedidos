@@ -1,12 +1,14 @@
+import { formatAdminDateTime as formatDateTime } from "@/lib/admin-display";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { DeleteRecordButton } from "@/components/admin/delete-record-button";
+import { costState, COST_LABELS } from "@/lib/admin-display";
 import { PageHeader } from "@/components/admin/page-header";
 import { deleteSale } from "@/app/admin/operations/actions";
 import { getSaleById } from "@/lib/admin-operations";
-import { formatARS, formatDateTime, formatQuantity } from "@/lib/format";
+import {formatARS, formatQuantity} from "@/lib/format";
 import { requireAdminUser } from "@/lib/supabase/admin";
 
 type SaleDetailPageProps = {
@@ -33,8 +35,10 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
     notFound();
   }
 
+  const quality = costState(sale.items);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         kicker="Venta"
         title={sale.saleCode}
@@ -67,14 +71,14 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
       <section className="grid gap-4 md:grid-cols-4">
         <InfoCard label="Código" value={sale.saleCode} />
         <InfoCard label="Total" value={formatARS(sale.totalCents / 100)} />
-        <InfoCard label="Margen" value={formatARS(sale.totalMarginCents / 100)} />
+        <InfoCard label="Margen bruto estimado" value={quality === "missing" ? "No concluyente" : formatARS(sale.totalMarginCents / 100)} />
         <InfoCard
           label="Stock"
           value={sale.hasNegativeStock ? "Hay productos en negativo" : "Sin alertas"}
         />
       </section>
 
-      <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
+      <section className="surface-panel organic-outline overflow-hidden rounded-xl">
         <div className="grid gap-px bg-olive/8">
           {sale.items.map((item) => (
             <article
@@ -98,17 +102,19 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
               <MiniInfo label="Presentaciones" value={formatQuantity(item.quantity)} />
               <MiniInfo label="Precio" value={formatARS(item.unitPriceCents / 100)} />
               <MiniInfo
-                label={item.usesEstimatedCost ? "Costo estimado" : "Costo snap"}
-                value={formatARS(item.unitCostSnapshotCents / 100)}
+                label={COST_LABELS[costState([item])]}
+                value={costState([item]) === "missing" ? "Sin costo confirmado" : formatARS(item.unitCostSnapshotCents / 100)}
               />
-              <MiniInfo label="Margen" value={formatARS(item.lineMarginCents / 100)} />
+              <MiniInfo label="Margen estimado" value={costState([item]) === "missing" ? "—" : formatARS(item.lineMarginCents / 100)} />
             </article>
           ))}
         </div>
       </section>
 
+      {quality === "missing" ? <p className="admin-notice">Hay ítems sin costo confirmado. El margen total no es concluyente; no se interpreta ese faltante como costo cero.</p> : null}
+
       {sale.items.some((item) => item.usesEstimatedCost) ? (
-        <section className="surface-panel organic-outline rounded-[1.8rem] p-5">
+        <section className="surface-panel organic-outline rounded-xl p-5">
           <p className="text-sm leading-6 text-foreground/68">
             Algunos items no tenían costo guardado al momento de crear la venta. Para esos casos,
             el margen se muestra con el último costo disponible en compras.
@@ -117,7 +123,7 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
       ) : null}
 
       {sale.notes ? (
-        <section className="surface-panel organic-outline rounded-[1.8rem] p-5">
+        <section className="surface-panel organic-outline rounded-xl p-5">
           <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">Notas</p>
           <p className="mt-3 text-sm leading-6 text-foreground/68">{sale.notes}</p>
         </section>
@@ -128,7 +134,7 @@ async function SaleDetailContent({ params }: SaleDetailPageProps) {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="surface-panel organic-outline rounded-[1.8rem] p-5">
+    <div className="surface-panel organic-outline rounded-xl p-5">
       <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
       <p className="mt-2 text-3xl font-semibold text-olive-dark">{value}</p>
     </div>
@@ -137,7 +143,7 @@ function InfoCard({ label, value }: { label: string; value: string }) {
 
 function MiniInfo({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-olive/10 bg-olive-soft/26 px-3 py-2 text-sm text-olive-dark">
+    <div className="rounded-lg border border-olive/10 bg-olive-soft/26 px-3 py-2 text-sm text-olive-dark">
       <strong>{label}</strong>
       <div>{value}</div>
     </div>

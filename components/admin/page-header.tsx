@@ -8,7 +8,7 @@ type PageHeaderProps = {
 };
 
 export function PageHeader({
-  kicker = "Backoffice",
+  kicker = "Gestión comercial",
   title,
   description,
   actions,
@@ -17,12 +17,12 @@ export function PageHeader({
     <header className="admin-page-header">
       <div>
         <span className="section-kicker">{kicker}</span>
-        <h1 className="mt-3 font-display text-4xl font-semibold text-olive-dark">{title}</h1>
+        <h1 className="admin-page-title">{title}</h1>
         {description ? (
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground/66">{description}</p>
+          <p className="admin-page-description">{description}</p>
         ) : null}
       </div>
-      {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
+      {actions ? <div className="admin-page-actions">{actions}</div> : null}
     </header>
   );
 }

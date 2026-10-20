@@ -9,7 +9,7 @@ type AdminFormProps = {
   className?: string;
 };
 
-export function AdminForm({ action, children, className = "space-y-6" }: AdminFormProps) {
+export function AdminForm({ action, children, className = "space-y-4" }: AdminFormProps) {
   const [result, setResult] = useState<AdminFormResult | null>(null);
   const [isPending, setIsPending] = useState(false);
   const submitting = useRef(false);
@@ -60,7 +60,7 @@ export function AdminForm({ action, children, className = "space-y-6" }: AdminFo
     <form ref={formRef} method="post" onSubmit={handleSubmit} className={className} aria-busy={isPending}>
       {result ? (
         <div ref={alertRef} tabIndex={-1} role="alert" aria-labelledby={messageId}
-          className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 outline-none focus:ring-2 focus:ring-red-300">
+          className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 outline-none focus:ring-2 focus:ring-red-300">
           <p id={messageId} className="font-semibold">Revisá el guardado</p>
           <p className="mt-2">{result.error}</p>
           {result.reference ? <p className="mt-2 text-xs">Referencia para soporte: {result.reference}</p> : null}
@@ -68,7 +68,7 @@ export function AdminForm({ action, children, className = "space-y-6" }: AdminFo
         </div>
       ) : null}
       {isPending ? <p role="status" className="text-sm font-semibold text-olive-dark">Guardando… esperá la confirmación.</p> : null}
-      <fieldset disabled={isPending} className="space-y-6 disabled:opacity-60">{children}</fieldset>
+      <fieldset disabled={isPending} className="space-y-4 disabled:opacity-60">{children}</fieldset>
       {result ? <p className="text-sm text-red-800">{result.error}</p> : null}
     </form>
   );

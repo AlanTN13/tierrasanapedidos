@@ -1,5 +1,7 @@
 # Tierra Sana ERP V3 — análisis y propuesta visual
 
+> Actualización 20/10/2026: propuesta y alcance aprobados. Implementación real de los ocho módulos en este PR. Estado y validación actuales: [receipt de implementación](../../receipts/2026-10-20-erp-v3.md). El texto siguiente conserva el diagnóstico de la etapa 1–2; sus pendientes de implementación fueron superados por esta aprobación. La demo HTML sigue siendo una referencia histórica con datos ficticios, no el acceso al ERP actualizado.
+
 ## EXECUTION PREFLIGHT
 - Rol/superficie: Dirección de Ejecución Técnica; análisis y propuesta visual sobre AlanTN13/tierrasanapedidos. CasaItaliaERP sólo como referencia de diseño, sin modificar ese repositorio.
 - Autorización: pedido del 19/10/2026 a las 21:08 Argentina, etapas 1 y 2. La implementación de los módulos espera validación de esta propuesta; producción exige aceptación explícita nueva.

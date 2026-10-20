@@ -36,7 +36,7 @@ async function EditProductContent({ params }: EditProductPageProps) {
   }
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-5xl space-y-4">
       <PageHeader
         title="Editar producto"
         description="Ajustá SKU base, presentaciones activas, categorías, precio y disponibilidad."

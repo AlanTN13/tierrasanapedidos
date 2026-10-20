@@ -1,277 +1,97 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState } from "react";
+import { Fragment, useDeferredValue, useMemo, useState } from "react";
 import Link from "next/link";
 import { ListPagination } from "@/components/admin/list-pagination";
+import { AdminBadge, AdminEmpty } from "@/components/admin/admin-ui";
 import type { InventorySummaryRecord } from "@/lib/admin-operations";
 import type { AdminCatalogProduct } from "@/lib/catalog-data";
 import { formatARS, formatQuantity } from "@/lib/format";
 
 type ProductsListProps = {
   products: AdminCatalogProduct[];
-  categoryNameById: Record<string, string>;
+  categoryNameById: Record<string,string>;
   inventorySummary: InventorySummaryRecord[];
-  latestCostByProductId: Record<string, number>;
+  latestCostByProductId: Record<string,number>;
 };
-
 type ProductViewModel = {
   product: AdminCatalogProduct;
   inventory: InventorySummaryRecord | null;
   activePresentations: AdminCatalogProduct["presentations"];
   inactivePresentations: AdminCatalogProduct["presentations"];
-  minPrice: number;
-  maxPrice: number;
-  lastBaseCostCents: number | null;
+  minPrice: number; maxPrice: number; lastBaseCostCents: number | null;
 };
-
-export function ProductsList({
-  products,
-  categoryNameById,
-  inventorySummary,
-  latestCostByProductId,
-}: ProductsListProps) {
-  const [query, setQuery] = useState("");
-  const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
-  const [criticalFilter, setCriticalFilter] = useState<"all" | "critical" | "healthy">("all");
-  const [expandedProductId, setExpandedProductId] = useState<string | null>(null);
-  const deferredQuery = useDeferredValue(query);
-
-  const inventoryByProductId = useMemo(
-    () => new Map(inventorySummary.map((item) => [item.productId, item])),
-    [inventorySummary],
-  );
-
-  const filteredProducts = useMemo(() => {
-    const normalizedQuery = normalizeSearchText(deferredQuery);
-
-    return products
-      .map((product) => buildProductViewModel(product, inventoryByProductId, latestCostByProductId))
-      .filter((item) => {
-        if (statusFilter === "active" && !item.product.isActive) {
-          return false;
-        }
-
-        if (statusFilter === "inactive" && item.product.isActive) {
-          return false;
-        }
-
-        if (criticalFilter === "critical" && !item.inventory?.isLowStock) {
-          return false;
-        }
-
-        if (criticalFilter === "healthy" && item.inventory?.isLowStock) {
-          return false;
-        }
-
-        if (!normalizedQuery) {
-          return true;
-        }
-
-        const haystack = normalizeSearchText([
-          item.product.name,
-          item.product.slug,
-          item.product.baseSku,
-          item.product.description,
-          item.product.tags.join(" "),
-          item.product.categoryIds.map((categoryId) => categoryNameById[categoryId] ?? categoryId).join(" "),
-          item.product.presentations.map((presentation) => presentation.etiqueta).join(" "),
-          item.product.presentations.map((presentation) => presentation.sku ?? "").join(" "),
-        ].join(" "));
-
-        return haystack.includes(normalizedQuery);
-      })
-      .sort((a, b) => compareProductPriority(a, b));
-  }, [categoryNameById, deferredQuery, inventoryByProductId, latestCostByProductId, products, statusFilter, criticalFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / pageSize));
-  const currentPage = Math.min(page, totalPages);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
-
-  function toggleProduct(productId: string) {
-    const product = filteredProducts.find((item) => item.product.uuid === productId) ?? null;
-    const isExpanded = expandedProductId === productId || (expandedProductId == null && shouldAutoExpand(product, criticalFilter) && productId === product?.product.uuid);
-    setExpandedProductId(isExpanded ? null : productId);
-  }
-
-  return (
-    <div className="space-y-4">
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-4 sm:p-5">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_180px_180px_auto] xl:items-end">
-          <label className="space-y-2">
-            <span className="text-sm font-semibold text-olive-dark">Buscar producto</span>
-            <input
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setPage(1);
-              }}
-              placeholder="Nombre, SKU base, SKU de presentación o categoría"
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
-            />
-          </label>
-
-          <label className="space-y-2">
-            <span className="text-sm font-semibold text-olive-dark">Estado</span>
-            <select
-              value={statusFilter}
-              onChange={(event) => {
-                setStatusFilter(event.target.value as typeof statusFilter);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
-            >
-              <option value="all">Todos</option>
-              <option value="active">Activos</option>
-              <option value="inactive">Inactivos</option>
-            </select>
-          </label>
-
-          <label className="space-y-2">
-            <span className="text-sm font-semibold text-olive-dark">Alerta</span>
-            <select
-              value={criticalFilter}
-              onChange={(event) => {
-                setCriticalFilter(event.target.value as typeof criticalFilter);
-                setPage(1);
-              }}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
-            >
-              <option value="all">Todos</option>
-              <option value="critical">Solo críticos</option>
-              <option value="healthy">Sin alerta</option>
-            </select>
-          </label>
-
-          <div className="rounded-2xl border border-olive/10 bg-olive-soft/24 px-4 py-3 text-sm text-olive-dark">
-            {filteredProducts.length} de {products.length} productos
-          </div>
-        </div>
-      </section>
-
-      <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
-        <div className="grid gap-px bg-olive/8">
-          {paginatedProducts.length > 0 ? (
-            paginatedProducts.map((item) => (
-              <article key={item.product.uuid} className="bg-white/92 px-4 py-3">
-                <ProductCard
-                  item={item}
-                  categoryNameById={categoryNameById}
-                  expanded={expandedProductId != null
-                    ? expandedProductId === item.product.uuid
-                    : shouldAutoExpand(item, criticalFilter)}
-                  onToggle={() => toggleProduct(item.product.uuid)}
-                />
-              </article>
-            ))
-          ) : (
-            <div className="bg-white/92 px-5 py-8 text-center text-sm text-foreground/66">
-              No encontramos productos con esos filtros.
-            </div>
-          )}
-
-          {filteredProducts.length > 0 ? (
-            <ListPagination
-              page={currentPage}
-              pageSize={pageSize}
-              totalItems={filteredProducts.length}
-              onPageChange={setPage}
-              onPageSizeChange={(nextPageSize) => {
-                setPageSize(nextPageSize);
-                setPage(1);
-              }}
-              itemLabel="productos"
-            />
-          ) : null}
-        </div>
-      </section>
-    </div>
-  );
+export function ProductsList({products,categoryNameById,inventorySummary,latestCostByProductId}: ProductsListProps) {
+  const [query,setQuery]=useState("");
+  const [statusFilter,setStatusFilter]=useState("all");
+  const [criticalFilter,setCriticalFilter]=useState<"all"|"critical"|"healthy">("all");
+  const [categoryFilter,setCategoryFilter]=useState("all");
+  const [costFilter,setCostFilter]=useState("all");
+  const [page,setPage]=useState(1);
+  const [pageSize,setPageSize]=useState(10);
+  const [expandedProductId,setExpandedProductId]=useState<string|null>(null);
+  const deferredQuery=useDeferredValue(query);
+  const inventoryByProductId=useMemo(()=>new Map(inventorySummary.map((item)=>[item.productId,item])),[inventorySummary]);
+  const filteredProducts=useMemo(()=> {
+    const query=normalizeSearchText(deferredQuery);
+    return products.map((product)=>buildProductViewModel(product,inventoryByProductId,latestCostByProductId)).filter((item)=> {
+      if(statusFilter!=="all" && item.product.isActive !== (statusFilter==="active"))return false;
+      if(criticalFilter==="critical" && !item.inventory?.isLowStock)return false;
+      if(criticalFilter==="healthy" && (!item.inventory || item.inventory.isLowStock))return false;
+      if(categoryFilter!=="all" && !item.product.categoryIds.includes(categoryFilter))return false;
+      if(costFilter==="missing" && item.lastBaseCostCents!=null && item.lastBaseCostCents>0)return false;
+      return normalizeSearchText([item.product.name,item.product.slug,item.product.baseSku,item.product.description,item.product.tags.join(" "),item.product.categoryIds.map((id)=>categoryNameById[id]??id).join(" "),...item.product.presentations.flatMap((p)=>[p.etiqueta,p.sku??""])].join(" ")).includes(query);
+    }).sort(compareProductPriority);
+  },[deferredQuery,products,inventoryByProductId,latestCostByProductId,statusFilter,criticalFilter,categoryFilter,costFilter,categoryNameById]);
+  const currentPage=Math.min(page,Math.max(1,Math.ceil(filteredProducts.length/pageSize)));
+  function reset(){setQuery("");setStatusFilter("all");setCriticalFilter("all");setCategoryFilter("all");setCostFilter("all");setPage(1);setExpandedProductId(null);}
+  return <div className="space-y-4">
+    <section className="admin-toolbar" aria-label="Filtrar productos">
+      <label className="admin-search">Buscar producto<input type="search" value={query} onChange={(e)=>{setQuery(e.target.value);setPage(1);}} placeholder="Nombre, SKU, presentación o categoría" /></label>
+      <label>Categoría<select value={categoryFilter} onChange={(e)=>{setCategoryFilter(e.target.value);setPage(1);}}><option value="all">Todas</option>{Object.entries(categoryNameById).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label>
+      <label>Estado<select value={statusFilter} onChange={(e)=>{setStatusFilter(e.target.value);setPage(1);}}><option value="all">Todos</option><option value="active">Activos</option><option value="inactive">Inactivos</option></select></label>
+      <label>Stock<select value={criticalFilter} onChange={(e)=>{setCriticalFilter(e.target.value as typeof criticalFilter);setPage(1);}}><option value="all">Todos</option><option value="critical">Con alerta</option><option value="healthy">Sin alerta</option></select></label>
+      <label>Costo<select value={costFilter} onChange={(e)=>{setCostFilter(e.target.value);setPage(1);}}><option value="all">Todos</option><option value="missing">Sin costo registrado</option></select></label>
+      <button type="button" className="admin-button" onClick={reset}>Limpiar</button>
+    </section>
+    <p className="admin-muted" role="status">{filteredProducts.length} de {products.length} productos · stock en unidad base · costo de última compra por kg, litro o unidad.</p>
+    <div className="admin-table-wrap">{filteredProducts.length ? <>
+      <table className="admin-table admin-table--responsive"><caption className="sr-only">Productos, presentaciones, precio, costo y stock</caption><thead><tr><th style={{width:"25%"}}>Producto / categoría</th><th style={{width:"9%"}}>Pres.</th><th style={{width:"15%"}}>Precio</th><th style={{width:"15%"}}>Último costo</th><th style={{width:"13%"}}>Stock base</th><th style={{width:"9%"}}>Estado</th><th style={{width:"14%"}}>Acciones</th></tr></thead>
+      <tbody>{filteredProducts.slice((currentPage-1)*pageSize,currentPage*pageSize).map((item)=>{
+        const expanded=expandedProductId===item.product.uuid;
+        const tone=getStockTone(item);
+        const price=item.minPrice>0?(item.minPrice===item.maxPrice?formatARS(item.minPrice):`${formatARS(item.minPrice)} – ${formatARS(item.maxPrice)}`):"Sin precio";
+        return <Fragment key={item.product.uuid}><tr>
+          <td data-label="Producto"><div><strong>{item.product.name}</strong><span className="admin-cell-note">{item.product.baseSku}</span><span className="admin-cell-note">{item.product.categoryIds.map((id)=>categoryNameById[id]??id).join(" · ") || "Sin categoría"}</span></div></td>
+          <td data-label="Presentaciones">{item.activePresentations.length}</td>
+          <td data-label="Precio">{price}</td>
+          <td data-label="Costo"><div>{item.lastBaseCostCents!=null && item.lastBaseCostCents>0?`${formatARS(item.lastBaseCostCents/100)} / ${costUnit(item)}`:<AdminBadge tone="warning">Sin costo registrado</AdminBadge>}</div></td>
+          <td data-label="Stock base"><div><strong>{item.inventory?.stockBaseLabel??"Sin registro"}</strong><span className="admin-cell-note"><AdminBadge tone={!item.inventory?"neutral":item.inventory.stockBaseUnits<=0?"danger":item.inventory.isLowStock?"warning":"success"}>{tone.label}</AdminBadge></span></div></td>
+          <td data-label="Estado"><AdminBadge tone={item.product.isActive?"success":"neutral"}>{item.product.isActive?"Activo":"Inactivo"}</AdminBadge></td>
+          <td data-label="Acciones"><div className="admin-actions"><button type="button" className="admin-button" aria-expanded={expanded} aria-controls={`product-detail-${item.product.uuid}`} onClick={()=>setExpandedProductId(expanded?null:item.product.uuid)}>{expanded?"Cerrar":"Detalle"}</button><Link className="admin-button" href={`/admin/products/${item.product.slug}`}>Editar</Link></div></td>
+        </tr>{expanded?<tr className="admin-detail-row"><td colSpan={7} className="admin-cell-wide"><ProductDetail item={item} categoryNameById={categoryNameById}/></td></tr>:null}</Fragment>;
+      })}</tbody></table>
+      <ListPagination page={currentPage} pageSize={pageSize} totalItems={filteredProducts.length} onPageChange={setPage} onPageSizeChange={(size)=>{setPageSize(size);setPage(1);}} itemLabel="productos"/>
+    </>:<AdminEmpty>No encontramos productos con esos filtros. <button type="button" className="underline" onClick={reset}>Limpiar filtros</button></AdminEmpty>}</div>
+  </div>;
 }
-
-function ProductCard({
-  item,
-  categoryNameById,
-  expanded,
-  onToggle,
-}: {
-  item: ProductViewModel;
-  categoryNameById: Record<string, string>;
-  expanded: boolean;
-  onToggle: () => void;
-}) {
-  const stockLabel = item.inventory?.stockBaseLabel ?? "0 unidades";
-  const priceLabel =
-    item.minPrice > 0
-      ? item.minPrice === item.maxPrice
-        ? formatARS(item.minPrice)
-        : `${formatARS(item.minPrice)} a ${formatARS(item.maxPrice)}`
-      : "Sin precio";
-  const presentationsCount = item.activePresentations.length;
-  const archivedCount = item.inactivePresentations.length;
-  const purchasedLabel = item.inventory?.quantityPurchased ? formatQuantity(item.inventory.quantityPurchased) : "0";
-  const soldLabel = item.inventory?.quantitySold ? formatQuantity(item.inventory.quantitySold) : "0";
-  const stockTone = getStockTone(item);
-  const hasMultiplePresentations = presentationsCount > 1;
-
+function costUnit(item: ProductViewModel) {
+  const kind=item.inventory?.measurementKind??item.activePresentations[0]?.measurementKind??item.product.presentations[0]?.measurementKind;
+  return kind==="weight"?"kg":kind==="volume"?"l":"unidad";
+}
+function ProductDetail({item,categoryNameById}:{item:ProductViewModel;categoryNameById:Record<string,string>}){
+  const stockLabel=item.inventory?.stockBaseLabel??"Sin registro";
+  const purchasedLabel=item.inventory?formatEquivalentBase(item.inventory.quantityPurchased,item.inventory.measurementKind):"Sin registro";
+  const soldLabel=item.inventory?formatEquivalentBase(item.inventory.quantitySold,item.inventory.measurementKind):"Sin registro";
+  const stockTone=getStockTone(item);
+  const archivedCount=item.inactivePresentations.length;
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold text-olive-dark">{item.product.name}</h2>
-            <StockStatusBadge tone={stockTone} />
-            {!item.product.isActive ? <StateBadge active={false} /> : null}
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-expanded={expanded}
-            aria-controls={`product-detail-${item.product.uuid}`}
-            className="inline-flex items-center justify-center rounded-full border border-olive/14 bg-white px-3.5 py-1.5 text-sm font-semibold text-olive-dark hover:bg-olive-soft/36"
-          >
-            {expanded ? "Ocultar detalle" : "Ver detalle"}
-          </button>
-          <Link
-            href={`/admin/products/${item.product.slug}`}
-            className="inline-flex items-center justify-center rounded-full bg-olive px-3.5 py-1.5 text-sm font-semibold text-white hover:bg-olive-dark"
-          >
-            Editar
-          </Link>
-        </div>
-      </div>
-
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_minmax(180px,220px)_minmax(180px,220px)] lg:items-stretch">
-        <div className={`rounded-[1.5rem] border px-4 py-3 ${stockTone.cardClassName}`}>
-          <p className="text-xs font-semibold tracking-[0.14em] uppercase opacity-75">
-            Stock
-          </p>
-          <p className="mt-1 text-2xl font-semibold">{stockLabel}</p>
-        </div>
-
-        <SimpleMetric label="Precio" value={priceLabel} compact />
-        <SimpleMetric
-          label="Presentaciones"
-          value={hasMultiplePresentations ? `${presentationsCount}` : "1"}
-          description={hasMultiplePresentations ? "Mas de una" : "Una"}
-          compact
-        />
-      </div>
-
-      {expanded ? (
         <div
           id={`product-detail-${item.product.uuid}`}
-          className="rounded-[1.5rem] border border-olive/10 bg-[#fbfaf4] p-4"
+          className="rounded-lg border border-olive/10 bg-[#fbfaf4] p-4"
         >
           <div className="grid gap-5 xl:grid-cols-2">
-            <section className="space-y-4 rounded-[1.6rem] border border-olive/10 bg-white p-4">
+            <section className="space-y-4 rounded-lg border border-olive/10 bg-white p-4">
               <div>
                 <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
                   Inventario
@@ -294,14 +114,14 @@ function ProductCard({
                   label="Costo base"
                   value={
                     item.lastBaseCostCents != null
-                      ? formatARS(item.lastBaseCostCents / 100)
+                      ? `${formatARS(item.lastBaseCostCents / 100)} / ${costUnit(item)}`
                       : "Sin costo"
                   }
                 />
               </div>
             </section>
 
-            <section className="space-y-4 rounded-[1.6rem] border border-olive/10 bg-white p-4">
+            <section className="space-y-4 rounded-lg border border-olive/10 bg-white p-4">
               <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">
                 Catalogo
               </p>
@@ -352,9 +172,9 @@ function ProductCard({
             </section>
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-olive/10 bg-white">
+          <div className="mt-4 overflow-hidden rounded-lg border border-olive/10 bg-white">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-olive/8">
+              <table className="admin-table admin-table--responsive">
                 <thead className="bg-olive-soft/32">
                   <tr className="text-left text-[11px] font-semibold tracking-[0.14em] text-earth uppercase">
                     <th className="px-4 py-3">SKU presentacion</th>
@@ -370,18 +190,18 @@ function ProductCard({
                     <tr
                       key={`${item.product.uuid}-${presentation.id ?? presentation.sku ?? presentation.etiqueta}`}
                     >
-                      <td className="px-4 py-3 font-semibold">{presentation.sku ?? "Sin SKU"}</td>
-                      <td className="px-4 py-3">{presentation.etiqueta}</td>
-                      <td className="px-4 py-3">{formatARS(presentation.precio)}</td>
-                      <td className="px-4 py-3">
+                      <td data-label="SKU" className="px-4 py-3 font-semibold">{presentation.sku ?? "Sin SKU"}</td>
+                      <td data-label="Presentación" className="px-4 py-3">{presentation.etiqueta}</td>
+                      <td data-label="Precio" className="px-4 py-3">{formatARS(presentation.precio)}</td>
+                      <td data-label="Equivalencia" className="px-4 py-3">
                         {formatEquivalentBase(presentation.amountInBaseUnits, presentation.measurementKind)}
                       </td>
-                      <td className="px-4 py-3">
+                      <td data-label="Stock posible" className="px-4 py-3">
                         {presentation.amountInBaseUnits > 0
                           ? formatQuantity((item.inventory?.stockBaseUnits ?? 0) / presentation.amountInBaseUnits)
                           : "0"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td data-label="Estado" className="px-4 py-3">
                         {item.inventory?.smallestPresentationSku === presentation.sku
                           ? "Minima alerta"
                           : "Activa"}
@@ -393,8 +213,6 @@ function ProductCard({
             </div>
           </div>
         </div>
-      ) : null}
-    </div>
   );
 }
 
@@ -418,81 +236,22 @@ function buildProductViewModel(
   };
 }
 
-function SimpleMetric({
-  label,
-  value,
-  description,
-  compact = false,
-}: {
-  label: string;
-  value: string;
-  description?: string;
-  compact?: boolean;
-}) {
-  return (
-    <div className={`rounded-[1.5rem] border border-olive/10 bg-white ${compact ? "px-4 py-3" : "p-5"}`}>
-      <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
-      <p className={`font-semibold text-olive-dark ${compact ? "mt-1 text-xl" : "mt-3 text-xl"}`}>{value}</p>
-      {description ? <p className="mt-0.5 text-sm text-foreground/64">{description}</p> : null}
-    </div>
-  );
-}
-
 function MetricPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-olive/10 bg-white/90 px-4 py-3">
+    <div className="rounded-lg border border-olive/10 bg-white/90 px-4 py-3">
       <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
       <p className="mt-2 text-sm font-semibold text-olive-dark">{value}</p>
     </div>
   );
 }
 
-function StateBadge({ active }: { active: boolean }) {
-  return (
-    <span
-      className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-        active
-          ? "bg-olive-soft/48 text-olive-dark"
-          : "bg-foreground/8 text-foreground/72"
-      }`}
-    >
-      {active ? "Activo" : "Inactivo"}
-    </span>
-  );
-}
-
-function StockStatusBadge({
-  tone,
-}: {
-  tone: ReturnType<typeof getStockTone>;
-}) {
-  return (
-    <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${tone.badgeClassName}`}>
-      {tone.label}
-    </span>
-  );
-}
-
-function shouldAutoExpand(
-  item: ProductViewModel | null,
-  criticalFilter: "all" | "critical" | "healthy",
-) {
-  if (!item) {
-    return false;
-  }
-
-  if (criticalFilter !== "critical") {
-    return false;
-  }
-
-  return isOutOfStock(item) || Boolean(item.inventory?.isLowStock);
-}
-
 function isOutOfStock(item: ProductViewModel) {
-  return (item.inventory?.stockBaseUnits ?? 0) <= 0;
+  return item.inventory != null && item.inventory.stockBaseUnits <= 0;
 }
 
 function getStockTone(item: ProductViewModel) {
+  if (!item.inventory) return { label: "Sin registro", description: "Stock no disponible.", badgeClassName: "bg-gray-100 text-gray-600", cardClassName: "border-gray-200", priority: 3 };
+  if (item.inventory.stockBaseUnits < 0) return { label: "Stock negativo", description: "Revisar movimientos.", badgeClassName: "bg-red-100 text-red-700", cardClassName: "border-red-200", priority: 0 };
   if (isOutOfStock(item)) {
     return {
       label: "Sin stock",
