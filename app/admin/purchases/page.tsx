@@ -20,7 +20,7 @@ async function PurchasesPageContent() {
   const purchaseOrders = await getPurchaseOrders();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         title="Compras"
         description="Registrá órdenes de compra y sumá stock base real según gramos, ml o unidades."

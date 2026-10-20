@@ -23,7 +23,7 @@ export function ImageUploadField({
   const hasCurrentImage = Boolean(currentImagePath);
 
   return (
-    <div className="space-y-3 rounded-[1.6rem] border border-dashed border-olive/18 bg-white/80 p-4">
+    <div className="space-y-3 rounded-lg border border-dashed border-olive/18 bg-white/80 p-4">
       <input
         type="hidden"
         name={removeFieldName}
@@ -50,7 +50,7 @@ export function ImageUploadField({
               <img
                 src={currentImagePath ?? ""}
                 alt={currentImageAlt}
-                className="h-24 w-24 rounded-2xl object-cover"
+                className="h-24 w-24 rounded-lg object-cover"
               />
               <p className="text-sm text-foreground/66">{currentImagePath}</p>
             </div>
@@ -80,7 +80,7 @@ export function ImageUploadField({
         type="file"
         name={fileFieldName}
         accept="image/png,image/jpeg,image/webp,image/svg+xml"
-        className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
+        className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
       />
       <p className="text-xs leading-5 text-foreground/58">{helperText}</p>
     </div>

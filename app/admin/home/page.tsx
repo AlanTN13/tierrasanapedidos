@@ -20,9 +20,9 @@ async function AdminHomeContent() {
   const settings = await getAdminHomeSettings();
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="max-w-6xl space-y-4">
       <PageHeader
-        title="Home"
+        title="Home de la web"
         description="Gestioná el banner principal de la web desde el backoffice."
       />
       <HomeForm settings={settings} action={saveHomeSettings} />

@@ -20,7 +20,7 @@ async function NewSaleContent() {
   const options = await getAdminPresentationOptions();
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="max-w-6xl space-y-4">
       <PageHeader
         title="Nueva venta"
         description="Cargá la venta por presentación. El sistema descuenta el stock base real al guardar."

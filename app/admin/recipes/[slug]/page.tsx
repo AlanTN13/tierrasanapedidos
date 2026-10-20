@@ -46,7 +46,7 @@ async function EditRecipeContent({ params, searchParams }: EditRecipePageProps) 
   }
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-5xl space-y-4">
       <PageHeader
         title="Editar receta"
         description="Ajustá el contenido, la imagen y los productos sugeridos."
@@ -60,12 +60,12 @@ async function EditRecipeContent({ params, searchParams }: EditRecipePageProps) 
         }
       />
       {resolvedSearchParams?.error ? (
-        <div className="rounded-[1.4rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {resolvedSearchParams.error}
         </div>
       ) : null}
       {resolvedSearchParams?.saved === "1" ? (
-        <div className="rounded-[1.4rem] border border-olive/12 bg-olive-soft/36 px-4 py-3 text-sm text-olive-dark">
+        <div className="rounded-lg border border-olive/12 bg-olive-soft/36 px-4 py-3 text-sm text-olive-dark">
           Receta guardada.
         </div>
       ) : null}
@@ -75,7 +75,7 @@ async function EditRecipeContent({ params, searchParams }: EditRecipePageProps) 
         recipe={recipe}
         action={saveRecipe}
       />
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5">
+      <section className="surface-panel organic-outline rounded-xl p-5">
         <h2 className="text-xl font-semibold text-olive-dark">Zona sensible</h2>
         <p className="mt-2 text-sm leading-6 text-foreground/64">
           Si esta receta es de prueba o ya no tiene que estar publicada, podés borrarla desde acá.

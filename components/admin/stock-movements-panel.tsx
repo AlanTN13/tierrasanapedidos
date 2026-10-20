@@ -1,6 +1,10 @@
 "use client";
 
+import { formatAdminDateTime as formatDateTime } from "@/lib/admin-display";
+
 import { useActionState, useDeferredValue, useMemo, useState } from "react";
+import { InventoryList } from "@/components/admin/inventory-list";
+import { matchesAdminDate } from "@/lib/admin-display";
 import { ListPagination } from "@/components/admin/list-pagination";
 import { SearchBar } from "@/components/search-bar";
 import {
@@ -9,7 +13,7 @@ import {
   type StockMovementDashboardMetrics,
   type StockMovementRecord,
 } from "@/lib/admin-operations";
-import { formatDateTime, formatQuantity } from "@/lib/format";
+import {formatQuantity} from "@/lib/format";
 import {
   saveStockMovement,
   type StockMovementFormState,
@@ -20,6 +24,7 @@ type StockMovementsPanelProps = {
   movements: StockMovementRecord[];
   productOptions: AdminPurchaseProductOption[];
   presentationOptions: AdminPresentationOption[];
+  action?: typeof saveStockMovement;
 };
 
 const INITIAL_FORM_STATE: StockMovementFormState = {
@@ -49,9 +54,10 @@ export function StockMovementsPanel({
   movements,
   productOptions,
   presentationOptions,
+  action = saveStockMovement,
 }: StockMovementsPanelProps) {
   const [formState, formAction, isPending] = useActionState(
-    saveStockMovement,
+    action,
     INITIAL_FORM_STATE,
   );
   const [selectedProductId, setSelectedProductId] = useState("");
@@ -86,7 +92,7 @@ export function StockMovementsPanel({
       return false;
     }
 
-    if (dateFilter && !movement.createdAt.startsWith(dateFilter)) {
+    if (dateFilter && !matchesAdminDate(movement.createdAt, dateFilter, dateFilter)) {
       return false;
     }
 
@@ -112,7 +118,7 @@ export function StockMovementsPanel({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard
           label="Ajustes hoy"
@@ -136,8 +142,11 @@ export function StockMovementsPanel({
         />
       </section>
 
-      <form action={formAction} className="space-y-6">
-        <section className="surface-panel organic-outline rounded-[2rem] p-5 sm:p-6">
+      <div className="flex justify-end"><a href="#manual-stock-movement" className="admin-button">+ Registrar ajuste</a></div>
+      <InventoryList products={productOptions} />
+
+      <form id="manual-stock-movement" action={formAction} className="scroll-mt-20 space-y-4">
+        <section className="surface-panel organic-outline rounded-xl p-4">
           <div className="flex flex-col gap-2">
             <h2 className="text-xl font-semibold text-olive-dark">Nuevo movimiento manual</h2>
             <p className="text-sm leading-6 text-foreground/66">
@@ -146,7 +155,7 @@ export function StockMovementsPanel({
             </p>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <label className="space-y-2 xl:col-span-2">
               <span className="text-sm font-semibold text-olive-dark">Producto</span>
               <select
@@ -156,7 +165,7 @@ export function StockMovementsPanel({
                   setSelectedProductId(event.target.value);
                   setSelectedPresentationId("");
                 }}
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 required
               >
                 <option value="">Elegí un producto</option>
@@ -175,7 +184,7 @@ export function StockMovementsPanel({
                 value={selectedPresentationId}
                 onChange={(event) => setSelectedPresentationId(event.target.value)}
                 disabled={!selectedProduct}
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none disabled:cursor-not-allowed disabled:bg-olive-soft/16 focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none disabled:cursor-not-allowed disabled:bg-olive-soft/16 focus:ring-2 focus:ring-olive/20"
               >
                 <option value="">Aplicar sobre stock base</option>
                 {productPresentations.map((presentation) => (
@@ -194,7 +203,7 @@ export function StockMovementsPanel({
                 onChange={(event) =>
                   setMovementType(event.target.value as "entry" | "exit" | "set")
                 }
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
               >
                 <option value="entry">Entrada</option>
                 <option value="exit">Salida</option>
@@ -210,7 +219,7 @@ export function StockMovementsPanel({
                 onChange={(event) => setQuantityInput(event.target.value)}
                 inputMode="decimal"
                 placeholder="0"
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 required
               />
               <p className="text-xs leading-5 text-foreground/58">
@@ -228,7 +237,7 @@ export function StockMovementsPanel({
               <span className="text-sm font-semibold text-olive-dark">Motivo</span>
               <select
                 name="reason"
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
                 required
                 defaultValue=""
               >
@@ -249,12 +258,12 @@ export function StockMovementsPanel({
                 name="notes"
                 rows={3}
                 placeholder="Opcional: detalle del conteo, referencia, observación o contexto."
-                className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+                className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
               />
             </label>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
             <PreviewCard
               label="Stock actual"
               value={preview.currentStockLabel}
@@ -279,12 +288,12 @@ export function StockMovementsPanel({
           </div>
 
           {formState.error ? (
-            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {formState.error}
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-foreground/62">
               El ajuste siempre se guarda como movimiento. No modifica stock en silencio.
             </p>
@@ -299,7 +308,7 @@ export function StockMovementsPanel({
         </section>
       </form>
 
-      <section className="surface-panel organic-outline rounded-[2rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_180px_180px_180px] xl:items-end">
           <div>
             <p className="text-sm font-semibold text-olive-dark">Buscar movimientos</p>
@@ -315,7 +324,7 @@ export function StockMovementsPanel({
                 setTypeFilter(event.target.value as typeof typeFilter);
                 setPage(1);
               }}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             >
               <option value="all">Todos</option>
               <option value="entry">Entradas</option>
@@ -331,7 +340,7 @@ export function StockMovementsPanel({
                 setReasonFilter(event.target.value);
                 setPage(1);
               }}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             >
               <option value="all">Todos</option>
               {REASON_OPTIONS.map((reason) => (
@@ -350,7 +359,7 @@ export function StockMovementsPanel({
                 setDateFilter(event.target.value);
                 setPage(1);
               }}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
         </div>
@@ -368,10 +377,10 @@ export function StockMovementsPanel({
         </div>
       </section>
 
-      <section className="surface-panel organic-outline overflow-hidden rounded-[2rem]">
+      <section className="surface-panel organic-outline overflow-hidden rounded-xl">
         {filteredMovements.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-olive/8">
+            <table className="admin-table admin-table--responsive">
               <thead className="bg-olive-soft/28">
                 <tr className="text-left text-[11px] font-semibold tracking-[0.14em] text-earth uppercase">
                   <th className="px-4 py-3">Fecha</th>
@@ -388,29 +397,29 @@ export function StockMovementsPanel({
               <tbody className="divide-y divide-olive/8 bg-white text-sm text-olive-dark">
                 {paginatedMovements.map((movement) => (
                   <tr key={movement.id}>
-                    <td className="px-4 py-3 whitespace-nowrap">{formatDateTime(movement.createdAt)}</td>
-                    <td className="px-4 py-3 font-semibold">{movement.productName}</td>
-                    <td className="px-4 py-3">{movement.presentationLabel ?? "Stock base"}</td>
-                    <td className="px-4 py-3">
+                    <td data-label="Fecha" className="px-4 py-3">{formatDateTime(movement.createdAt)}</td>
+                    <td data-label="Producto" className="px-4 py-3 font-semibold">{movement.productName}</td>
+                    <td data-label="Presentación" className="px-4 py-3">{movement.presentationLabel ?? "Stock base"}</td>
+                    <td data-label="Tipo" className="px-4 py-3">
                       <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${movementBadgeClassName(movement.movementType)}`}>
                         {MOVEMENT_TYPE_LABEL[movement.movementType]}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td data-label="Cantidad" className="px-4 py-3">
                       <div>{movement.quantityLabel}</div>
                       <div className="text-xs text-foreground/60">
                         Impacto {movement.quantityBaseLabel}
                       </div>
                     </td>
-                    <td className="px-4 py-3">{movement.previousStockLabel}</td>
-                    <td className="px-4 py-3">{movement.newStockLabel}</td>
-                    <td className="px-4 py-3">
+                    <td data-label="Stock anterior" className="px-4 py-3">{movement.previousStockLabel}</td>
+                    <td data-label="Stock nuevo" className="px-4 py-3">{movement.newStockLabel}</td>
+                    <td data-label="Motivo" className="px-4 py-3">
                       <div>{movement.reason}</div>
                       {movement.notes ? (
                         <div className="text-xs text-foreground/60">{movement.notes}</div>
                       ) : null}
                     </td>
-                    <td className="px-4 py-3">{movement.createdByEmail}</td>
+                    <td data-label="Usuario" className="px-4 py-3">{movement.createdByEmail}</td>
                   </tr>
                 ))}
               </tbody>
@@ -452,7 +461,7 @@ function SummaryCard({
   detail: string;
 }) {
   return (
-    <article className="surface-panel organic-outline rounded-[1.8rem] p-5">
+    <article className="surface-panel organic-outline rounded-xl p-5">
       <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
       <p className="mt-2 text-3xl font-semibold text-olive-dark">{value}</p>
       <p className="mt-2 text-sm leading-6 text-foreground/64">{detail}</p>
@@ -472,7 +481,7 @@ function PreviewCard({
   tone?: "default" | "warn";
 }) {
   return (
-    <article className="rounded-[1.8rem] border border-olive/10 bg-white p-5">
+    <article className="rounded-xl border border-olive/10 bg-white p-5">
       <p className="text-xs font-semibold tracking-[0.14em] text-earth uppercase">{label}</p>
       <p className={`mt-2 text-2xl font-semibold ${tone === "warn" ? "text-red-700" : "text-olive-dark"}`}>
         {value}

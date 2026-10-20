@@ -20,7 +20,7 @@ async function NewProductContent() {
   const categories = await getAdminCategories();
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-5xl space-y-4">
       <PageHeader
         title="Nuevo producto"
         description="Cargá los datos base, categorías y presentaciones."

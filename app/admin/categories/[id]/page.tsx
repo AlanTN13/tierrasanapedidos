@@ -33,7 +33,7 @@ async function EditCategoryContent({ params }: EditCategoryPageProps) {
   }
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-5xl space-y-4">
       <PageHeader
         title="Editar categoría"
         description="Ajustá nombre, slug, orden e imagen visible."

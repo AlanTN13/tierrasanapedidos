@@ -24,7 +24,7 @@ export function HomeForm({ settings, action }: HomeFormProps) {
   const mobilePreviewPath = settings.heroBannerMobilePath || settings.heroBannerPath;
 
   return (
-    <AdminForm action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-4">
       <input type="hidden" name="existingHeroBannerPath" value={settings.heroBannerPath} />
       <input
         type="hidden"
@@ -32,7 +32,7 @@ export function HomeForm({ settings, action }: HomeFormProps) {
         value={settings.heroBannerMobilePath ?? ""}
       />
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div>
           <h2 className="text-xl font-semibold text-olive-dark">Banner principal</h2>
           <p className="text-sm text-foreground/64">
@@ -41,7 +41,7 @@ export function HomeForm({ settings, action }: HomeFormProps) {
           </p>
         </div>
 
-        <div className="mt-5 space-y-6">
+        <div className="mt-4 grid gap-5 lg:grid-cols-2">
           <BannerUpload
             title="Banner para computadora"
             recommendedSize="1920 × 720 px"
@@ -113,7 +113,7 @@ function BannerUpload({
   }
 
   return (
-    <div className="rounded-[1.6rem] border border-olive/14 bg-white/80 p-4 sm:p-5">
+    <div className="rounded-lg border border-olive/14 bg-white/80 p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-olive-dark">{title}</h3>
@@ -130,7 +130,7 @@ function BannerUpload({
 
       <div className={`mt-4 grid gap-5 ${mobile ? "lg:grid-cols-[320px_1fr]" : "lg:grid-cols-[1.2fr_0.8fr]"}`}>
         <div className={mobile ? "mx-auto w-full max-w-[280px]" : "w-full"}>
-          <div className="overflow-hidden rounded-[1.4rem] border border-olive/10 bg-olive-soft/24 p-2">
+          <div className="overflow-hidden rounded-lg border border-olive/10 bg-olive-soft/24 p-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={selectedPreview ?? currentPath}
@@ -150,7 +150,7 @@ function BannerUpload({
             name={fieldName}
             accept="image/png,image/jpeg,image/webp,image/svg+xml"
             onChange={handleFileChange}
-            className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
+            className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark file:mr-4 file:rounded-full file:border-0 file:bg-olive file:px-4 file:py-2 file:font-semibold file:text-white"
           />
           {selectedDimensions ? (
             <p className="text-xs font-medium text-olive-dark">

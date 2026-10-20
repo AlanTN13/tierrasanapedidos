@@ -30,13 +30,13 @@ async function NewRecipeContent({ searchParams }: NewRecipePageProps) {
   ]);
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="max-w-5xl space-y-4">
       <PageHeader
         title="Nueva receta"
         description="Cargá contenido, imagen principal y productos vinculados."
       />
       {resolvedSearchParams?.error ? (
-        <div className="rounded-[1.4rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {resolvedSearchParams.error}
         </div>
       ) : null}

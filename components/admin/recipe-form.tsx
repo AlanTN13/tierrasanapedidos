@@ -22,11 +22,11 @@ export function RecipeForm({
   action,
 }: RecipeFormProps) {
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-4">
       <input type="hidden" name="recipeId" value={recipe?.id ?? ""} />
       <input type="hidden" name="existingImagePath" value={recipe?.heroImagePath ?? ""} />
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-olive-dark">Título</span>
@@ -35,7 +35,7 @@ export function RecipeForm({
               defaultValue={recipe?.title ?? ""}
               placeholder="Cookies de mantequilla de maní"
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -45,7 +45,7 @@ export function RecipeForm({
               name="slug"
               defaultValue={recipe?.slug ?? ""}
               placeholder="cookies-de-mantequilla-de-mani"
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -67,7 +67,7 @@ export function RecipeForm({
               defaultValue={recipe?.shortDescription ?? ""}
               rows={3}
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -78,7 +78,7 @@ export function RecipeForm({
               defaultValue={recipe?.longDescription ?? ""}
               rows={5}
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -89,7 +89,7 @@ export function RecipeForm({
               type="url"
               defaultValue={recipe?.instagramUrl ?? ""}
               placeholder="https://www.instagram.com/p/..."
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
             <p className="text-xs leading-5 text-foreground/58">
               Opcional. Si la completás, aparecerá un acceso a la publicación original.
@@ -105,7 +105,7 @@ export function RecipeForm({
               type="url"
               defaultValue={recipe?.youtubeUrl ?? ""}
               placeholder="https://www.youtube.com/shorts/..."
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
             <p className="text-xs leading-5 text-foreground/58">
               Opcional. Acepta enlaces de Shorts, videos de YouTube y youtu.be.
@@ -117,7 +117,7 @@ export function RecipeForm({
             <select
               name="targetCategory"
               defaultValue={recipe?.targetCategory ?? categories[0] ?? ""}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -135,7 +135,7 @@ export function RecipeForm({
               min="0"
               step="1"
               defaultValue={recipe?.sortOrder ?? 0}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -146,7 +146,7 @@ export function RecipeForm({
               defaultValue={recipe?.prepLabel ?? ""}
               placeholder="12 a 15 min de horno"
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -157,7 +157,7 @@ export function RecipeForm({
               defaultValue={recipe?.servingsLabel ?? ""}
               placeholder="Varias cookies"
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -175,7 +175,7 @@ export function RecipeForm({
         </div>
       </section>
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-olive-dark">Ingredientes</span>
@@ -184,7 +184,7 @@ export function RecipeForm({
               defaultValue={(recipe?.ingredients ?? []).join("\n")}
               rows={10}
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
             <p className="text-xs leading-5 text-foreground/58">
               Cargá un ingrediente por línea.
@@ -198,7 +198,7 @@ export function RecipeForm({
               defaultValue={(recipe?.steps ?? []).join("\n")}
               rows={10}
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
             <p className="text-xs leading-5 text-foreground/58">
               Cargá un paso por línea, en el orden en que querés mostrarlo.
@@ -207,7 +207,7 @@ export function RecipeForm({
         </div>
       </section>
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div>
           <h2 className="text-xl font-semibold text-olive-dark">Productos sugeridos</h2>
           <p className="text-sm text-foreground/64">
@@ -219,7 +219,7 @@ export function RecipeForm({
           {productOptions.map((product) => (
             <label
               key={product.id}
-              className="flex items-start gap-3 rounded-2xl border border-olive/14 bg-white/90 px-4 py-3 text-sm text-olive-dark"
+              className="flex items-start gap-3 rounded-lg border border-olive/14 bg-white/90 px-4 py-3 text-sm text-olive-dark"
             >
               <input
                 type="checkbox"

@@ -10,11 +10,11 @@ type CategoryFormProps = {
 
 export function CategoryForm({ category, action }: CategoryFormProps) {
   return (
-    <AdminForm action={action} className="space-y-6">
+    <AdminForm action={action} className="space-y-4">
       <input type="hidden" name="categoryId" value={category?.id ?? ""} />
       <input type="hidden" name="existingImagePath" value={category?.imagePath ?? ""} />
 
-      <section className="surface-panel organic-outline rounded-[1.8rem] p-5 sm:p-6">
+      <section className="surface-panel organic-outline rounded-xl p-4">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2">
             <span className="text-sm font-semibold text-olive-dark">Nombre</span>
@@ -23,7 +23,7 @@ export function CategoryForm({ category, action }: CategoryFormProps) {
               defaultValue={category?.name ?? ""}
               placeholder="Semillas"
               required
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -33,7 +33,7 @@ export function CategoryForm({ category, action }: CategoryFormProps) {
               name="slug"
               defaultValue={category?.slug ?? ""}
               placeholder="semillas"
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -54,7 +54,7 @@ export function CategoryForm({ category, action }: CategoryFormProps) {
               name="searchTags"
               defaultValue={(category?.searchTags ?? []).join(", ")}
               placeholder="semillas, desayuno, topping"
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 
@@ -66,7 +66,7 @@ export function CategoryForm({ category, action }: CategoryFormProps) {
               min="0"
               step="1"
               defaultValue={category?.sortOrder ?? 0}
-              className="w-full rounded-2xl border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
+              className="w-full rounded-lg border border-olive/14 bg-white px-4 py-3 text-sm text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
             />
           </label>
 

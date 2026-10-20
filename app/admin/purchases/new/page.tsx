@@ -20,7 +20,7 @@ async function NewPurchaseContent() {
   const options = await getAdminPurchaseProductOptions();
 
   return (
-    <div className="max-w-6xl space-y-6">
+    <div className="max-w-6xl space-y-4">
       <PageHeader
         title="Nueva compra"
         description="Buscá un producto único y cargá la compra en kg, litros o unidades según corresponda."

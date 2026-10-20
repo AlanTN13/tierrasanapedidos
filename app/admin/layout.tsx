@@ -1,13 +1,14 @@
 import { Suspense, type ReactNode } from "react";
 import Image from "next/image";
 import { signOutAdmin } from "@/app/admin/auth-actions";
-import { AdminNavLinks } from "@/components/admin/admin-nav-links";
+import { AdminContextHeader, AdminNavLinks } from "@/components/admin/admin-nav-links";
+import { AdminShellFrame } from "@/components/admin/admin-shell-frame";
+import "./admin.css";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="admin-shell min-h-screen">
-      <div className="admin-shell__bg" />
-      <div className="admin-shell__frame">
+    <Suspense fallback={<div className="admin-shell"><main id="main-content" className="admin-login-main" aria-busy="true">Cargando administración…</main></div>}>
+      <AdminShellFrame sidebar={
         <aside className="admin-sidebar">
           <div className="admin-sidebar__brand">
             <div className="admin-sidebar__logo">
@@ -20,8 +21,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               />
             </div>
             <div>
-              <p className="admin-sidebar__eyebrow">Backoffice</p>
-              <h1 className="admin-sidebar__title">Tierra Sana</h1>
+              <p className="admin-sidebar__title">Tierra Sana</p>
+              <p className="admin-sidebar__eyebrow">Gestión comercial</p>
             </div>
           </div>
 
@@ -33,7 +34,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
           <div className="admin-sidebar__footer">
             <p className="admin-sidebar__hint">
-              Home, catálogo, compras y ventas en una sola vista operativa.
+              Tierra Sana ERP · V3
             </p>
             <form action={signOutAdmin}>
               <button type="submit" className="admin-sidebar__logout">
@@ -42,19 +43,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </form>
           </div>
         </aside>
-
-        <div className="admin-content">
-          <div className="admin-mobile-nav">
+      } header={
+          <header className="admin-topbar">
             <Suspense fallback={null}>
-              <AdminNavLinks mobile />
+              <AdminNavLinks mobile footer={<form action={signOutAdmin}><button type="submit" className="admin-sidebar__logout">Cerrar sesión</button></form>} />
+              <AdminContextHeader />
             </Suspense>
-          </div>
-
-          <main id="main-content" className="admin-main">
-            {children}
-          </main>
-        </div>
-      </div>
-    </div>
+          </header>
+      }>
+        {children}
+      </AdminShellFrame>
+    </Suspense>
   );
 }
