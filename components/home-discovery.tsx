@@ -19,7 +19,6 @@ import { getDefaultRecipeCartItems } from "@/lib/recipe-cart";
 import { getYouTubeEmbedUrl } from "@/lib/youtube";
 import type { HomeContent, HomeRecipeHighlight } from "@/types/home";
 
-const COLLAPSED_CATEGORY_COUNT = 12;
 const SHORTS_AUTOPLAY_SPEED_PX_PER_SECOND = 24;
 const SHORTS_INTERACTION_PAUSE_MS = 4000;
 const SHORTS_DRAG_THRESHOLD_PX = 8;
@@ -30,19 +29,11 @@ export function HomeCategories({
 }: {
   content: HomeContent;
 }) {
-  const [showAllCategories, setShowAllCategories] = useState(false);
-  const hasExtraCategories =
-    content.categoryCards.length > COLLAPSED_CATEGORY_COUNT;
-  const visibleCategories =
-    hasExtraCategories && !showAllCategories
-      ? content.categoryCards.slice(0, COLLAPSED_CATEGORY_COUNT - 1)
-      : content.categoryCards;
-
   return (
     <section
       id="categorias"
       aria-labelledby="categorias-title"
-      className="container-shell pb-9 sm:pb-12"
+      className="container-shell scroll-mt-28 pb-9 sm:pb-12"
     >
       <h2
         id="categorias-title"
@@ -51,44 +42,30 @@ export function HomeCategories({
         Categorías
       </h2>
 
-      <div className="mt-4 grid grid-cols-6 items-start gap-x-1.5 gap-y-5 sm:mt-5 sm:grid-cols-7 sm:gap-x-4 lg:grid-cols-10 xl:grid-cols-13">
-        {visibleCategories.map((card) => (
+      <div className="mt-4 grid grid-cols-3 items-start gap-x-4 gap-y-5 sm:mt-5 sm:grid-cols-4 md:grid-cols-7 lg:grid-cols-10 xl:grid-cols-13">
+        {content.categoryCards.map((card) => (
           <Link
             key={card.category}
             href={`/categoria/${card.slug}`}
             className="group min-w-0 text-center focus:outline-none"
             aria-label={`Ver productos de ${card.title}`}
           >
-            <span className="relative mx-auto block aspect-square w-full max-w-[3.4rem] overflow-hidden rounded-full bg-olive-soft/45 shadow-[0_8px_18px_rgba(63,74,47,0.12)] ring-1 ring-olive/12 transition duration-200 group-hover:-translate-y-0.5 group-focus-visible:ring-2 group-focus-visible:ring-olive sm:max-w-[5.75rem]">
+            <span className="relative mx-auto block aspect-square w-full max-w-[4.5rem] overflow-hidden rounded-full bg-olive-soft/45 shadow-[0_8px_18px_rgba(63,74,47,0.12)] ring-1 ring-olive/12 transition duration-200 group-hover:-translate-y-0.5 group-focus-visible:ring-2 group-focus-visible:ring-olive sm:max-w-[5.75rem]">
               <Image
                 src={card.image}
                 alt=""
                 fill
-                sizes="(max-width: 639px) 56px, (max-width: 1023px) 92px, 110px"
+                sizes="(max-width: 639px) 72px, (max-width: 1023px) 92px, 110px"
                 className="object-cover transition duration-300 group-hover:scale-105"
               />
             </span>
-            <span className="mt-2 block text-[9px] leading-[1.15] font-semibold text-olive-dark sm:text-xs sm:leading-4">
+            <span className="mt-2 block text-xs leading-4 font-semibold text-olive-dark">
               {card.title}
             </span>
           </Link>
         ))}
 
-        {hasExtraCategories ? (
-          <button
-            type="button"
-            onClick={() => setShowAllCategories((current) => !current)}
-            className="group min-w-0 text-center focus:outline-none"
-            aria-expanded={showAllCategories}
-          >
-            <span className="mx-auto flex aspect-square w-full max-w-[3.4rem] items-center justify-center rounded-full border border-dashed border-olive/35 bg-white/72 text-xl font-medium text-olive-dark transition group-hover:-translate-y-0.5 group-hover:bg-olive-soft/40 group-focus-visible:ring-2 group-focus-visible:ring-olive sm:max-w-[5.75rem] sm:text-2xl">
-              {showAllCategories ? "−" : "+"}
-            </span>
-            <span className="mt-2 block text-[9px] leading-[1.15] font-semibold text-olive-dark sm:text-xs sm:leading-4">
-              {showAllCategories ? "Ver menos" : "Ver más categorías"}
-            </span>
-          </button>
-        ) : null}
+
       </div>
     </section>
   );
