@@ -25,6 +25,7 @@
 .admin-sidebar { display: none; }
 .admin-content { min-width: 0; }
 .admin-main { max-width: 1760px; margin-inline: auto; padding: 24px; }
+.admin-login-main { min-height: 100dvh; display: grid; align-items: center; padding: 24px 16px; }
 .admin-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
 .admin-page-title { font-size: 26px; font-weight: 650; letter-spacing: -.04em; line-height: 1.25; margin-top: 3px; }
 .admin-page-description { max-width: 800px; color: #66716a; font-size: 13px; margin-top: 6px; }
