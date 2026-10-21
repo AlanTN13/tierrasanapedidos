@@ -3,7 +3,7 @@ import "server-only";
 import { createClient as createPublicClient } from "@supabase/supabase-js";
 import { cacheTag, revalidateTag } from "next/cache";
 import { getCatalogProducts, getCategoryCards } from "@/lib/catalog-data";
-import { resolveHomeBannerPaths } from "@/lib/home-banner";
+import { resolveHomeBannerPaths, resolveHomeBanners } from "@/lib/home-banner";
 import { getDefaultHomeHero, getFallbackHomeRecipeHighlights, getHomeContentWithRecipes } from "@/lib/home";
 import { getHomeRecipeHighlights } from "@/lib/recipes-data";
 import { getSupabaseEnv, isSupabaseConfigured } from "@/lib/supabase/config";
@@ -42,6 +42,12 @@ function mapHeroSettings(row: HomeSettingsRow | null | undefined) {
     bannerDesktopImage: bannerPaths.desktopPath,
     bannerMobileImage: bannerPaths.mobilePath,
     bannerAlt: row?.hero_banner_alt || fallbackHero.bannerAlt,
+    banners: resolveHomeBanners(row?.hero_banners, {
+      id: "legacy",
+      desktopPath: bannerPaths.desktopPath,
+      mobilePath: row?.hero_banner_mobile_path || null,
+      alt: row?.hero_banner_alt || fallbackHero.bannerAlt,
+    }),
   };
 }
 
@@ -53,7 +59,7 @@ async function getRawHomeSettings() {
   const supabase = createSupabaseClient();
   const { data, error } = await supabase
     .from("home_settings")
-    .select("id, hero_banner_path, hero_banner_mobile_path, hero_banner_alt, created_at, updated_at")
+    .select("*")
     .eq("id", "main")
     .maybeSingle();
 
@@ -90,38 +96,33 @@ export async function getResolvedHomeContent(): Promise<HomeContent> {
 
 export async function getAdminHomeSettings() {
   const fallbackHero = getDefaultHomeHero();
-
-  if (!isSupabaseConfigured()) {
-    return {
-      id: "main",
-      heroBannerPath: fallbackHero.bannerDesktopImage,
-      heroBannerMobilePath: null,
-    };
-  }
+  const fallback = {
+    id: "main",
+    heroBannerPath: fallbackHero.bannerDesktopImage,
+    heroBannerMobilePath: null,
+    banners: [{ id: "legacy", desktopPath: fallbackHero.bannerDesktopImage, mobilePath: null, alt: fallbackHero.bannerAlt }],
+    carouselReady: false,
+  };
+  if (!isSupabaseConfigured()) return fallback;
 
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("home_settings")
-    .select("id, hero_banner_path, hero_banner_mobile_path, hero_banner_alt")
-    .eq("id", "main")
-    .maybeSingle();
+  // select(*) keeps the existing single banner usable before the additive setup is applied.
+  const { data, error } = await supabase.from("home_settings").select("*").eq("id", "main").maybeSingle();
+  if (error && isMissingRelationError(error.message)) return fallback;
+  if (error) throw new Error(error.message);
 
-  if (error && isMissingRelationError(error.message)) {
-    return {
-      id: "main",
-      heroBannerPath: fallbackHero.bannerDesktopImage,
-      heroBannerMobilePath: null,
-    };
-  }
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
+  const legacy = {
+    id: "legacy",
+    desktopPath: data?.hero_banner_path || fallbackHero.bannerDesktopImage,
+    mobilePath: data?.hero_banner_mobile_path || null,
+    alt: data?.hero_banner_alt ?? fallbackHero.bannerAlt,
+  };
   return {
     id: data?.id ?? "main",
-    heroBannerPath: data?.hero_banner_path ?? fallbackHero.bannerDesktopImage,
-    heroBannerMobilePath: data?.hero_banner_mobile_path ?? null,
+    heroBannerPath: legacy.desktopPath,
+    heroBannerMobilePath: legacy.mobilePath,
+    banners: resolveHomeBanners(data?.hero_banners, legacy),
+    carouselReady: Boolean(data && Object.hasOwn(data, "hero_banners")),
   };
 }
 

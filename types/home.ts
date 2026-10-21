@@ -1,4 +1,5 @@
 import type { Product, ProductCategory } from "@/types/catalog";
+import type { HomeBanner } from "@/lib/home-banner";
 
 export type HomeSectionLink = {
   id: string;
@@ -6,6 +7,7 @@ export type HomeSectionLink = {
 };
 
 export type HomeHeroConfig = {
+  banners?: HomeBanner[];
   bannerDesktopImage: string;
   bannerMobileImage: string;
   bannerAlt: string;

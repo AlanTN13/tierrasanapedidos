@@ -61,6 +61,7 @@ export type Database = {
       home_settings: {
         Row: {
           id: string;
+          hero_banners: unknown;
           hero_banner_path: string | null;
           hero_banner_mobile_path: string | null;
           hero_banner_alt: string | null;
@@ -69,6 +70,7 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          hero_banners?: unknown;
           hero_banner_path?: string | null;
           hero_banner_mobile_path?: string | null;
           hero_banner_alt?: string | null;
@@ -77,6 +79,7 @@ export type Database = {
         };
         Update: {
           id?: string;
+          hero_banners?: unknown;
           hero_banner_path?: string | null;
           hero_banner_mobile_path?: string | null;
           hero_banner_alt?: string | null;
