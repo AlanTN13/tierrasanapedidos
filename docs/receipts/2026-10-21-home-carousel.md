@@ -1,5 +1,45 @@
 # Carrusel de portada — 21/10/2026
 
+## Cierre de publicación — 22/10/2026
+
+**Vigente:** SQL aplicado, PR #4 integrado y release de código publicado. La portada existente continúa como una sola imagen fija; no se agregaron banners de prueba. El guardado real desde /admin/home queda pendiente por falta de sesión administrativa del sitio en el Chrome disponible.
+
+### Preflight de reanudación / PATCH MODE
+- Superficie real: Chrome habitual, perfil alan, sesión existente de Supabase; GitHub y Vercel mediante conectores autorizados. Sin navegador integrado ni otro perfil.
+- Resultado y autorización: completar la publicación del carrusel ya desarrollado. El usuario reafirmó autorización de producción y SQL aditivo el 22/10; no fue necesaria una nueva confirmación.
+- Contexto leído: Execution_Runtime_Contract.md blob c74478a3d868c5f9dd4bdc91a5414073dc469624; Capacity Policy blob 60203336a5d23a910b62b75fecf420a258ec077f; TierraSana_Estado_Actual.md blob 57d1738257caae39115b79408157075d5def01eb; AGENTS técnico dfa783c8483b937985003de40cfe3d1a19d0b783.
+- M/T2/R2; un ejecutor, arquitectura existente. Reutilizada evidencia de 61 tests, typecheck y build del mismo commit 4b4ffb9; no se repitieron suites ni se cambió código.
+- Permitido: SQL preparado, merge/publicación, smoke de Home/admin y actualización documental. Congelados: otros módulos, catálogo, precios, stock, datos comerciales, auth, RLS y grants.
+- Aceptación: target inequívoco; esquema/configuración verificados antes y después; deploy READY asociado al dominio; comportamiento público desktop/mobile; límite de sesión declarado. Recuperación: deployment previo o revertir código conservando columna/archivos. STOP ante target incorrecto, cambio lateral o necesidad de modificar permisos.
+- Capacidad: reconocimiento único de PR/SQL/contexto; un escritor por superficie; QA focalizado y reserva para integración. No se abrió auditoría general ni trabajo adicional.
+
+### Supabase: aplicado y verificado
+- Organización observada en Chrome: Tierra Sana, eylurapgozocmrizqamp. Proyecto abierto desde su tarjeta: tierra sana Project, **vaermgfmwqvhebotcnsy**, main PRODUCTION, Healthy. No se adivinó el identificador ni se usó el conector de la otra cuenta.
+- Antes: public.home_settings tenía seis columnas; una fila main; RLS true. Políticas home_settings_admin_manage (private.is_admin, authenticated) y home_settings_public_read (id main, anon/authenticated).
+- Ejecutado por SQL Editor el contenido exacto de supabase/setup/home_banner_carousel.sql del PR: BEGIN/COMMIT, hero_banners JSONB nullable, constraint home_settings_hero_banners_count de 1–4 elementos para arrays y rechazo de otros tipos no NULL. Resultado: Success. No rows returned.
+- Después: columna jsonb / nullable YES; constraint validada true. hero_banners quedó NULL. Permanecieron el id check, PK y las mismas dos políticas con RLS true.
+- Comparación completa de la configuración previa, excluyendo sólo la nueva columna: MD5 **70c3d05670690f4a8aaf4ea695b710b5** antes/después; legacy_unchanged true. Incluye timestamps y alt, no sólo rutas.
+- Portada conservada: /storage/product-images/home/hero-desktop-msnlmb1l.webp; móvil /storage/product-images/home/hero-mobile-msnlivpo.webp; alt Armá tu pedido en 3 pasos. updated_at se mantuvo 2026-08-10T19:02:31.143657+00:00.
+- No se ejecutó UPDATE/INSERT de configuración ni de datos comerciales; sin modificación de RLS, grants ni autenticación.
+
+### Integración y producción comprobadas
+- Premerge: PR OPEN, mergeable true, no draft; head exacto **4b4ffb9be1e8ebeb7b11f0debe97afbcc5408371**, base aefece51ec37ae257b7bfb702f8be82c6974d664; Vercel success. Sin workflows de GitHub Actions asociados; los 61 tests/types/build son evidencia previa del mismo commit, no una corrida nueva.
+- Merge squash con expected_head_sha: **f1a48bcf26c767e891214fc603d06d64236d1017**. GitHub confirmó merged true.
+- Deployment de código: **dpl_DqhK8nS5ey6PXk85DKUeRfPTPuGb**, target production, READY, commit f1a48bcf. Build remoto completado; check Vercel success.
+- Consulta por www.tierrasanadietetica.com resolvió exactamente al nuevo deployment/commit, con alias raíz y www asignados. Este cierre documental posterior sólo actualiza este archivo; no cambia código validado.
+- Smoke en el Chrome habitual sobre el dominio tras READY: contenedor Banners de Tierra Sana y un banner sin controles de rotación; portada heredada intacta. Desktop cargado desde su ruta real, 1600×600 naturales, render 1440×540. A 390 px cargó la variante móvil real, 1122×1402 naturales, render 390×487.32; ancho del documento y viewport 390, sin desborde horizontal. Override de viewport restablecido.
+- Consola de Home sin errores ni warnings en el corte de la prueba. /previews/home-banners devuelve 404 en producción.
+- /admin/home redirige a /admin/login?next=%2Fadmin%2Fhome, login sin sidebar/topbar. No hay sesión válida del sitio aunque sí de Supabase: **no se probaron formulario interno, upload, guardado real ni rotación con 2–4 banners en producción**. No se eludió autenticación ni se solicitaron secretos.
+- Capturas: tierrasana-home-desktop.jpg, tierrasana-home-mobile.jpg y admin-login.jpg; conservadas como evidencia del smoke. La aceptación de la operación habitual por el responsable no se presume.
+
+### Recuperación
+Restaurar dpl_7hPNXnT9UAXeiayf35RwSUr8W7m6 / aefece51ec37ae257b7bfb702f8be82c6974d664, o revertir el merge de PR #4 y publicar. Conservar hero_banners nullable y assets anteriores; los campos legacy siguen válidos. No restaurar ni modificar datos comerciales.
+
+---
+
+## Preparación e implementación del 21/10/2026 — histórico
+Los estados pendientes que siguen pertenecen a la preparación original y fueron sustituidos por el cierre del 22/10 de arriba.
+
 EXECUTION PREFLIGHT / PATCH MODE
 - Rol: ejecución técnica, repo AlanTN13/tierrasanapedidos. Resultado autorizado: administrador con hasta cuatro banners de portada y carrusel público responsive.
 - Fuentes leídas: Alan/01_Architecture/Execution_Runtime_Contract.md c74478a; Capacity Policy 6020333; TierraSana_Estado_Actual.md 3b32e83; TierraSana_Decisiones.md 45a12ee. Main remoto confirmado aefece51; baseline local reconstruido y árbol idéntico cb9aa4ff7ebbed5cfc1e84b1631ebbd70515252f.
