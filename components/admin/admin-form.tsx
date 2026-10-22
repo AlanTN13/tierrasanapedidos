@@ -1,6 +1,7 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { startTransition, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { UNKNOWN_SAVE_ERROR, type AdminFormAction, type AdminFormResult } from "@/lib/admin-form-result";
 
 type AdminFormProps = {
@@ -18,7 +19,7 @@ export function AdminForm({ action, children, className = "space-y-4" }: AdminFo
   const alertRef = useRef<HTMLDivElement>(null);
   const messageId = useId();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (submitting.current) return;
     submitting.current = true;
@@ -31,21 +32,26 @@ export function AdminForm({ action, children, className = "space-y-4" }: AdminFo
     }
     setResult(null);
     setIsPending(true);
-    try {
-      const nextResult = await action(data);
-      if (nextResult?.error) {
-        if (nextResult.resume) resume.current = nextResult.resume;
-        setResult(nextResult);
+    startTransition(async () => {
+      try {
+        const nextResult = await action(data);
+        if (nextResult?.error) {
+          if (nextResult.resume) resume.current = nextResult.resume;
+          setResult(nextResult);
+          requestAnimationFrame(() => alertRef.current?.focus());
+        }
+      } catch (error) {
+        // Next rejects successful Server Action redirects so its navigation boundary
+        // can reset the form. Let framework control flow reach that boundary.
+        unstable_rethrow(error);
+        // Network and unexpected failures retain the form without exposing internals.
+        setResult({ error: UNKNOWN_SAVE_ERROR });
         requestAnimationFrame(() => alertRef.current?.focus());
+      } finally {
+        submitting.current = false;
+        setIsPending(false);
       }
-    } catch {
-      // Network and unexpected action failures must not replace the form or expose internals.
-      setResult({ error: UNKNOWN_SAVE_ERROR });
-      requestAnimationFrame(() => alertRef.current?.focus());
-    } finally {
-      submitting.current = false;
-      setIsPending(false);
-    }
+    });
   }
 
   function focusField() {
