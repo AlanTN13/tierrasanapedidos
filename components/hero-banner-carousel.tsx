@@ -24,7 +24,7 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const touch = useRef<{ x: number; y: number } | null>(null);
-  const suppressLinkClick = useRef(false);
+  const suppressLinkClickUntil = useRef(0);
   const reducedMotion = useSyncExternalStore(subscribeMotion, readMotion, serverMotion);
   const hidden = useSyncExternalStore(subscribeVisibility, readVisibility, serverMotion);
   const multiple = banners.length > 1;
@@ -72,7 +72,7 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
           goTo(active + (event.key === "ArrowRight" ? 1 : -1));
         }
       }}
-      onTouchStart={(event) => { suppressLinkClick.current = false; const point = event.touches[0]; touch.current = { x: point.clientX, y: point.clientY }; }}
+      onTouchStart={(event) => { suppressLinkClickUntil.current = 0; const point = event.touches[0]; touch.current = { x: point.clientX, y: point.clientY }; }}
       onTouchEnd={(event) => {
         if (!touch.current || !multiple) return;
         const point = event.changedTouches[0];
@@ -80,7 +80,7 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
         const dy = point.clientY - touch.current.y;
         touch.current = null;
         if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-          suppressLinkClick.current = true;
+          suppressLinkClickUntil.current = Date.now() + 500;
           goTo(active + (dx < 0 ? 1 : -1));
         }
       }}
@@ -90,10 +90,10 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
         <div role="group" aria-roledescription={multiple ? "diapositiva" : undefined} aria-label={multiple ? `${active + 1} de ${banners.length}` : undefined}>
           {linkUrl ? (
             <a href={linkUrl} aria-label={banner.alt || "Abrir enlace del banner"} className="block focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive" onClick={(event) => {
-              if (suppressLinkClick.current) {
+              if (event.detail !== 0 && Date.now() < suppressLinkClickUntil.current) {
                 event.preventDefault();
-                suppressLinkClick.current = false;
               }
+              suppressLinkClickUntil.current = 0;
             }}>{image}</a>
           ) : image}
         </div>
