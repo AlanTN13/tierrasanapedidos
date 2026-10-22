@@ -13,6 +13,7 @@ export type HomeBanner = {
   desktopPath: string;
   mobilePath: string | null;
   alt: string;
+  linkUrl?: string | null;
 };
 
 export const MAX_HOME_BANNERS = 4;
@@ -26,6 +27,7 @@ export function resolveHomeBanners(value: unknown, legacy: HomeBanner): HomeBann
   for (const entry of value) {
     if (!entry || typeof entry !== "object") continue;
     const { id, desktopPath, mobilePath, alt } = entry;
+    const linkUrl = normalizeHomeBannerLink(entry.linkUrl);
     if (typeof id !== "string" || !/^[a-zA-Z0-9-]{1,64}$/.test(id) || seen.has(id)) continue;
     if (typeof desktopPath !== "string" || !isBannerPath(desktopPath)) continue;
     seen.add(id);
@@ -34,6 +36,7 @@ export function resolveHomeBanners(value: unknown, legacy: HomeBanner): HomeBann
       desktopPath,
       mobilePath: typeof mobilePath === "string" && isBannerPath(mobilePath) ? mobilePath : null,
       alt: typeof alt === "string" ? alt.slice(0, 200) : "",
+      ...(linkUrl ? { linkUrl } : {}),
     });
     if (banners.length === MAX_HOME_BANNERS) break;
   }
@@ -42,6 +45,20 @@ export function resolveHomeBanners(value: unknown, legacy: HomeBanner): HomeBann
 
 function isBannerPath(value: string) {
   return (value.startsWith("/") && !value.startsWith("//")) || value.startsWith("https://");
+}
+
+export function normalizeHomeBannerLink(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const link = value.trim();
+  if (!link || link.length > 2048 || /[\u0000-\u0020\u007f\\]/.test(link)) return null;
+  if (link.startsWith("/") && !link.startsWith("//")) return link;
+  if (!/^https?:\/\//i.test(link)) return null;
+  try {
+    const url = new URL(link);
+    return url.hostname && !url.username && !url.password ? link : null;
+  } catch {
+    return null;
+  }
 }
 
 export function validateBannerFiles(formData: FormData): string | null {

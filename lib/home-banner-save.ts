@@ -1,5 +1,5 @@
 import { AdminInputError } from "./admin-form-result.ts";
-import { MAX_HOME_BANNERS, validateBannerFiles, type HomeBanner } from "./home-banner.ts";
+import { MAX_HOME_BANNERS, normalizeHomeBannerLink, validateBannerFiles, type HomeBanner } from "./home-banner.ts";
 
 type BannerSaveDependencies = {
   upload: (file: File, id: string, variant: "desktop" | "mobile") => Promise<string>;
@@ -32,6 +32,12 @@ export async function saveHomeBannerCollection(
       throw new AdminInputError("Elegí una imagen para computadora en cada banner.", `bannerDesktopFile-${value}`);
     }
     const alt = formData.get(`bannerAlt-${value}`);
+    // Preserve links from forms opened before this optional field was added.
+    const rawLink = formData.get(`bannerLink-${value}`) ?? previous?.linkUrl ?? "";
+    const linkUrl = normalizeHomeBannerLink(rawLink);
+    if (typeof rawLink !== "string" || (rawLink.trim() && !linkUrl)) {
+      throw new AdminInputError("Usá una URL completa con https:// o http://, o una ruta como /catalogo. Dejá el enlace vacío si no lo necesitás.", `bannerLink-${value}`);
+    }
     return {
       id: value,
       previous,
@@ -39,6 +45,7 @@ export async function saveHomeBannerCollection(
       mobileFile,
       removeMobile: formData.get(`removeBannerMobile-${value}`) === "on",
       alt: typeof alt === "string" ? alt.trim().slice(0, 200) : "",
+      linkUrl,
     };
   });
 
@@ -53,6 +60,7 @@ export async function saveHomeBannerCollection(
         ? await upload(draft.mobileFile, draft.id, "mobile")
         : draft.removeMobile ? null : draft.previous?.mobilePath ?? null,
       alt: draft.alt,
+      linkUrl: draft.linkUrl,
     });
   }
   // One database write. Keep previous assets available for rollback and unsuccessful retries.
