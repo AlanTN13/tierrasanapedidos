@@ -6,8 +6,8 @@ import { AdminInputError, productErrorResult, type AdminFormResult } from "@/lib
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminUser } from "@/lib/supabase/admin";
 import { refreshCatalogCache } from "@/lib/catalog-data";
-import { refreshHomeCache } from "@/lib/home-data";
-import { resolveHomeBannerSavePaths } from "@/lib/home-banner";
+import { getAdminHomeSettings, refreshHomeCache } from "@/lib/home-data";
+import { saveHomeBannerCollection } from "@/lib/home-banner-save";
 import { refreshRecipesCache } from "@/lib/recipes-data";
 import { generateBaseSku, normalizeManualSku } from "@/lib/sku";
 import { parsePresentations, validateProductIdentity } from "@/lib/product-form-validation";
@@ -24,7 +24,6 @@ const HOME_IMAGE_PREFIX = "home";
 const RECIPE_IMAGE_PREFIX = "recipes";
 const PRODUCT_IMAGE_PLACEHOLDER = "/productos/frutos-secos-placeholder.svg";
 const CATEGORY_IMAGE_PLACEHOLDER = "/categorias-optimized/semillas.webp";
-const HOME_BANNER_PLACEHOLDER = "/hero-optimized/banner-home.webp";
 const RECIPE_IMAGE_PLACEHOLDER = "/recetas/trufas-fit.webp";
 
 function isMissingColumnError(message: string) {
@@ -414,48 +413,34 @@ export async function saveCategory(formData: FormData) {
   redirect(`/admin/categories/${resolvedCategoryId}?saved=1`);
 }
 
-export async function saveHomeSettings(formData: FormData) {
+export async function saveHomeSettings(formData: FormData): Promise<AdminFormResult | void> {
   await requireAdminUser();
-
-  if (!isSupabaseConfigured()) {
-    throw new Error("Supabase no está configurado.");
+  try {
+    const settings = await getAdminHomeSettings();
+    if (!settings.carouselReady) {
+      throw new AdminInputError("La carga de varios banners todavía no está habilitada. La portada actual sigue disponible.");
+    }
+    const supabase = await createClient();
+    await saveHomeBannerCollection(formData, settings.banners, {
+      upload: async (file, id, variant) => uploadHomeBanner({ imageFile: file, bannerId: id, variant }),
+      persist: async (banners) => {
+        const first = banners[0];
+        const { error } = await supabase.from("home_settings").upsert({
+          id: "main",
+          hero_banners: banners,
+          hero_banner_path: first.desktopPath,
+          hero_banner_mobile_path: first.mobilePath,
+          hero_banner_alt: first.alt,
+        });
+        if (error) throw error;
+      },
+    });
+  } catch (error) {
+    if (error instanceof AdminInputError) return { error: error.message, field: error.field };
+    const reference = randomUUID().slice(0, 8);
+    console.error("[admin:saveHomeSettings]", { reference, error });
+    return { error: "No pudimos confirmar el guardado. Conservamos tus imágenes y el formulario; revisá la portada antes de volver a intentar.", reference };
   }
-
-  const supabase = await createClient();
-  const existingHeroBannerPath = readString(formData.get("existingHeroBannerPath"));
-  const existingHeroBannerMobilePath = readString(
-    formData.get("existingHeroBannerMobilePath"),
-  );
-  const heroBannerFile = formData.get("heroBannerDesktopFile");
-  const heroBannerMobileFile = formData.get("heroBannerMobileFile");
-  const uploadedHeroBannerPath = await uploadHomeBanner({
-    imageFile: heroBannerFile,
-    existingImagePath: existingHeroBannerPath,
-    variant: "desktop",
-  });
-  const uploadedHeroBannerMobilePath = await uploadHomeBanner({
-    imageFile: heroBannerMobileFile,
-    existingImagePath: existingHeroBannerMobilePath,
-    variant: "mobile",
-  });
-  const heroBannerPaths = resolveHomeBannerSavePaths({
-    existingDesktopPath: existingHeroBannerPath,
-    existingMobilePath: existingHeroBannerMobilePath,
-    uploadedDesktopPath: uploadedHeroBannerPath,
-    uploadedMobilePath: uploadedHeroBannerMobilePath,
-    fallbackDesktopPath: HOME_BANNER_PLACEHOLDER,
-  });
-
-  const { error } = await supabase.from("home_settings").upsert({
-    id: "main",
-    hero_banner_path: heroBannerPaths.desktopPath,
-    hero_banner_mobile_path: heroBannerPaths.mobilePath,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
   await refreshHomeCache();
   redirect("/admin/home?saved=1");
 }
@@ -703,29 +688,21 @@ async function resolveCategoryImagePath({
 
 async function uploadHomeBanner({
   imageFile,
-  existingImagePath,
+  bannerId,
   variant,
 }: {
-  imageFile: FormDataEntryValue | null;
-  existingImagePath: string;
+  imageFile: File;
+  bannerId: string;
   variant: "desktop" | "mobile";
 }) {
-  if (!(imageFile instanceof File) || imageFile.size === 0) {
-    return undefined;
-  }
-
   const extension = getOutputImageExtension(imageFile);
   const filePath = buildVersionedStorageObjectPath(
     HOME_IMAGE_PREFIX,
-    `hero-${variant}`,
+    `hero-${bannerId}-${variant}-${randomUUID()}`,
     extension,
   );
-  const storagePath = buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
-
   await uploadImageToStorage(imageFile, filePath);
-  await removeStoredImageAtPath(existingImagePath);
-
-  return storagePath;
+  return buildStorageProxyPath(PRODUCT_IMAGE_BUCKET, filePath);
 }
 
 async function resolveRecipeImagePath({

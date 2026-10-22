@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HeroBannerCarousel } from "@/components/hero-banner-carousel";
 import type { ResolvedHomeHeroConfig } from "@/types/home";
 
 type HeroProps = {
@@ -12,20 +13,12 @@ type HeroProps = {
 export function Hero({ content }: HeroProps) {
   return (
     <section id="inicio" className="pb-4 sm:pb-6">
-      <article className="relative w-full overflow-hidden bg-white/55">
-        <picture>
-          <source media="(min-width: 768px)" srcSet={content.bannerDesktopImage} />
-          <source media="(max-width: 767px)" srcSet={content.bannerMobileImage} />
-          {/* Dimensions are intentionally omitted: uploaded banners retain their natural ratio. */}
-          <img
-            src={content.bannerMobileImage}
-            alt={content.bannerAlt}
-            loading="eager"
-            fetchPriority="high"
-            className="block h-auto w-full"
-          />
-        </picture>
-      </article>
+      <HeroBannerCarousel banners={content.banners?.length ? content.banners : [{
+        id: "legacy",
+        desktopPath: content.bannerDesktopImage,
+        mobilePath: content.bannerMobileImage,
+        alt: content.bannerAlt,
+      }]} />
 
       <div className="container-shell mt-2 sm:mt-3">
         <Link

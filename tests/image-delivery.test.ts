@@ -9,9 +9,9 @@ test("serves source images without the metered Vercel optimizer", () => {
 });
 
 test("keeps independent source URLs for desktop and mobile home banners", () => {
-  const hero = fs.readFileSync(new URL("../components/hero.tsx", import.meta.url), "utf8");
+  const hero = fs.readFileSync(new URL("../components/hero-banner-carousel.tsx", import.meta.url), "utf8");
 
-  assert.match(hero, /srcSet=\{content\.bannerDesktopImage\}/);
-  assert.match(hero, /srcSet=\{content\.bannerMobileImage\}/);
-  assert.match(hero, /src=\{content\.bannerMobileImage\}/);
+  assert.match(hero, /srcSet=\{banner\.desktopPath\}/);
+  assert.match(hero, /srcSet=\{banner\.mobilePath \|\| banner\.desktopPath\}/);
+  assert.match(hero, /src=\{banner\.mobilePath \|\| banner\.desktopPath\}/);
 });
