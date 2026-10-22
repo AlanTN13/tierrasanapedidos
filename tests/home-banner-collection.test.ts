@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { MAX_BANNER_UPLOAD_BYTES, resolveHomeBanners, type HomeBanner } from "../lib/home-banner.ts";
+import { MAX_BANNER_UPLOAD_BYTES, normalizeHomeBannerLink, resolveHomeBanners, type HomeBanner } from "../lib/home-banner.ts";
 import { saveHomeBannerCollection } from "../lib/home-banner-save.ts";
 
 const old: HomeBanner = { id: "legacy", desktopPath: "/old.webp", mobilePath: "/mobile.webp", alt: "Anterior" };
@@ -97,4 +97,44 @@ test("upload or persistence failures leave the existing collection unchanged", a
   await assert.rejects(saveHomeBannerCollection(data, [old], { upload: async () => { throw Error("offline"); }, persist: async () => assert.fail("must not persist") }), /offline/);
   await assert.rejects(saveHomeBannerCollection(data, [old], { upload: async () => "/unused.webp", persist: async () => { throw Error("database unavailable"); } }), /database unavailable/);
   assert.deepEqual(old, before);
+});
+
+test("banner links accept web URLs and internal paths but reject executable or ambiguous destinations", () => {
+  for (const link of ["https://example.com/promo?q=1#oferta", "http://example.com", "/catalogo?q=mix", "/"]) {
+    assert.equal(normalizeHomeBannerLink(`  ${link}  `), link);
+  }
+  for (const link of [null, {}, "", "javascript:alert(1)", "data:text/html,bad", "//example.com", "/\\example.com", "https:\\example.com", "https://", "https://name:password@example.com", "https://exam\nple.com", "https://example.com/space here", `https://example.com/${"a".repeat(2048)}`]) {
+    assert.equal(normalizeHomeBannerLink(link), null);
+  }
+});
+
+test("reading persisted links preserves safe URLs and ignores unsafe links without losing the image", () => {
+  assert.deepEqual(resolveHomeBanners([{ ...old, linkUrl: " /catalogo " }], old), [{ ...old, linkUrl: "/catalogo" }]);
+  assert.deepEqual(resolveHomeBanners([{ ...old, linkUrl: "javascript:alert(1)" }], old), [old]);
+});
+
+test("saving links keeps destinations attached to their banners when reordered, and can clear a link", async () => {
+  const current = [{ ...old, linkUrl: "/anterior" }, { ...old, id: "second", desktopPath: "/second.webp", linkUrl: "/segundo" }];
+  const data = form(["second", "legacy"]);
+  data.set("bannerLink-second", " https://example.com/promo ");
+  data.set("bannerLink-legacy", "");
+  let writes = 0;
+  const result = await saveHomeBannerCollection(data, current, {
+    upload: async () => assert.fail("link edits must not upload images"),
+    persist: async () => { writes++; },
+  });
+  assert.equal(writes, 1);
+  assert.deepEqual(result.map((banner) => [banner.id, banner.linkUrl, banner.desktopPath]), [["second", "https://example.com/promo", "/second.webp"], ["legacy", null, "/old.webp"]]);
+  assert.equal((await saveHomeBannerCollection(form(["legacy"]), current, { upload: async () => assert.fail(), persist: async () => {} }))[0].linkUrl, "/anterior");
+});
+
+test("an invalid link in a later banner rejects the whole collection before uploads or persistence", async () => {
+  const data = form(["new", "legacy"]);
+  data.set("bannerDesktopFile-new", image());
+  data.set("bannerLink-new", "/catalogo");
+  data.set("bannerLink-legacy", "javascript:alert(1)");
+  await assert.rejects(saveHomeBannerCollection(data, [old], {
+    upload: async () => assert.fail("must not upload"),
+    persist: async () => assert.fail("must not persist"),
+  }), (error: unknown) => error instanceof Error && "field" in error && error.field === "bannerLink-legacy");
 });

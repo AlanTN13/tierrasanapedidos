@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import type { HomeBanner } from "@/lib/home-banner";
+import { normalizeHomeBannerLink, type HomeBanner } from "@/lib/home-banner";
 import styles from "./hero-banner-carousel.module.css";
 
 const ROTATION_MS = 6000;
@@ -24,6 +24,7 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const touch = useRef<{ x: number; y: number } | null>(null);
+  const suppressLinkClick = useRef(false);
   const reducedMotion = useSyncExternalStore(subscribeMotion, readMotion, serverMotion);
   const hidden = useSyncExternalStore(subscribeVisibility, readVisibility, serverMotion);
   const multiple = banners.length > 1;
@@ -44,6 +45,16 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
 
   if (!banner) return null;
 
+  const linkUrl = normalizeHomeBannerLink(banner.linkUrl);
+  const image = (
+    <picture key={banner.id} className={`block ${styles.image}`}>
+      <source media="(min-width: 768px)" srcSet={banner.desktopPath} />
+      <source media="(max-width: 767px)" srcSet={banner.mobilePath || banner.desktopPath} />
+      {/* Natural proportions preserve text and artwork in uploaded banners. */}
+      <img src={banner.mobilePath || banner.desktopPath} alt={banner.alt} loading="eager" fetchPriority={active === 0 ? "high" : "auto"} className="block h-auto w-full" />
+    </picture>
+  );
+
   return (
     <div
       role="region"
@@ -61,25 +72,30 @@ export function HeroBannerCarousel({ banners }: { banners: HomeBanner[] }) {
           goTo(active + (event.key === "ArrowRight" ? 1 : -1));
         }
       }}
-      onTouchStart={(event) => { const point = event.touches[0]; touch.current = { x: point.clientX, y: point.clientY }; }}
+      onTouchStart={(event) => { suppressLinkClick.current = false; const point = event.touches[0]; touch.current = { x: point.clientX, y: point.clientY }; }}
       onTouchEnd={(event) => {
         if (!touch.current || !multiple) return;
         const point = event.changedTouches[0];
         const dx = point.clientX - touch.current.x;
         const dy = point.clientY - touch.current.y;
         touch.current = null;
-        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) goTo(active + (dx < 0 ? 1 : -1));
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          suppressLinkClick.current = true;
+          goTo(active + (dx < 0 ? 1 : -1));
+        }
       }}
       onTouchCancel={() => { touch.current = null; }}
     >
       <div aria-live={stopped || focused || hovered ? "polite" : "off"} aria-atomic="true">
         <div role="group" aria-roledescription={multiple ? "diapositiva" : undefined} aria-label={multiple ? `${active + 1} de ${banners.length}` : undefined}>
-          <picture key={banner.id} className={`block ${styles.image}`}>
-            <source media="(min-width: 768px)" srcSet={banner.desktopPath} />
-            <source media="(max-width: 767px)" srcSet={banner.mobilePath || banner.desktopPath} />
-            {/* Natural proportions preserve text and artwork in uploaded banners. */}
-            <img src={banner.mobilePath || banner.desktopPath} alt={banner.alt} loading="eager" fetchPriority={active === 0 ? "high" : "auto"} className="block h-auto w-full" />
-          </picture>
+          {linkUrl ? (
+            <a href={linkUrl} aria-label={banner.alt || "Abrir enlace del banner"} className="block focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-olive" onClick={(event) => {
+              if (suppressLinkClick.current) {
+                event.preventDefault();
+                suppressLinkClick.current = false;
+              }
+            }}>{image}</a>
+          ) : image}
         </div>
       </div>
       {multiple ? (

@@ -77,6 +77,11 @@ export function HomeForm({ settings, action }: HomeFormProps) {
             <input name={`bannerAlt-${banner.id}`} defaultValue={banner.alt} maxLength={200} placeholder="Describí lo que comunica el banner" className="w-full rounded-lg border border-olive/20 bg-white px-3 py-2" />
             <span className="block text-xs text-foreground/60">Para lectores de pantalla; no se agrega texto sobre la imagen.</span>
           </label>
+          <label className="mt-4 block space-y-1 text-sm">
+            <span className="font-semibold text-olive-dark">Enlace del banner (opcional)</span>
+            <input name={`bannerLink-${banner.id}`} defaultValue={banner.linkUrl ?? ""} inputMode="url" maxLength={2048} placeholder="https://... o /catalogo" className="w-full rounded-lg border border-olive/20 bg-white px-3 py-2" />
+            <span className="block text-xs text-foreground/60">Al tocar la imagen se abre este enlace en la misma pestaña. Dejalo vacío para usar el banner sin enlace.</span>
+          </label>
         </section>
       ))}
       <div className="flex flex-wrap gap-3">
