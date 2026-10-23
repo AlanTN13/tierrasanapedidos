@@ -42,12 +42,29 @@ export function CartCoupon() {
         ) : null}
       </div>
       {active ? (
-        <div className="mt-3 text-sm leading-5 text-olive-dark">
-          {remaining > 0 ? <p>Te {remaining === 1 ? "falta" : "faltan"} {formatCartMoney(remaining * 100)} para superar los {formatCartMoney(promotion.minimumCents)} y acceder al descuento.</p> :
-            quote.status === "applied" ? <p>Tu carrito ya tiene el {promotion.percent}% OFF.</p> :
-              <p>¡Tu carrito ya cumple las condiciones del {promotion.percent}% OFF! <button type="button" onClick={() => { applyCoupon(promotion.code); setError(""); }} className="font-semibold underline focus-visible:outline-2 focus-visible:outline-olive">Aplicá {promotion.code}</button>.</p>}
-          <progress aria-label="Progreso para acceder al descuento" max={promotion.minimumCents + 100}
-            value={Math.min(quote.subtotalCents, promotion.minimumCents + 100)} className="mt-3 h-1.5 w-full accent-olive" />
+        <div className="mt-4 text-sm leading-5 text-olive-dark">
+          <div className="rounded-2xl border border-[#b7c69f] bg-gradient-to-br from-[#e7eed9] to-[#f5f8ee] p-4 shadow-[0_4px_14px_rgba(63,74,47,0.07)]">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#455638] px-2.5 py-1 text-xs font-bold tracking-wide text-white">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13" /><path d="M12 8H8.5a2.5 2.5 0 1 1 2.4-3.2L12 8Zm0 0h3.5a2.5 2.5 0 1 0-2.4-3.2L12 8Z" /></svg>
+                {promotion.percent}% OFF
+              </span>
+              <span className="text-xs font-medium text-[#53633e]">{remaining > 0 ? "¡Estás cada vez más cerca!" : "¡Objetivo cumplido!"}</span>
+            </div>
+            {remaining > 0 ? (
+              <>
+                <p className="text-base leading-7">Te {remaining === 1 ? "falta" : "faltan"} <strong className="text-2xl font-bold tracking-tight text-[#35432d]">{formatCartMoney(remaining * 100)}</strong></p>
+                <p className="mt-1 text-sm leading-5 text-[#53633e]">para superar los {formatCartMoney(promotion.minimumCents)} y acceder al descuento.</p>
+              </>
+            ) : quote.status === "applied" ? <p className="text-base font-semibold leading-6">Tu carrito ya tiene el {promotion.percent}% OFF.</p> :
+              <p className="text-sm leading-6">¡Tu carrito ya cumple las condiciones del {promotion.percent}% OFF! <button type="button" onClick={() => { applyCoupon(promotion.code); setError(""); }} className="font-bold underline decoration-2 underline-offset-2 focus-visible:outline-2 focus-visible:outline-olive">Aplicá {promotion.code}</button>.</p>}
+            <progress aria-label="Progreso para acceder al descuento" max={promotion.minimumCents + 100}
+              value={Math.min(quote.subtotalCents, promotion.minimumCents + 100)} className="mt-4 block h-3.5 w-full appearance-none overflow-hidden rounded-full border border-[#c4d0b3] bg-white accent-olive [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-white [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-[linear-gradient(90deg,#8ba65b,#536d31)] [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-[linear-gradient(90deg,#8ba65b,#536d31)]" />
+            <div className="mt-2 flex flex-wrap justify-between gap-x-3 gap-y-1 text-[11px] font-medium leading-4 text-[#53633e]">
+              <span>Tu carrito: {formatCartMoney(quote.subtotalCents)}</span>
+              <span>Más de {formatCartMoney(promotion.minimumCents)}</span>
+            </div>
+          </div>
           <p className="mt-2 text-xs text-foreground/70">{promotionConditions(promotion)}</p>
         </div>
       ) : null}
