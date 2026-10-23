@@ -1,5 +1,22 @@
 # Los más elegidos — preview del 23/10/2026
 
+## Videos de recetas — diseño coherente con la Home
+
+- Resultado/autorización: usuario adjunta `image(20261023-231729).png` y pide «que este quede con la misma onda que estamos laburando». Captura leída visualmente: bloque Home «Mirá y descubrí», carrusel de videos. Implementación en la misma preview; producción no autorizada en este turno.
+- Contexto vigente: runtime `Alan/01_Architecture/Execution_Runtime_Contract.md` blob `c74478a3d868c5f9dd4bdc91a5414073dc469624`; estado canónico `fc3ef266d7c230e5ff757a41f2434a87fe06686b`, Alanos/main `b8dc6562aaaba5e1c78b83b0486308dca0668e29`. PR14 draft/open head `1f663cf843f3f578c118efd47d37c102cddbcbfb`, árbol `e55bcf85e48c47b79a5b8b9c8cc1c689c7d27e0b`, preview READY `dpl_CZRPMYymVVUhk771k9sox5TCcDx8`; HomeShorts remoto `c913b203a86afa80b3040c095134db0179dc23cb`. Guías locales Next16 CSS/Image leídas antes del cambio.
+- PATCH MODE / S-T1-R1 / un escritor. Sólo presentación de HomeShorts en `components/home-discovery.tsx` y este receipt. Tarjetas con borde/sombra suaves, foto4:3 menos alta, play oliva pequeño dentro de la foto y pie crema con título a ancho completo, título22/26px y acción «Ver recetas» más corta. Mobile dos tarjetas y parte de la siguiente; controles del carrusel discretos con área44px. Se conserva reproducción en modal vertical9:16.
+- Congelado: HomeCategories (en el mismo archivo), lógica/velocidad/loop/arrastre/pausa/movimiento reducido del carrusel, fuentes/orden/fotos/títulos/URLs de recetas y video, modal/foco/cierre y compra de ingredientes; pop-up, tarjetas de productos aceptadas, header/banners/entregas, catálogo/precios/stock/ERP/Supabase/carrito/cupón/WhatsApp y pagos. Sin dependencias del proyecto, consultas, migraciones o imágenes nuevas.
+- Aceptación: tipos/lint focal; comparación literal de categorías, lógica y modal intactos; fixture de apertura/reproducción/cierre/enlaces/ingredientes y controles con ReactDOM/jsdom; build preview y un smoke Home/activos. No tests permanentes de estilos, suite económica intacta ni nuevos intentos headless (fallo previo SIGABRT/EPERM); Browser js no disponible y CUA retirado en este entorno. QA visual/interactiva nativa320/390/desktop pendiente.
+- Recuperación/STOP: misma rama/PR14, sin merge/promoción. Revertir revisión restaura bloque de videos anterior; cerrar PR conserva producción PR13/main `67966a4b`. STOP con preview revisable, evidencia y límites. No expandir a página de recetas, otros módulos o cambios editoriales.
+
+### QA de videos
+
+- Tipos del proyecto y ESLint focal PASS; 20/20 tests existentes de carrusel continuo, URLs YouTube y compra de ingredientes PASS. No se modifican tests del repo ni dependencias.
+- Fixture temporal React19/ReactDOM real con Next/Image/Link + jsdom PASS: tarjetas con título/play contenidos, filtro de URLs válidas, copias del loop primarias accesibles y duplicados fuera del Tab, flechas por paso, pausa/reanudar, apertura por teclado/click, URL autoplay sólo al abrir, Escape/cierre, destinos de receta y callback de ingredientes una sola vez, bloqueo cuando no hay ingredientes, vacío y datos intactos. No demuestra reproducción de YouTube ni layout/foco en navegador nativo.
+- Comparación literal contra el blob remoto de base PASS: HomeCategories, hooks/handlers del carrusel, modal de video y helpers permanecen byte a byte. Fotos y contenido existentes reutilizados; sólo estilos/presentación de HomeShorts cambian.
+- Browser plugin leído y capacidades consultadas: js asociado de Browser no disponible; CUA ya no disponible. No se repite fallo headless anterior ni se instala otra vía. QA visual/interactiva nativa320/390/desktop pendiente. Un build/HTTP smoke no la reemplaza.
+- Build/head/URL/smoke y producción preservada se cierran en cuerpo PR14. Preflight y QA de fases anteriores conservan historia; esta sección habilita el bloque de videos antes diferido, sólo en preview.
+
 ## Pop-up compacto y navegación a productos — preflight
 
 - Resultado/autorización: el usuario acepta las tarjetas («ahora sí me encanta») y pide achicar bastante el pop-up inicial en mobile y sustituir «Aplicar al carrito» por «Ver productos». Se recomienda terminar pop-up y videos de recetas en preview antes de publicar juntos; esta revisión no autoriza producción.
