@@ -66,6 +66,7 @@ function StorefrontContent({
   const lastCartTriggerRef = useRef<HTMLElement | null>(null);
   const lastShippingTriggerRef = useRef<HTMLElement | null>(null);
   const shippingCloseButtonRef = useRef<HTMLButtonElement | null>(null);
+  const shippingDialogRef = useRef<HTMLDivElement | null>(null);
   const previousCartOpenRef = useRef(isOpen);
   const previousShippingOpenRef = useRef(isShippingOpen);
 
@@ -93,7 +94,23 @@ function StorefrontContent({
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         setIsShippingOpen(false);
+      }
+      if (event.key === "Tab") {
+        const controls = shippingDialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled]), [tabindex="0"]',
+        );
+        if (!controls?.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || !shippingDialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !shippingDialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -178,7 +195,7 @@ function StorefrontContent({
 
   return (
     <div className="min-h-screen bg-[#fffdf9] pb-20">
-      <ShippingTicker onOpenShipping={handleOpenShipping} />
+      <ShippingTicker isOpen={isShippingOpen} onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={[
           { id: "categorias", label: "Nuestras categorías" },
@@ -225,7 +242,7 @@ function StorefrontContent({
       />
 
       {isShippingOpen ? (
-        <div className="fixed inset-0 z-[60] transition lg:hidden">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 transition sm:p-6">
           <button
             type="button"
             onClick={() => setIsShippingOpen(false)}
@@ -234,31 +251,35 @@ function StorefrontContent({
           />
 
           <div
+            id="shipping-details"
+            ref={shippingDialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="shipping-title"
-            className="absolute right-0 bottom-0 left-0 rounded-t-[2rem] bg-[#fffdf9] p-5 shadow-[0_-24px_60px_rgba(63,74,47,0.18)] transition-transform duration-300 translate-y-0"
+            className="relative max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-[2rem] bg-[#fffdf9] p-5 shadow-[0_24px_60px_rgba(63,74,47,0.22)] sm:p-7"
           >
-            <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-olive/16" />
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-3">
               <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-olive-soft text-2xl">
                 📦
               </span>
-              <div>
-                <p
-                  id="shipping-title"
-                  className="text-sm font-bold tracking-[0.12em] text-earth uppercase"
-                >
-                  Entregas en la zona sin costo
-                </p>
-                <p className="mt-2 text-sm leading-6 text-foreground/68">
-                  Realizamos entregas en Avellaneda, Sarandi, Wilde, Villa
-                  Dominico, Gerli, Bernal y Don Bosco.
-                </p>
-                <p className="mt-2 text-sm leading-6 text-foreground/68">
-                  El dia y horario se coordina por WhatsApp.
-                </p>
-              </div>
+              <h2 id="shipping-title" className="text-lg font-semibold text-olive-dark">
+                Envíos y entregas
+              </h2>
+            </div>
+
+            <div className="mt-4 text-sm leading-6 text-foreground/75">
+              <p className="font-semibold text-olive-dark">Entrega sin costo</p>
+              <p className="mt-1">
+                Avellaneda, Sarandí, Wilde, Villa Domínico, Gerli, Bernal y Don Bosco.
+              </p>
+              <p className="mt-4 font-semibold text-olive-dark">Otras localidades</p>
+              <p className="mt-1">
+                Calculamos el costo de envío según tu localidad y te lo informamos
+                por WhatsApp.
+              </p>
+              <p className="mt-4 text-xs leading-5 text-foreground/65">
+                Día y horario a coordinar por WhatsApp.
+              </p>
             </div>
 
             <button
@@ -325,31 +346,25 @@ function StorefrontContent({
   );
 }
 
-function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
-  const shippingTickerText =
-    "Entregas sin costo en Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y Don Bosco";
-  const tickerItems = Array.from({ length: 4 }, (_, index) => index);
-
+function ShippingTicker({ isOpen, onOpenShipping }: { isOpen: boolean; onOpenShipping: () => void }) {
   return (
     <div className="border-b border-olive/10 bg-olive">
       <button
         type="button"
         onClick={onOpenShipping}
-        className="relative block w-full overflow-hidden py-1.5 text-left text-white focus:outline-none focus:ring-2 focus:ring-white/25"
-        aria-label="Ver zonas y condiciones de entrega"
+        className="group flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-0.5 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-olive-dark focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
+        aria-label="Envíos y entregas: ver zonas y condiciones"
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-controls="shipping-details"
       >
-        <div className="pointer-events-none flex min-w-max animate-[shipping-marquee_28s_linear_infinite] items-center gap-8 whitespace-nowrap pr-8">
-          {[...tickerItems, ...tickerItems].map((item, index) => (
-            <span
-              key={`${item}-${index}`}
-              className="inline-flex shrink-0 items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
-            >
-              <span className="inline-flex items-center gap-3">
-                <span>{shippingTickerText}</span>
-              </span>
-            </span>
-          ))}
-        </div>
+        <span>Envíos y entregas</span>
+        <span aria-hidden="true">·</span>
+        <span className="font-semibold underline decoration-white/60 underline-offset-4 group-hover:decoration-white">
+          <span className="lg:hidden">Tocá para ver más</span>
+          <span className="hidden lg:inline">Hacé clic para ver zonas y condiciones</span>
+        </span>
+        <span aria-hidden="true">→</span>
       </button>
     </div>
   );
