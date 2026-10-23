@@ -6,11 +6,29 @@ import { formatCartMoney, promotionConditions, promotionStatus } from "@/lib/pro
 import { trackCampaign } from "@/lib/campaign-events";
 
 const DISMISSED_KEY = "tierra-sana-noviembre-2026-dismissed";
+const FIRST_VISIT_KEY = "tierra-sana-noviembre-2026-first-visit";
+const FIRST_VISIT_DELAY = 8000;
 let dismissedInMemory = false;
+let firstVisitInMemory: number | null = null;
 
 function isDismissed() {
   try { return dismissedInMemory || sessionStorage.getItem(DISMISSED_KEY) === "1"; }
   catch { return dismissedInMemory; }
+}
+
+function remainingFirstVisitDelay() {
+  const current = Date.now();
+  let firstVisit = firstVisitInMemory;
+  try {
+    const saved = sessionStorage.getItem(FIRST_VISIT_KEY);
+    if (saved !== null && Number.isFinite(Number(saved))) firstVisit = Number(saved);
+  } catch { /* Memory preserves timing during navigation when storage is unavailable. */ }
+  if (firstVisit === null || firstVisit > current) {
+    firstVisit = current;
+    try { sessionStorage.setItem(FIRST_VISIT_KEY, String(firstVisit)); } catch { /* Memory fallback. */ }
+  }
+  firstVisitInMemory = firstVisit;
+  return Math.max(0, FIRST_VISIT_DELAY - (current - firstVisit));
 }
 
 export function PromotionPopup() {
@@ -21,15 +39,23 @@ export function PromotionPopup() {
 
   useEffect(() => {
     const dialog = ref.current;
-    if (!dialog || !active || isOpen) { dialog?.close(); return; }
-    const timeout = window.setTimeout(() => {
+    if (!dialog || !active || isDismissed()) { dialog?.close(); return; }
+    const delay = remainingFirstVisitDelay();
+    if (isOpen) { dialog.close(); return; }
+    let timeout: number;
+    function showWhenAvailable() {
+      if (!dialog || isDismissed()) return;
       const focused = document.activeElement;
-      if (isDismissed() || document.hidden || document.querySelector('dialog[open], [role="dialog"]') ||
-        (focused instanceof HTMLElement && focused.matches("input, textarea, select, [contenteditable=true]"))) return;
+      if (document.hidden || document.querySelector('dialog[open], [role="dialog"]') ||
+        (focused instanceof HTMLElement && focused.matches("input, textarea, select, [contenteditable=true]"))) {
+        timeout = window.setTimeout(showWhenAvailable, 1000);
+        return;
+      }
       dialog.showModal();
       trackCampaign("promotion_view");
-    }, 8000);
-    return () => { clearTimeout(timeout); dialog.close(); };
+    }
+    timeout = window.setTimeout(showWhenAvailable, delay);
+    return () => { window.clearTimeout(timeout); dialog.close(); };
   }, [active, isOpen]);
 
   function dismiss() {

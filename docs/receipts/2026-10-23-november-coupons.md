@@ -30,3 +30,15 @@
 - El intento de servidor local fue denegado por el entorno (listen EPERM). No se elevó ni se eludió; smoke HTTP previsto sobre la preview autorizada de Vercel.
 - Preparación de preview en rama `feat/november-coupons`; identificadores de PR/deployment y smoke HTTP se agregan al cierre del PR/AlanOS. No confundir build local aprobado con preview remota ni con publicación en producción. Producción conserva main7f68cfbe hasta completar QA requerido.
 - Recuperación: revertir el PR o deployment anterior dpl_F89GxzxWReVVaw8zeRxVZxqUcAWq. STOP seguro: implementación verificable en preview, sin habilitar descuentos públicos y con gates comercial/QA explícitos.
+
+
+## Corrección aprobada del usuario — 23/10/2026
+
+- Scope lock: quitar el tope de $3.000 y reducir la aclaración logística de las condiciones promocionales a «No incluye envío».
+- `maximumDiscountCents=null`: $40.000 descuenta $4.000; $80.000 descuenta $8.000. Sin cambios en mínimo, porcentaje, vigencia, gate económico, módulos o datos del negocio.
+- Se ajustaron las expectativas de pruebas y el análisis de canastas: $40.500 ahora descuenta $4.050 y totaliza $36.450. La evaluación económica inicial con tope queda superada por esta decisión.
+- El texto de confirmación del pedido dentro de WhatsApp conserva el contrato original; la corrección de copy se aplica a las condiciones de la promoción.
+- Parche en la misma rama/PR7. Validaciones y deployment del delta se registran en el cierre del PR y AlanOS.
+
+- Aclaración posterior del usuario: el pop-up informa el cupón desde la primera navegación, sin abrir el carrito. Se conserva el plazo inicial de 8s entre páginas mediante sessionStorage; al estar ocupado el foco/otro diálogo, se posterga sin perder el aviso. Cerrar o aplicar impide reaparecer en la sesión. Vigencia y bloqueo comercial se conservan.
+- Validación del delta: 14 pruebas de promoción/WhatsApp y fixture React DOM PASS; pruebas de $40.000/$80.000, copy reducido y timer de primera navegación (tras navegar a los 3s quedan 5s). Tipos y lint focal PASS. Preview actualizada en el mismo PR7.

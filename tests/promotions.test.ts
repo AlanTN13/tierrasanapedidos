@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { NOVEMBER_PROMOTION, quoteCart, toCents, promotionStatus, pesosToExceedMinimum, formatCartMoney } from "../lib/promotions.ts";
+import { NOVEMBER_PROMOTION, quoteCart, toCents, promotionStatus, pesosToExceedMinimum, formatCartMoney, promotionConditions } from "../lib/promotions.ts";
 import { createWhatsAppUrl } from "../lib/whatsapp.ts";
 import type { CartItem } from "../types/catalog.ts";
 
@@ -12,7 +12,7 @@ function items(price: number, quantity = 1): CartItem[] {
   return [{ product: { id: "test", nombre: "Producto", categoria: "Test", descripcion: "", imagen: "", destacado: false, presentaciones: [presentation] }, presentation, quantity }];
 }
 
-for (const [subtotal, discount] of [[19000, 0], [20000, 0], [20001, 2000.1], [25000, 2500], [40000, 3000]]) {
+for (const [subtotal, discount] of [[19000, 0], [20000, 0], [20001, 2000.1], [25000, 2500], [40000, 4000]]) {
   test(`carrito $${subtotal}: descuento $${discount}`, () => {
     const result = quoteCart(toCents(subtotal), code, november, approved);
     assert.equal(result.discountCents, toCents(discount));
@@ -55,9 +55,16 @@ test("incentivo exige superar el umbral", () => {
   assert.equal(pesosToExceedMinimum(2000100, approved), 0);
 });
 test("quitar productos recalcula sin conservar un descuento anterior", () => {
-  assert.equal(quoteCart(4000000, code, november, approved).discountCents, 300000);
+  assert.equal(quoteCart(4000000, code, november, approved).discountCents, 400000);
   assert.equal(quoteCart(2500000, code, november, approved).discountCents, 250000);
   assert.equal(quoteCart(1900000, code, november, approved).discountCents, 0);
+});
+test("campaña sin tope y condiciones logísticas reducidas a No incluye envío", () => {
+  assert.equal(NOVEMBER_PROMOTION.maximumDiscountCents, null);
+  assert.equal(quoteCart(10000000, code, november, approved).discountCents, 1000000);
+  const conditions = promotionConditions(NOVEMBER_PROMOTION);
+  assert.ok(conditions.endsWith("No incluye envío."));
+  assert.doesNotMatch(conditions, /tope|retiro|WhatsApp|coordinar/i);
 });
 test("WhatsApp conserva productos, subtotal, cupón, descuento y total de la cotización", () => {
   for (const price of [19000, 20000, 20001, 25000, 40000]) {

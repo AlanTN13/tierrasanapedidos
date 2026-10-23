@@ -25,8 +25,9 @@ const approved = { ...NOVEMBER_PROMOTION, commercialApproved: true };
 let now = Date.parse("2026-11-15T12:00:00-03:00");
 Date.now = () => now;
 let popupTimer;
+let popupDelay;
 const originalTimeout = window.setTimeout.bind(window);
-window.setTimeout = (fn, ms, ...args) => { if (ms === 8000) { popupTimer = fn; return 999999; } return originalTimeout(fn, ms, ...args); };
+window.setTimeout = (fn, ms, ...args) => { if (ms > 0 && ms <= 8000) { popupTimer = fn; popupDelay = ms; return 999999; } return originalTimeout(fn, ms, ...args); };
 // jsdom doesn't implement native dialogs. These stubs test wiring only.
 dom.window.HTMLDialogElement.prototype.showModal = function() { this.open = true; this.querySelector("button")?.focus(); };
 dom.window.HTMLDialogElement.prototype.close = function() { this.open = false; };
@@ -42,7 +43,7 @@ function Harness() {
 let reactRoot;
 const container = document.getElementById("root");
 const flush = () => new Promise((r) => setImmediate(r));
-async function mount(props = {}) { reactRoot = createRoot(container); await act(async () => { reactRoot.render(React.createElement(CartProvider, props, React.createElement(Harness))); await flush(); }); }
+async function mount(props = {}) { reactRoot = createRoot(container); await act(async () => { reactRoot.render(React.createElement(CartProvider, props, React.createElement(Harness))); await flush(); }); await act(async () => { await new Promise((resolve) => setTimeout(resolve, 5)); }); }
 async function unmount() { await act(async () => { reactRoot.unmount(); await flush(); }); }
 async function click(text) { const button = [...container.querySelectorAll("button")].find((b) => b.textContent.trim() === text); assert.ok(button, `missing button ${text}`); await act(async () => { button.click(); await flush(); }); }
 async function apply(code) { await act(async () => { const input = document.getElementById("cart-coupon"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(input, code); input.dispatchEvent(new Event("input", { bubbles: true })); input.dispatchEvent(new Event("change", { bubbles: true })); }); await act(async () => { container.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); await flush(); }); }
@@ -54,7 +55,13 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   await seed(25000); await mount(); await click("Abrir"); await apply("NOVIEMBRE10");
   assert.match(container.textContent, /todavía no está habilitada/); assert.equal(cart.quote.discountCents, 0);
   await unmount();
-  await mount({ promotion: approved }); await click("Abrir");
+  await mount({ promotion: approved });
+  assert.equal(popupDelay, 8000, "first visit starts delayed coupon popup without opening cart");
+  assert.ok(!container.querySelector("dialog").open);
+  await unmount(); now += 3000;
+  await mount({ promotion: approved });
+  assert.equal(popupDelay, 5000, "navigation preserves elapsed time instead of restarting popup delay");
+  await click("Abrir");
   await apply("inexistente"); assert.match(container.textContent, /no existe/);
   await apply(" noviembre10 "); assert.equal(cart.quote.discountCents, 250000); assert.match(container.textContent, /Cupón aplicado/);
   await apply("NOVIEMBRE10"); assert.equal(cart.quote.discountCents, 250000, "no duplicate discount");
@@ -65,9 +72,9 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   await seed(19000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /debe superar/);
   await seed(20000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /falta.*1.*para superar/);
   await seed(20001); assert.equal(cart.quote.discountCents, 200010); assert.equal(cart.quote.totalCents, 1800090);
-  await seed(40000); assert.equal(cart.quote.discountCents, 300000);
+  await seed(40000); assert.equal(cart.quote.discountCents, 400000);
   const frozen = JSON.stringify(cart.items[0].presentation);
-  await act(async () => cart.updateQuantity("test", "unidad", 2)); assert.equal(cart.quote.discountCents, 300000);
+  await act(async () => cart.updateQuantity("test", "unidad", 2)); assert.equal(cart.quote.discountCents, 800000);
   await act(async () => cart.updateQuantity("test", "unidad", 1)); assert.equal(JSON.stringify(cart.items[0].presentation), frozen);
   await act(async () => cart.removeItem("test", "unidad")); assert.equal(cart.quote.discountCents, 0);
   await seed(25000); await click("Enviar pedido por WhatsApp");
@@ -96,12 +103,12 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   assert.equal(cart.items.length, 0, "preview isolates fixture cart");
   await seed(40000, "tierra-sana-cart-preview"); await click("Abrir"); await apply("NOVIEMBRE10");
   openedUrl = null; await click("Enviar pedido por WhatsApp"); assert.equal(openedUrl, null);
-  assert.match(container.querySelector("textarea").value, /37\.000/);
+  assert.match(container.querySelector("textarea").value, /36\.000/);
   assert.equal(localStorage.getItem("tierra-sana-cart"), publicCart);
   assert.equal(localStorage.getItem("tierra-sana-coupon-v1-public"), publicCoupon);
   await unmount(); await mount({ promotion: approved, previewNow: Date.parse("2026-11-15T12:00:00-03:00") });
-  assert.equal(cart.quote.discountCents, 300000, "preview reload restores state");
+  assert.equal(cart.quote.discountCents, 400000, "preview reload restores state");
   await unmount(); dom.window.close();
   console.log("PASS: real React DOM coupon flow, thresholds, quantity/removal, persistence, date boundaries, modal wiring, WhatsApp parity, event semantics, preview isolation.");
   console.log("LIMIT: jsdom has no layout engine; 320/390/desktop visuals and native-dialog focus/Escape behavior require browser QA.");
-})().catch((error) => { console.error(error); process.exitCode = 1; dom.window.close(); });
+})().catch(async (error) => { console.error(error); process.exitCode = 1; if (reactRoot) await act(async () => reactRoot.unmount()); dom.window.close(); });

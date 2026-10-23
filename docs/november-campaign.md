@@ -9,14 +9,14 @@ Fuente única: `lib/promotions.ts`, `NOVEMBER_PROMOTION`.
 | Código | NOVIEMBRE10 |
 | Descuento | 10% del subtotal de productos |
 | Mínimo | Estrictamente más de $20.000, antes de descontar |
-| Tope propuesto | $3.000 por pedido, configurable en centavos |
+| Tope | Sin tope de descuento (`maximumDiscountCents: null`) |
 | Inicio inclusivo | 01/11/2026 00:00 Argentina = 03:00 UTC |
 | Fin exclusivo | 01/12/2026 00:00 Argentina = 03:00 UTC |
 | Aprobación económica | `commercialApproved: false` |
 
-**No se activa automáticamente el 1/11 mientras siga pendiente la aprobación económica.** Después de validar costos vigentes, embalaje/logística absorbida y margen objetivo, registrar la aprobación en AlanOS y cambiar únicamente `commercialApproved` a true mediante PR/deploy. Si se aprueba un tope distinto, cambiar `maximumDiscountCents` y repetir los escenarios afectados. No hay toggle público ni cambio de fecha/campaña por query string.
+**No se activa automáticamente el 1/11 mientras siga pendiente la aprobación económica.** Después de validar costos vigentes, embalaje/logística absorbida y margen objetivo, registrar la aprobación en AlanOS y cambiar únicamente `commercialApproved` a true mediante PR/deploy. Corrección aprobada del usuario: descuento sin tope monetario. No hay toggle público ni cambio de fecha/campaña por query string.
 
-El navegador revalida al llegar a los límites de fecha, al recuperar foco y al abrir WhatsApp. Las fechas no dependen de la zona horaria del dispositivo. El modal aparece a los 8 segundos, nunca sobre otro diálogo o mientras se edita un campo. Se cierra con botón, fondo o Escape; usa diálogo nativo para foco/teclado. El cierre se conserva en sessionStorage. El código va en localStorage, separado del carrito; un código válido bajo el mínimo queda pendiente y vuelve a aplicar al cumplirlo. Uno desconocido o inactivo no sustituye el cupón anterior.
+El navegador revalida al llegar a los límites de fecha, al recuperar foco y al abrir WhatsApp. Las fechas no dependen de la zona horaria del dispositivo. El modal del cupón aparece en la primera visita, a los 8 segundos, sin abrir el carrito. El tiempo transcurrido se conserva durante la navegación de la sesión. Si hay otro diálogo abierto, una pestaña oculta o un campo en edición, espera a que se pueda mostrar sin interrumpir. Se cierra con botón, fondo o Escape; usa diálogo nativo para foco/teclado. El cierre se conserva en sessionStorage. El código va en localStorage, separado del carrito; un código válido bajo el mínimo queda pendiente y vuelve a aplicar al cumplirlo. Uno desconocido o inactivo no sustituye el cupón anterior.
 
 ## Revisión comercial del 23/10/2026
 
@@ -26,11 +26,11 @@ Se consultó `https://www.tierrasanadietetica.com/api/catalog`: HTTP200, 208 pro
 |---|---|---:|---:|---:|---:|
 | Desayuno / snacks | Granola crocante 500g $6.290; avena tradicional 1kg $2.900; nuez mariposa 250g $6.500; mix semillas 250g $1.990; almendra 250g $7.500 | $25.180 | $2.518 | $22.662 | 10% |
 | Despensa / semillas | 2 garbanzos 1kg a $3.190; 2 lentejas 1kg a $4.190; harina avena 1kg $3.200; mix semillas 1kg $6.690 | $24.650 | $2.465 | $22.185 | 10% |
-| Frutos secos | Almendra 1kg $28.000; nuez mariposa 500g $12.500 | $40.500 | $3.000 | $37.500 | 7,41% |
+| Frutos secos | Almendra 1kg $28.000; nuez mariposa 500g $12.500 | $40.500 | $4.050 | $36.450 | 10% |
 
-El tope limita la bonificación a partir de $30.000 de subtotal. Esto limita exposición, pero **no acredita rentabilidad**. Faltan costos actuales completos por SKU/presentación, envase, preparación, costos de entrega absorbidos y objetivo de contribución. AlanOS ya advertía costos incompletos/estimados: no se convirtieron en cero ni se usaron costos históricos de chat como vigentes. La validación debe comparar `subtotal - descuento - costo de mercadería - costos variables absorbidos` con el margen objetivo aprobado, incluyendo canastas de baja contribución.
+El descuento es el 10% del subtotal sin tope monetario, por corrección explícita del usuario. Esto **no acredita rentabilidad**. Faltan costos actuales completos por SKU/presentación, envase, preparación, costos de entrega absorbidos y objetivo de contribución. AlanOS ya advertía costos incompletos/estimados: no se convirtieron en cero ni se usaron costos históricos de chat como vigentes. La validación debe comparar `subtotal - descuento - costo de mercadería - costos variables absorbidos` con el margen objetivo aprobado, incluyendo canastas de baja contribución.
 
-**Bloqueo comercial:** no se valida aún que $3.000 sea rentable. No se publican beneficios mientras esté bloqueado. No se agregan exclusiones ni acumulaciones. Las condiciones logísticas existentes se conservan; el descuento toma sólo productos y el mensaje deja entrega/retiro a coordinar, sin tarifas inventadas. No se afirma haber revalidado zonas o mínimos de envío.
+**Bloqueo comercial:** todavía no se validó la rentabilidad de la promoción sin tope. No se publican beneficios mientras esté bloqueado. No se agregan exclusiones ni acumulaciones. Las condiciones logísticas existentes se conservan; el descuento toma sólo productos y las condiciones promocionales muestran solamente «No incluye envío» como aclaración logística, sin tarifas inventadas. No se afirma haber revalidado zonas o mínimos de envío.
 
 ## Preview y aislamiento
 
@@ -38,7 +38,7 @@ El tope limita la bonificación a partir de $30.000 de subtotal. Esto limita exp
 
 ## Cálculo y WhatsApp
 
-Importes internos en centavos enteros; 10% redondeado al centavo más cercano, limitado al tope/subtotal. $20.001 produce $2.000,10 de descuento y $18.000,90 de total. El incentivo propone la cantidad de pesos enteros para superar el mínimo ($1 al estar justo en $20.000). Nunca se altera un precio unitario ni se incluye envío en la base del descuento.
+Importes internos en centavos enteros; 10% redondeado al centavo más cercano, sin tope monetario y limitado únicamente al subtotal para evitar totales negativos. $20.001 produce $2.000,10 de descuento y $18.000,90 de total. El incentivo propone la cantidad de pesos enteros para superar el mínimo ($1 al estar justo en $20.000). Nunca se altera un precio unitario ni se incluye envío en la base del descuento.
 
 `createWhatsAppUrl` vuelve a sumar las líneas y valida el cupón/fecha al click: no acepta el total descontado de la UI como autoridad. Incluye detalle, subtotal, código, porcentaje, importe, total y coordinación de entrega/retiro. Conserva el número y el comportamiento anterior de abrir WhatsApp y vaciar el carrito. Eso es una intención de compra, no venta confirmada; no se escribe una venta.
 
@@ -50,7 +50,7 @@ Instrumentación sin datos personales en `dataLayer` y evento DOM `tierra-sana:c
 
 ## QA y rollback
 
-- `npm test`: escenarios numéricos, códigos, gate, fechas UTC-03, recálculo, tope configurable, centavos y coincidencia WhatsApp.
+- `npm test`: escenarios numéricos, códigos, gate, fechas UTC-03, recálculo, ausencia de tope y configuración, centavos y coincidencia WhatsApp.
 - `node scripts/check-coupon-flow.cjs` con jsdom disponible en NODE_PATH: componentes React reales, DOM simulado, almacenamiento, navegación/remontaje, cantidades, eliminación, flujo de cupón/modal, mensajes WhatsApp y aislamiento preview. No prueba layout ni comportamiento nativo del navegador.
 - `npm run typecheck`, `npm run lint`, `npm run build`.
 - QA obligatorio pendiente de navegador real: 320/390/desktop sin desbordes, modal nativo con Tab/ShiftTab/Escape/restauración de foco, copiar código y navegación real por las cuatro superficies públicas.
