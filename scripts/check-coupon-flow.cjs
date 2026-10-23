@@ -46,12 +46,20 @@ const flush = () => new Promise((r) => setImmediate(r));
 async function mount(props = {}) { reactRoot = createRoot(container); await act(async () => { reactRoot.render(React.createElement(CartProvider, props, React.createElement(Harness))); await flush(); }); await act(async () => { await new Promise((resolve) => setTimeout(resolve, 5)); }); }
 async function unmount() { await act(async () => { reactRoot.unmount(); await flush(); }); }
 async function click(text) { const button = [...container.querySelectorAll("button")].find((b) => b.textContent.trim() === text); assert.ok(button, `missing button ${text}`); await act(async () => { button.click(); await flush(); }); }
+async function clickLabel(label) { const button = [...container.querySelectorAll("button")].find((b) => b.getAttribute("aria-label") === label); assert.ok(button, `missing button ${label}`); await act(async () => { button.click(); await flush(); }); }
 async function apply(code) { await act(async () => { const input = document.getElementById("cart-coupon"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(input, code); input.dispatchEvent(new Event("input", { bubbles: true })); input.dispatchEvent(new Event("change", { bubbles: true })); }); await act(async () => { container.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); await flush(); }); }
 function item(price) { const presentation = { etiqueta: "unidad", precio: price, measurementKind: "unit", amountValue: 1, amountUnit: "unit", amountInBaseUnits: 1 }; return { product: { id: "test", nombre: "Canasta de prueba", categoria: "QA", presentaciones: [presentation], imagen: "", descripcion: "", destacado: false }, presentation, quantity: 1 }; }
 async function seed(price, key = "tierra-sana-cart") { await act(async () => { localStorage.setItem(key, JSON.stringify([item(price)])); window.dispatchEvent(new Event("storage")); await flush(); }); }
 async function resumeTime(value) { now = Date.parse(value); await act(async () => { window.dispatchEvent(new Event("focus")); await flush(); }); }
 
 (async () => {
+  await mount(); document.getElementById("open-cart").focus(); await click("Abrir");
+  assert.match(container.textContent, /Tu carrito está vacío/);
+  assert.ok([...container.querySelectorAll("button")].find((b) => b.textContent.trim() === "Enviar pedido por WhatsApp").disabled);
+  assert.equal(document.activeElement.getAttribute("aria-label"), "Cerrar carrito");
+  await click("Seguir comprando"); assert.equal(cart.isOpen, false);
+  assert.equal(document.activeElement.id, "open-cart", "closing restores the originating control");
+  await unmount();
   await seed(35000); await mount({ promotion: { ...NOVEMBER_PROMOTION, commercialApproved: false } }); await click("Abrir"); await apply("TIERRASANA10");
   assert.match(container.textContent, /todavía no está habilitada/); assert.equal(cart.quote.discountCents, 0);
   await unmount();
@@ -78,10 +86,19 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   await seed(30001); assert.equal(cart.quote.discountCents, 300010); assert.equal(cart.quote.totalCents, 2700090);
   await seed(40000); assert.equal(cart.quote.discountCents, 400000);
   const frozen = JSON.stringify(cart.items[0].presentation);
-  await act(async () => cart.updateQuantity("test", "unidad", 2)); assert.equal(cart.quote.discountCents, 800000);
-  await act(async () => cart.updateQuantity("test", "unidad", 1)); assert.equal(JSON.stringify(cart.items[0].presentation), frozen);
-  await act(async () => cart.removeItem("test", "unidad")); assert.equal(cart.quote.discountCents, 0);
-  await seed(35000); await click("Enviar pedido por WhatsApp");
+  await clickLabel("Sumar Canasta de prueba"); assert.equal(cart.quote.discountCents, 800000);
+  assert.ok(container.querySelector('[aria-label="2 productos"]'), "header count follows quantity controls");
+  await clickLabel("Restar Canasta de prueba"); assert.equal(JSON.stringify(cart.items[0].presentation), frozen);
+  await clickLabel("Quitar Canasta de prueba unidad"); assert.equal(cart.quote.discountCents, 0);
+  const drawer = container.querySelector("aside");
+  const controls = [...drawer.querySelectorAll('button:not([disabled]), input, a[href], [tabindex="0"]')];
+  controls.at(-1).focus(); document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
+  assert.equal(document.activeElement, controls[0], "Tab wraps within the cart");
+  document.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true }));
+  assert.equal(document.activeElement, controls.at(-1), "Shift+Tab wraps within the cart");
+  await act(async () => { window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })); await flush(); });
+  assert.equal(cart.isOpen, false, "Escape closes the redesigned cart");
+  await seed(35000); await click("Abrir"); await click("Enviar pedido por WhatsApp");
   const message = new URL(openedUrl).searchParams.get("text");
   assert.match(message, /Subtotal:.*35\.000/); assert.match(message, /Descuento 10%:.*3\.500/); assert.match(message, /31\.500/);
   assert.equal(cart.items.length, 0, "baseline clears cart on WhatsApp intent");
