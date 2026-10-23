@@ -66,6 +66,7 @@ function StorefrontContent({
   const lastCartTriggerRef = useRef<HTMLElement | null>(null);
   const lastShippingTriggerRef = useRef<HTMLElement | null>(null);
   const shippingCloseButtonRef = useRef<HTMLButtonElement | null>(null);
+  const shippingDialogRef = useRef<HTMLDivElement | null>(null);
   const previousCartOpenRef = useRef(isOpen);
   const previousShippingOpenRef = useRef(isShippingOpen);
 
@@ -93,7 +94,23 @@ function StorefrontContent({
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         setIsShippingOpen(false);
+      }
+      if (event.key === "Tab") {
+        const controls = shippingDialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled]), [tabindex="0"]',
+        );
+        if (!controls?.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && (document.activeElement === first || !shippingDialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && (document.activeElement === last || !shippingDialogRef.current?.contains(document.activeElement))) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
 
@@ -178,7 +195,7 @@ function StorefrontContent({
 
   return (
     <div className="min-h-screen bg-[#fffdf9] pb-20">
-      <ShippingTicker onOpenShipping={handleOpenShipping} />
+      <ShippingTicker isOpen={isShippingOpen} onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={[
           { id: "categorias", label: "Nuestras categorías" },
@@ -225,7 +242,7 @@ function StorefrontContent({
       />
 
       {isShippingOpen ? (
-        <div className="fixed inset-0 z-[60] transition lg:hidden">
+        <div className="fixed inset-0 z-[60] flex items-end justify-center transition lg:items-center lg:p-6">
           <button
             type="button"
             onClick={() => setIsShippingOpen(false)}
@@ -234,10 +251,12 @@ function StorefrontContent({
           />
 
           <div
+            id="shipping-details"
+            ref={shippingDialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="shipping-title"
-            className="absolute right-0 bottom-0 left-0 rounded-t-[2rem] bg-[#fffdf9] p-5 shadow-[0_-24px_60px_rgba(63,74,47,0.18)] transition-transform duration-300 translate-y-0"
+            className="relative max-h-[85dvh] w-full overflow-y-auto rounded-t-[2rem] bg-[#fffdf9] p-5 shadow-[0_-24px_60px_rgba(63,74,47,0.18)] transition-transform duration-300 translate-y-0 lg:max-w-lg lg:rounded-[2rem] lg:p-7"
           >
             <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-olive/16" />
             <div className="flex items-start gap-4">
@@ -325,17 +344,25 @@ function StorefrontContent({
   );
 }
 
-function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
+function ShippingTicker({ isOpen, onOpenShipping }: { isOpen: boolean; onOpenShipping: () => void }) {
   return (
     <div className="border-b border-olive/10 bg-olive">
       <button
         type="button"
         onClick={onOpenShipping}
-        className="block w-full px-4 py-2 text-center text-xs font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
-        aria-label="Ver zonas y condiciones de entrega"
+        className="group flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-0.5 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-olive-dark focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
+        aria-label="Envíos y entregas: ver zonas y condiciones"
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-controls="shipping-details"
       >
-        Envíos y entregas <span aria-hidden="true">·</span>{" "}
-        <span className="font-semibold">Consultá tu zona</span>
+        <span>Envíos y entregas</span>
+        <span aria-hidden="true">·</span>
+        <span className="font-semibold underline decoration-white/60 underline-offset-4 group-hover:decoration-white">
+          <span className="lg:hidden">Tocá para ver más</span>
+          <span className="hidden lg:inline">Hacé clic para ver zonas y condiciones</span>
+        </span>
+        <span aria-hidden="true">→</span>
       </button>
     </div>
   );

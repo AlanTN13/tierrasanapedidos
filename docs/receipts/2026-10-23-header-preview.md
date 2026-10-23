@@ -1,5 +1,13 @@
 # Header responsive — preview del 23/10/2026
 
+## Ajuste de entregas solicitado sobre la preview
+
+- EXECUTION PREFLIGHT / PATCH MODE: S / T1 / R1. El usuario señala la franja en `image(20261023-172455).png` y solicita una invitación explícita a hacer clic para ver información de entregas. Baseline PR12/head `4fc9e62`; runtime vigente `c74478a3` y estado canónico `fb9c347b` verificados. Continúa la autorización de preview exclusiva.
+- Delta permitido: copy/affordance de `ShippingTicker` y apertura del panel existente de entregas en mobile/desktop. Se detectó `lg:hidden` en el panel, que impedía mostrar información en desktop; corregirlo es necesario para que funcione el CTA. Preservar literalmente información comercial existente y el resto del header/categorías/carrito/campaña/datos.
+- Aceptación/QA: CTA explícito, subrayado y con indicación visual; botón y estados accesibles; panel visible en ambos tamaños, cierre/Escape/Tab/foco; tipos/lint y build, un smoke HTTP de Home. QA nativo sigue pendiente si Browser no está disponible.
+- Validación local de este ajuste: typecheck, lint focal de storefront y render SSR de ShippingTicker extraído del TSX real PASS: copy mobile/desktop, botón nativo, asociación al diálogo y aria-expanded false/true. Información comercial del panel comparada literalmente con el baseline: idéntica. Foco/Tab/Escape implementados, sin afirmación de prueba nativa. Build/URL/cierre final en PR.
+- Producción/rollback/STOP: sólo rama PR12 en borrador; volver a `4fc9e62` descarta este ajuste; no merge/promoción ni cambio productivo. Publicación/verificación final en el cuerpo del mismo PR.
+
 ## EXECUTION PREFLIGHT
 
 - Rol y superficie real: Dirección de Ejecución Técnica; header público de Tierra Sana.
@@ -30,7 +38,7 @@ Implementado y verificado localmente. No mergeado ni publicado en producción. E
 - Desktop: logo original con proporciones reales, buscador ancho sin mínimos que fuerzan overflow, Instagram y carrito oliva; enlaces existentes de secciones y rail de categorías en fila inferior.
 - Mobile: menú, logo original, Instagram y carrito; búsqueda permanente debajo, texto de 16px para evitar zoom de foco de iOS. Menú conserva las categorías y puede desplazarse dentro de la pantalla; Escape devuelve foco al botón.
 - Franja de envíos estática y breve, con el botón y modal de condiciones existentes. No altera zonas/tarifas ni logística.
-- Se conserva íntegro el contenido de `storefront.tsx` fuera de `ShippingTicker`, comprobado contra main; fotos/componentes de categorías, banners y carrito sin cambios. El header reutiliza exactamente el enlace Instagram ya existente.
+- Se conservan fotos/componentes de categorías, banners y carrito. El cambio original sólo afectaba ShippingTicker; el ajuste posterior autorizado incluye estado/foco/presentación del panel existente de entregas para habilitarlo en desktop. Información comercial del panel idéntica al baseline. El header reutiliza el enlace Instagram ya existente.
 
 ## QA realmente ejecutado
 
