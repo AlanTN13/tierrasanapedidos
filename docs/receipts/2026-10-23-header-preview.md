@@ -1,5 +1,13 @@
 # Header responsive — preview del 23/10/2026
 
+## Panel centrado e información de otras localidades
+
+- EXECUTION PREFLIGHT / PATCH MODE: S / T1 / R1. Baseline PR12 `25785cb`; runtime `c74478a3` y estado canónico `7a378914` verificados. El usuario solicita panel centrado/flotante y aclara que las zonas actuales mantienen entrega sin costo; para otras localidades calculan el envío e informan su costo.
+- Delta: sólo JSX/presentación y texto del diálogo existente de entregas en `storefront.tsx`. Centrar con margen y esquinas completas en mobile/desktop; conservar zonas actuales, incorporar aclaración de cotización por localidad y coordinación. Sin calculador/tarifas automáticas, sin nuevas zonas, sin cambios en franja/header/categorías/cupón/carrito/WhatsApp o backend.
+- Aceptación/validación proporcionada: tipos, lint focal, build de la misma rama y un smoke Home; comparar que todo el código fuera del diálogo sea idéntico al baseline. No tests nuevos de estilos/copy; QA visual nativo pendiente mientras Chrome no esté disponible.
+- Gate/recuperación/STOP: preview exclusiva, sin merge/promoción; volver a `25785cb` revierte sólo este ajuste. Resultado final de commit/build/URL en el mismo PR.
+- QA ejecutada en este ajuste: typecheck y lint focal PASS; comparación de código confirma que todo fuera del JSX del diálogo es idéntico a `25785cb`. No se añaden tests de copy/estilo ni se repiten los checks de cupón/header intactos. Posición/scroll y aceptación visual nativa pendientes; resultado de build/HTTP en PR.
+
 ## Ajuste de entregas solicitado sobre la preview
 
 - EXECUTION PREFLIGHT / PATCH MODE: S / T1 / R1. El usuario señala la franja en `image(20261023-172455).png` y solicita una invitación explícita a hacer clic para ver información de entregas. Baseline PR12/head `4fc9e62`; runtime vigente `c74478a3` y estado canónico `fb9c347b` verificados. Continúa la autorización de preview exclusiva.

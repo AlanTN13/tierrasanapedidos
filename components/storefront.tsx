@@ -242,7 +242,7 @@ function StorefrontContent({
       />
 
       {isShippingOpen ? (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center transition lg:items-center lg:p-6">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 transition sm:p-6">
           <button
             type="button"
             onClick={() => setIsShippingOpen(false)}
@@ -256,28 +256,30 @@ function StorefrontContent({
             role="dialog"
             aria-modal="true"
             aria-labelledby="shipping-title"
-            className="relative max-h-[85dvh] w-full overflow-y-auto rounded-t-[2rem] bg-[#fffdf9] p-5 shadow-[0_-24px_60px_rgba(63,74,47,0.18)] transition-transform duration-300 translate-y-0 lg:max-w-lg lg:rounded-[2rem] lg:p-7"
+            className="relative max-h-[85dvh] w-full max-w-lg overflow-y-auto rounded-[2rem] bg-[#fffdf9] p-5 shadow-[0_24px_60px_rgba(63,74,47,0.22)] sm:p-7"
           >
-            <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-olive/16" />
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-3">
               <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-olive-soft text-2xl">
                 📦
               </span>
-              <div>
-                <p
-                  id="shipping-title"
-                  className="text-sm font-bold tracking-[0.12em] text-earth uppercase"
-                >
-                  Entregas en la zona sin costo
-                </p>
-                <p className="mt-2 text-sm leading-6 text-foreground/68">
-                  Realizamos entregas en Avellaneda, Sarandi, Wilde, Villa
-                  Dominico, Gerli, Bernal y Don Bosco.
-                </p>
-                <p className="mt-2 text-sm leading-6 text-foreground/68">
-                  El dia y horario se coordina por WhatsApp.
-                </p>
-              </div>
+              <h2 id="shipping-title" className="text-lg font-semibold text-olive-dark">
+                Envíos y entregas
+              </h2>
+            </div>
+
+            <div className="mt-4 text-sm leading-6 text-foreground/75">
+              <p className="font-semibold text-olive-dark">Entrega sin costo</p>
+              <p className="mt-1">
+                Avellaneda, Sarandí, Wilde, Villa Domínico, Gerli, Bernal y Don Bosco.
+              </p>
+              <p className="mt-4 font-semibold text-olive-dark">Otras localidades</p>
+              <p className="mt-1">
+                Calculamos el costo de envío según tu localidad y te lo informamos
+                por WhatsApp.
+              </p>
+              <p className="mt-4 text-xs leading-5 text-foreground/65">
+                Día y horario a coordinar por WhatsApp.
+              </p>
             </div>
 
             <button
