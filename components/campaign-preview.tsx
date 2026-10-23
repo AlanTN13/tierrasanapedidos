@@ -35,7 +35,7 @@ function PreviewContent() {
             cart.clearCart(); cart.addItem(product, product.presentaciones[0], 1); cart.openCart();
           }} className="rounded-2xl border border-olive/25 bg-white p-5 text-left font-semibold hover:bg-olive-soft">Probar carrito de {formatCartMoney(price * 100)}</button>)}
         </div>
-        <p className="mt-6"><Link href="/catalogo" className="underline">Continuar al catálogo</Link> · Al salir de esta preview vuelve la configuración pública, que mantiene el gate económico.</p>
+        <p className="mt-6"><Link href="/catalogo" className="underline">Continuar al catálogo</Link> · Al salir de esta preview vuelve la configuración pública con su fecha real.</p>
       </div>
       <CartDrawer items={cart.items} isOpen={cart.isOpen} subtotal={cart.subtotal} onClose={cart.closeCart}
         onCheckout={cart.clearCart} onRemove={cart.removeItem} onUpdateQuantity={cart.updateQuantity} />
