@@ -1,5 +1,21 @@
 # Los más elegidos — preview del 23/10/2026
 
+## Pop-up compacto y navegación a productos — preflight
+
+- Resultado/autorización: el usuario acepta las tarjetas («ahora sí me encanta») y pide achicar bastante el pop-up inicial en mobile y sustituir «Aplicar al carrito» por «Ver productos». Se recomienda terminar pop-up y videos de recetas en preview antes de publicar juntos; esta revisión no autoriza producción.
+- Contexto leído: `Alan/01_Architecture/Execution_Runtime_Contract.md` blob `c74478a3d868c5f9dd4bdc91a5414073dc469624`; estado canónico blob `970b180fc4f3679e7ca4d2cbf7b343c084e40d90`, Alanos/main `87c0463ac9bd6d8dabcfb0bcc322aa6df8c26092`. Web PR14 draft/open `bcc3467ea7cc5d4a936ec6b76bf336cc086e3c5f`, árbol `8111a210cf747ddec3ee04e4e99e993ad3c62b8e`; producción main `67966a4b`. Guías locales Next16 CSS/Link (anclas y scroll) leídas antes del cambio.
+- PATCH MODE / S-T1-R1: sólo `components/promotion-popup.tsx`, evento de navegación en `lib/campaign-events.ts` y este receipt. Base mobile más baja/estrecha, tipografía/espacios reducidos, controles táctiles44px, mínimo explícito, código copiable, fecha y «No incluye envío». Composición desktop conservada. CTA enlaza `/#destacados`, cierra/recuerda el cierre sin aplicar cupón ni abrir carrito. Evento `promotion_browse` diferenciado de aplicar cupón.
+- Congelado: tarjetas ya aceptadas, categorías/banners/header/entregas/recetas/videos, datos/precios/stock/ERP/Supabase, cálculo/vigencia/cupón/carrito/WhatsApp. Se conservan aparición al segundo, Home, cierre por sesión, bloqueo por otro diálogo/campo editable y modal nativo. Sin dependencias del proyecto, migraciones ni nueva infraestructura.
+- Aceptación: tipos/lint focal; fixture de comportamiento del componente real (timer, CTA/destino sin aplicar/abrir carrito, copia, cierre por sesión, elegibilidad y Escape); build de preview y un smoke de navegación real con navegador ahora disponible. Layout320/390 sólo se acredita si el navegador permite esos viewports; CSS/DOM no lo certifica. No repetir suite económica intacta.
+- Permisos/recuperación/STOP: misma rama/PR14, sin merge/promoción. Revertir esta revisión restaura popup anterior; producción no cambia. STOP con preview revisable, QA real y límite documentados; videos de recetas quedan para el siguiente bloque.
+
+### QA del pop-up
+
+- Tipos del proyecto y ESLint focal: PASS. Checkout disperso completado con `data` para resolver el catálogo existente antes del chequeo; sin modificación de datos/dependencias del proyecto.
+- Fixture temporal React19/ReactDOM + jsdom sobre el componente real, con límites CartProvider/Link simulados: PASS. Aparición diferida1s, mínimo/fecha/envío, copiar código y feedback, CTA `/#destacados`, cierre persistido entre montajes/recarga de módulo, cero llamadas a aplicar cupón/abrir carrito y evento `promotion_browse` sin falso `coupon_apply`. También vigencia/Home/carrito, postergación ante otro modal, cancelación/Escape, botón y fondo. No prueba navegación ni foco/layout nativos; se comprueban en el smoke cuando la capacidad lo permite.
+- Mobile: ancho máximo360px con margen16px, franja de descuento48px (antes88px), título24px (antes32px), cuerpo16px y condiciones breves; cierre/copia/CTA44px. Desde sm se conserva composición desktop680px, tipografía/espacios y condiciones completas. Sin nuevo copy comercial ni cambios de reglas: mínimo estrictamente superior a $30.000, sin tope, fecha30/11 y envío excluido.
+- El navegador cloud CDP está disponible en este entorno; acceso temporal autorizado a Vercel sin desproteger proyecto. No ofrece API de resize/emulación: un chequeo desktop no acredita320/390. Build/head/URL, smoke real y límites finales se registran en PR14, sin guardar tokens de acceso.
+
 ## Revisión de descripción y tarjeta contenida
 
 - Pedido/corrección explícita: el usuario observa que faltan descripciones y que el agregar queda suelto, especialmente en desktop. Mostrar la descripción existente y recuperar una tarjeta claramente delimitada con compra integrada. Se conserva mobile con dos productos completos y tercero asomando. Videos de recetas después; sólo preview.
