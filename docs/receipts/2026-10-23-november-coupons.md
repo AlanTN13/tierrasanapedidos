@@ -1,5 +1,22 @@
 # Noviembre Tierra Sana — cupón y carrito
 
+## Activación pública autorizada — 23/10/2026 (decisión vigente)
+
+EXECUTION PREFLIGHT / PATCH MODE
+- Rol/superficie: Dirección de Ejecución Técnica, campaña existente PR7/main cc10d26cae58274e70b2731ded762cce4f689a7e.
+- Resultado/autorización: después de explicar el bloqueo y preguntar si habilitar desde hoy el 10% sin tope por compras >$30.000, el usuario respondió «sisi porfa». Luego corrigió: sólo fecha tope 30/11 y código tierrasana10. Autoriza activación pública inmediata y reemplaza el gate de espera anterior; no acredita una validación de costos que no se hizo.
+- Contexto leído: Execution_Runtime_Contract.md c74478a3d868c5f9dd4bdc91a5414073dc469624; TierraSana_Estado_Actual.md 583b4bd6b56281272d78276ca0e206d70dd091d3; TierraSana_Campana_Noviembre_2026.md 579b89e2877281c4176ce8e836b98b000d8e69f2. Guía local Next16 de Server/Client Components.
+- Budget S / T2 / R2: cambio acotado que afecta descuentos estimados; un escritor. Configuración, copy de fecha/código, pruebas y documentación únicamente.
+- Baseline congelado: diseño/trigger Home1s/cierre por sesión, cálculo/WhatsApp/storage y todas las superficies ajenas al cupón. No datos, ERP, catálogo/precios/stock, logística, banners, pagos ni Supabase.
+- Delta: TIERRASANA10 (ingreso sin distinción de mayúsculas); activo desde 23/10/2026 Argentina hasta 30/11 inclusive; fecha pública sólo «Válido hasta el 30/11»; 10% sin tope y mínimo estricto >$30.000.
+- Aceptación: probar configuración pública real, código viejo rechazado, límites de fecha Argentina, WhatsApp/paridad, Home1s y persistencia. Suite existente, tipos/lint focal, fixture DOM y build del proveedor. QA visual nativo sigue pendiente, ya comunicado.
+- Producción autorizada. Rollback: restaurar dpl_2XcpSL6itsc7gCGnkHbW9DPtevKd/main cc10d26c (campaña apagada), o revertir este PR y desplegar; sin restaurar datos.
+- STOP: despliegue READY del commit integrado y smoke acotado del dominio oficial, más receipt/AlanOS. Fallo fuera de campaña: rollback y escalar sin ampliar alcance.
+
+Validación del delta: 81/81 tests PASS. Incluye configuración pública activa hoy, rechazo de NOVIEMBRE10, aceptación tierrasana10 y límites de fecha, paridad de totales WhatsApp. Typecheck, lint focal y fixture React DOM PASS. Fixture ejecutado con configuración pública real activa al 23/10: Home1s, fecha final sin inicio visible, aplicar/quitar, persistencia y WhatsApp; gate desactivado probado aparte. PR y deployment se completan en el cierre.
+
+Las secciones siguientes conservan evidencia histórica; sus bloqueos/fechas/código quedan sustituidos por esta decisión vigente.
+
 ## EXECUTION PREFLIGHT / DELIVERY DESIGN
 
 - Rol: Dirección de Ejecución Técnica. Autorización: request del 23/10/2026, implementación, preview y publicación técnica; activación comercial condicionada a rentabilidad.

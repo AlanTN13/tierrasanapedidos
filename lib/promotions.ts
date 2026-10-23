@@ -9,15 +9,15 @@ export type Promotion = {
 };
 
 // Midnight in America/Argentina/Buenos_Aires (UTC-03:00).
-// Approval must remain false until current basket costs/margins are validated.
+// Public activation explicitly authorized by the owner on 23/10/2026.
 export const NOVEMBER_PROMOTION: Promotion = {
-  code: "NOVIEMBRE10",
+  code: "TIERRASANA10",
   percent: 10,
   minimumCents: 3_000_000,
   maximumDiscountCents: null,
-  startsAt: "2026-11-01T00:00:00-03:00",
+  startsAt: "2026-10-23T00:00:00-03:00",
   endsAt: "2026-12-01T00:00:00-03:00",
-  commercialApproved: false,
+  commercialApproved: true,
 };
 
 export type CouponStatus = "none" | "unknown" | "upcoming" | "expired" | "disabled" | "minimum" | "applied";
@@ -78,8 +78,8 @@ export function formatCartMoney(cents: number) {
 export function couponMessage(status: CouponStatus, promotion: Promotion) {
   switch (status) {
     case "unknown": return "Ese cupón no existe. Revisá el código e intentá de nuevo.";
-    case "upcoming": return "Este cupón estará vigente del 1 al 30 de noviembre de 2026.";
-    case "expired": return "Este cupón venció el 30 de noviembre de 2026.";
+    case "upcoming": return "Esta promoción todavía no está vigente.";
+    case "expired": return `Este cupón venció el ${promotionDeadline(promotion)}.`;
     case "disabled": return "Esta promoción todavía no está habilitada.";
     case "minimum": return `El cupón está guardado. Para usarlo, tu compra debe superar ${formatCartMoney(promotion.minimumCents)} antes del descuento.`;
     case "applied": return "¡Cupón aplicado!";
@@ -87,9 +87,15 @@ export function couponMessage(status: CouponStatus, promotion: Promotion) {
   }
 }
 
+export function promotionDeadline(promotion: Promotion) {
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "2-digit", month: "2-digit", timeZone: "America/Argentina/Buenos_Aires",
+  }).format(Date.parse(promotion.endsAt) - 1);
+}
+
 export function promotionConditions(promotion: Promotion) {
   const cap = promotion.maximumDiscountCents === null ? "" : ` Tope: ${formatCartMoney(promotion.maximumDiscountCents)} por pedido.`;
-  return `${promotion.percent}% sobre productos en compras superiores a ${formatCartMoney(promotion.minimumCents)}, antes del descuento.${cap} Del 1 al 30/11/2026, horario de Argentina. Un cupón por carrito. No incluye envío.`;
+  return `${promotion.percent}% sobre productos en compras superiores a ${formatCartMoney(promotion.minimumCents)}, antes del descuento.${cap} Válido hasta el ${promotionDeadline(promotion)}, horario de Argentina. Un cupón por carrito. No incluye envío.`;
 }
 
 // Whole-peso suggestion: at exactly the minimum the customer needs $1 more.

@@ -28,7 +28,8 @@ test("centavos exactos, umbral estricto y tope configurable", () => {
   assert.equal(toCents(0.1 + 0.2), 30);
 });
 test("normaliza código, rechaza desconocido y no duplica ni vuelve negativo el descuento", () => {
-  assert.equal(quoteCart(3500000, " noviembre10 ", november, approved).discountCents, 350000);
+  assert.equal(quoteCart(3500000, " tierrasana10 ", november, approved).discountCents, 350000);
+  assert.equal(quoteCart(3500000, "NOVIEMBRE10", november, approved).status, "unknown");
   assert.equal(quoteCart(3500000, "otro", november, approved).status, "unknown");
   assert.equal(quoteCart(0, code, november, approved).totalCents, 0);
   assert.equal(quoteCart(-100, code, november, approved).totalCents, 0);
@@ -36,7 +37,7 @@ test("normaliza código, rechaza desconocido y no duplica ni vuelve negativo el 
   assert.deepEqual(quoteCart(3500000, code, november, approved), quoteCart(3500000, code, november, approved));
 });
 test("inicio y fin exactos en Argentina, independiente de la zona del proceso", () => {
-  const start = Date.parse("2026-11-01T03:00:00Z");
+  const start = Date.parse("2026-10-23T03:00:00Z");
   const end = Date.parse("2026-12-01T03:00:00Z");
   assert.equal(promotionStatus(approved, start - 1), "upcoming");
   assert.equal(promotionStatus(approved, start), "applied");
@@ -44,9 +45,10 @@ test("inicio y fin exactos en Argentina, independiente de la zona del proceso", 
   assert.equal(promotionStatus(approved, end), "expired");
   assert.equal(quoteCart(3500000, code, end, approved).discountCents, 0);
 });
-test("gate económico sigue bloqueando en noviembre y sin cupón no hay descuento", () => {
-  assert.equal(quoteCart(3500000, code, november).status, "disabled");
-  assert.equal(quoteCart(3500000, code, november).discountCents, 0);
+test("desactivación configurable y sin cupón no hay descuento", () => {
+  const disabled = { ...NOVEMBER_PROMOTION, commercialApproved: false };
+  assert.equal(quoteCart(3500000, code, november, disabled).status, "disabled");
+  assert.equal(quoteCart(3500000, code, november, disabled).discountCents, 0);
   assert.equal(quoteCart(3500000, null, november, approved).totalCents, 3500000);
 });
 test("incentivo exige superar el umbral", () => {
@@ -64,6 +66,8 @@ test("campaña sin tope y condiciones logísticas reducidas a No incluye envío"
   assert.equal(NOVEMBER_PROMOTION.maximumDiscountCents, null);
   assert.equal(quoteCart(10000000, code, november, approved).discountCents, 1000000);
   const conditions = promotionConditions(NOVEMBER_PROMOTION);
+  assert.match(conditions, /Válido hasta el 30\/11/);
+  assert.doesNotMatch(conditions, /Del 1|23\/10|desde/i);
   assert.ok(conditions.endsWith("No incluye envío."));
   assert.doesNotMatch(conditions, /tope|retiro|WhatsApp|coordinar/i);
 });
@@ -85,9 +89,22 @@ test("WhatsApp conserva productos, subtotal, cupón, descuento y total de la cot
   }
 });
 test("WhatsApp revalida vencimiento y gate al click; sin cupón mantiene total original", () => {
-  for (const [now, promo, coupon] of [[Date.parse(approved.endsAt), approved, code], [november, NOVEMBER_PROMOTION, code], [november, approved, null]] as const) {
+  for (const [now, promo, coupon] of [[Date.parse(approved.endsAt), approved, code], [november, { ...NOVEMBER_PROMOTION, commercialApproved: false }, code], [november, approved, null]] as const) {
     const text = new URL(createWhatsAppUrl(items(17500, 2), 35000, coupon, now, promo)).searchParams.get("text")!;
     assert.ok(!text.includes("Cupón:"));
     assert.ok(text.includes(formatCartMoney(3500000)));
   }
+});
+
+test("configuración pública aprobada aplica TIERRASANA10 desde hoy en carrito y WhatsApp", () => {
+  const today = Date.parse("2026-10-23T12:00:00-03:00");
+  assert.equal(NOVEMBER_PROMOTION.code, "TIERRASANA10");
+  assert.equal(NOVEMBER_PROMOTION.commercialApproved, true);
+  const quote = quoteCart(4000000, "tierrasana10", today);
+  assert.equal(quote.status, "applied");
+  assert.equal(quote.discountCents, 400000);
+  assert.equal(quote.totalCents, 3600000);
+  const text = new URL(createWhatsAppUrl(items(40000), 40000, "tierrasana10", today)).searchParams.get("text")!;
+  assert.match(text, /Cupón: TIERRASANA10/);
+  assert.ok(text.includes(formatCartMoney(quote.totalCents)));
 });
