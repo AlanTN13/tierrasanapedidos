@@ -30,13 +30,11 @@ export function Header({
   onOpenCart,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const desktopCategoryRailRef = useRef<HTMLDivElement | null>(null);
   const [canScrollCategoriesLeft, setCanScrollCategoriesLeft] = useState(false);
   const [canScrollCategoriesRight, setCanScrollCategoriesRight] = useState(false);
-  const mobileSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const mobileCategoryHeadingRef = useRef<HTMLParagraphElement | null>(null);
-  const mobileSearchPanelId = useId();
   const mobileCategoryPanelId = useId();
   const safeSearchQuery = searchQuery ?? "";
 
@@ -86,26 +84,20 @@ export function Header({
   }
 
   useEffect(() => {
-    if (!isMenuOpen && !isSearchOpen) {
+    if (!isMenuOpen) {
       return;
     }
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsMenuOpen(false);
-        setIsSearchOpen(false);
+        mobileMenuButtonRef.current?.focus();
       }
     };
 
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
-  }, [isMenuOpen, isSearchOpen]);
-
-  useEffect(() => {
-    if (isSearchOpen) {
-      mobileSearchInputRef.current?.focus();
-    }
-  }, [isSearchOpen]);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -114,262 +106,230 @@ export function Header({
   }, [isMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-olive/10 bg-background/88 backdrop-blur-xl">
-      <div className="container-shell py-3 sm:py-4 lg:py-2">
+    <header className="sticky top-0 z-50 border-b border-olive/12 bg-background/95 backdrop-blur-xl">
+      <div className="container-shell pb-3 pt-1.5 lg:pb-0 lg:pt-2">
         <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center pl-[max(0px,env(safe-area-inset-left))] pr-[max(0px,env(safe-area-inset-right))] lg:hidden">
-          <div className="flex min-w-0 items-center justify-start gap-1">
-            <button
-              type="button"
-              onClick={() => {
-                setIsSearchOpen(false);
-                setIsMenuOpen((current) => !current);
-              }}
-              className="organic-outline inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-olive-dark"
-              aria-label="Abrir menu de categorias"
-              aria-expanded={isMenuOpen}
-              aria-controls={mobileCategoryPanelId}
-            >
-              <HamburgerIcon />
-            </button>
-          </div>
+          <button
+            ref={mobileMenuButtonRef}
+            type="button"
+            onClick={() => setIsMenuOpen((current) => !current)}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-olive/12 bg-cream/60 text-olive-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive"
+            aria-label={isMenuOpen ? "Cerrar menú de categorías" : "Abrir menú de categorías"}
+            aria-expanded={isMenuOpen}
+            aria-controls={mobileCategoryPanelId}
+          >
+            <HamburgerIcon />
+          </button>
 
-          <Link href="/" className="mx-1 flex shrink-0 items-center justify-center">
+          <Link href="/" className="mx-1 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive">
             <Image
               src="/logo-tierra-sana-header.png"
-              alt="Tierra Sana Dietetica & Bienestar"
-              width={320}
-              height={140}
-              className="h-auto w-[64px] sm:w-[88px]"
+              alt="Tierra Sana Dietética & Bienestar"
+              width={1853}
+              height={1891}
+              className="h-[76px] w-[92px] object-contain sm:h-[84px] sm:w-[104px]"
             />
           </Link>
 
-          <div className="flex min-w-0 items-center justify-end gap-1">
-            <button
-              type="button"
-              onClick={() => {
-                setIsMenuOpen(false);
-                setIsSearchOpen((current) => !current);
-              }}
-              className="organic-outline inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-olive-dark"
-              aria-label="Abrir buscador"
-              aria-expanded={isSearchOpen}
-              aria-controls={mobileSearchPanelId}
-            >
-              <SearchIcon />
-            </button>
-
+          <div className="flex min-w-0 items-center justify-end gap-1.5">
             <InstagramLink variant="mobile" />
-
             <button
               type="button"
               onClick={onOpenCart}
-              className="organic-outline card-shadow relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card text-sm font-semibold text-olive-dark hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
-              aria-label={`Abrir carrito con ${totalItems} productos`}
+              className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-olive-dark text-white transition-colors hover:bg-olive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive"
+              aria-label={"Abrir carrito con " + totalItems + " productos"}
               aria-haspopup="dialog"
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
-                <CartIcon />
-              </span>
-              <span className="absolute -top-1 -right-1 min-w-5 rounded-full bg-olive-soft px-1.5 py-0.5 text-[10px] font-bold text-olive-dark">
+              <CartIcon />
+              <span className="absolute -right-1 -top-1 min-w-5 rounded-full border-2 border-background bg-olive-soft px-1 text-[10px] font-bold leading-4 text-olive-dark">
                 {totalItems}
               </span>
             </button>
           </div>
         </div>
 
-        <div className="hidden lg:grid lg:grid-cols-[160px_minmax(0,1fr)] lg:grid-rows-[auto_auto] lg:gap-x-5 xl:grid-cols-[170px_minmax(0,1fr)]">
-          <div className="row-span-2 flex items-center justify-center self-stretch border-r border-olive/8 pr-5 xl:pr-6">
-            <Link href="/" className="flex h-full items-center">
+        <form
+          className="relative mt-1 lg:hidden"
+          role="search"
+          aria-label="Buscar en el catálogo"
+          onSubmit={(event) => {
+            event.preventDefault();
+            setIsMenuOpen(false);
+            onSubmitSearch();
+          }}
+        >
+          <input
+            type="search"
+            value={safeSearchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+            placeholder="¿Qué estás buscando?"
+            className="h-12 w-full rounded-full border border-olive/18 bg-cream/55 pl-12 pr-12 text-base text-olive-dark outline-none placeholder:text-foreground/55 focus:bg-white focus:ring-2 focus:ring-olive/30"
+            aria-label="Buscar productos"
+          />
+          <button
+            type="submit"
+            className="absolute inset-y-0 left-1 inline-flex w-11 items-center justify-center rounded-full text-olive-dark focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-olive"
+            aria-label="Buscar productos"
+          >
+            <SearchIcon />
+          </button>
+          {safeSearchQuery ? (
+            <button
+              type="button"
+              onClick={onClearSearch}
+              className="absolute inset-y-0 right-1 inline-flex w-11 items-center justify-center rounded-full text-olive-dark focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-olive"
+              aria-label="Limpiar búsqueda"
+            >
+              <span aria-hidden="true">✕</span>
+            </button>
+          ) : null}
+        </form>
+
+        <div className="hidden lg:block">
+          <div className="grid grid-cols-[140px_minmax(0,1fr)_auto] items-center gap-7 pb-2 xl:grid-cols-[176px_minmax(0,1fr)_auto] xl:gap-10">
+            <Link href="/" className="justify-self-start rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive">
               <Image
                 src="/logo-tierra-sana-header.png"
-                alt="Tierra Sana Dietetica & Bienestar"
-                width={420}
-                height={190}
-                className="h-auto w-[116px] xl:w-[130px]"
+                alt="Tierra Sana Dietética & Bienestar"
+                width={1853}
+                height={1891}
+                className="h-[86px] w-[120px] object-contain xl:h-[94px] xl:w-[144px]"
               />
             </Link>
-          </div>
 
-          <div className="flex min-w-0 items-center gap-5 pb-2 xl:gap-6">
-            <nav
-              aria-label="Secciones principales"
-              className="flex items-center gap-5 text-sm font-medium text-foreground/72 xl:gap-6"
+            <form
+              className="relative min-w-0"
+              role="search"
+              aria-label="Buscar en el catálogo"
+              onSubmit={(event) => {
+                event.preventDefault();
+                onSubmitSearch();
+              }}
             >
-              {sectionLinks.map((section) => (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="transition-colors hover:text-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/25"
-                >
-                  {section.label}
-                </a>
-              ))}
-            </nav>
-
-            <div className="ml-auto flex min-w-0 items-center gap-3 xl:gap-4">
-              <form
-                className="relative w-full min-w-[21rem] max-w-[30rem] xl:min-w-[25rem] xl:max-w-[34rem]"
-                role="search"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  onSubmitSearch();
-                }}
+              <input
+                type="search"
+                value={safeSearchQuery}
+                onChange={(event) => onSearchChange(event.target.value)}
+                placeholder="¿Qué estás buscando hoy?"
+                className="h-[52px] w-full rounded-full border border-olive/18 bg-cream/55 pl-14 pr-12 text-[15px] text-olive-dark outline-none placeholder:text-foreground/55 focus:bg-white focus:ring-2 focus:ring-olive/30"
+                aria-label="Buscar productos"
+              />
+              <button
+                type="submit"
+                className="absolute inset-y-0 left-2 inline-flex w-[44px] items-center justify-center rounded-full text-olive-dark focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-olive"
+                aria-label="Buscar productos"
               >
-                <label className="organic-outline card-shadow relative block">
-                  <input
-                    type="search"
-                    value={safeSearchQuery}
-                    onChange={(event) => onSearchChange(event.target.value)}
-                    placeholder="Buscar productos..."
-                    className="w-full rounded-full bg-card px-11 py-2.5 pr-10 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:bg-white focus:ring-2 focus:ring-olive/25"
-                    aria-label="Buscar productos"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58 focus:outline-none"
-                    aria-label="Buscar"
-                  >
-                    <SearchIcon />
-                  </button>
-                  {safeSearchQuery ? (
-                    <button
-                      type="button"
-                      onClick={onClearSearch}
-                      className="absolute inset-y-0 right-3 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
-                      aria-label="Limpiar busqueda"
-                    >
-                      ✕
-                    </button>
-                  ) : null}
-                </label>
-              </form>
+                <SearchIcon />
+              </button>
+              {safeSearchQuery ? (
+                <button
+                  type="button"
+                  onClick={onClearSearch}
+                  className="absolute inset-y-0 right-1 inline-flex w-[44px] items-center justify-center rounded-full text-olive-dark focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-olive"
+                  aria-label="Limpiar búsqueda"
+                >
+                  <span aria-hidden="true">✕</span>
+                </button>
+              ) : null}
+            </form>
 
+            <div className="flex items-center gap-3">
               <InstagramLink />
-
               <button
                 type="button"
                 onClick={onOpenCart}
-                className="organic-outline card-shadow inline-flex shrink-0 items-center gap-2 rounded-full bg-card px-3 py-2 text-sm font-semibold text-olive-dark hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35"
-                aria-label={`Abrir carrito con ${totalItems} productos`}
+                className="inline-flex min-h-[48px] shrink-0 items-center gap-3 rounded-full bg-olive-dark px-5 text-[15px] font-semibold text-white transition-colors hover:bg-olive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive"
+                aria-label={"Abrir carrito con " + totalItems + " productos"}
                 aria-haspopup="dialog"
               >
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-olive text-white">
-                  <CartIcon />
-                </span>
-                <span>Carrito</span>
-                <span className="rounded-full bg-olive-soft px-2 py-0.5 text-xs font-bold text-olive-dark">
+                <CartIcon />
+                <span>Mi carrito</span>
+                <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-background px-2 text-xs font-bold text-olive-dark">
                   {totalItems}
                 </span>
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4 border-t border-olive/10 pt-2">
-            <div className="relative min-w-0 flex-1">
-              <div
-                className={`pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-12 bg-[linear-gradient(90deg,rgba(255,253,248,0.98)_15%,rgba(255,253,248,0)_100%)] transition-opacity ${
-                  canScrollCategoriesLeft ? "opacity-100" : "opacity-0"
-                }`}
-              />
-              <div
-                className={`pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-14 bg-[linear-gradient(270deg,rgba(255,253,248,0.98)_18%,rgba(255,253,248,0)_100%)] transition-opacity ${
-                  canScrollCategoriesRight ? "opacity-100" : "opacity-0"
-                }`}
-              />
-              <div className="pointer-events-none absolute top-1/2 left-0 z-20 -translate-y-1/2">
-                <DesktopRailArrow
-                  label="Ver categorias anteriores"
-                  disabled={!canScrollCategoriesLeft}
-                  onClick={() => moveDesktopCategoryRail("left")}
+          <div className="flex min-w-0 items-center gap-6 border-t border-olive/10">
+            <nav
+              aria-label="Secciones principales"
+              className="order-2 flex max-w-[45%] shrink-0 items-center gap-5 border-l border-olive/12 py-2.5 pl-6 text-sm font-medium text-foreground/72"
+            >
+              {sectionLinks.map((section) => (
+                <a
+                  key={section.id}
+                  href={"#" + section.id}
+                  className="min-w-0 truncate rounded-sm transition-colors hover:text-olive-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive"
                 >
-                  <ArrowLeftIcon />
-                </DesktopRailArrow>
-              </div>
-              <div className="pointer-events-none absolute top-1/2 right-1 z-20 -translate-y-1/2">
-                <DesktopRailArrow
-                  label="Ver categorias siguientes"
-                  disabled={!canScrollCategoriesRight}
-                  onClick={() => moveDesktopCategoryRail("right")}
+                  {section.label}
+                </a>
+              ))}
+            </nav>
+            <div className="flex min-w-0 flex-1 items-center justify-between gap-4 py-2.5">
+              <div className="relative min-w-0 flex-1">
+                <div
+                  className={`pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-12 bg-[linear-gradient(90deg,rgba(255,253,248,0.98)_15%,rgba(255,253,248,0)_100%)] transition-opacity ${
+                    canScrollCategoriesLeft ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+                <div
+                  className={`pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-14 bg-[linear-gradient(270deg,rgba(255,253,248,0.98)_18%,rgba(255,253,248,0)_100%)] transition-opacity ${
+                    canScrollCategoriesRight ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+                <div className="pointer-events-none absolute top-1/2 left-0 z-20 -translate-y-1/2">
+                  <DesktopRailArrow
+                    label="Ver categorias anteriores"
+                    disabled={!canScrollCategoriesLeft}
+                    onClick={() => moveDesktopCategoryRail("left")}
+                  >
+                    <ArrowLeftIcon />
+                  </DesktopRailArrow>
+                </div>
+                <div className="pointer-events-none absolute top-1/2 right-1 z-20 -translate-y-1/2">
+                  <DesktopRailArrow
+                    label="Ver categorias siguientes"
+                    disabled={!canScrollCategoriesRight}
+                    onClick={() => moveDesktopCategoryRail("right")}
+                  >
+                    <ArrowRightIcon />
+                  </DesktopRailArrow>
+                </div>
+                <div
+                  ref={desktopCategoryRailRef}
+                  className="overflow-x-auto pl-8 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 >
-                  <ArrowRightIcon />
-                </DesktopRailArrow>
-              </div>
-              <div
-                ref={desktopCategoryRailRef}
-                className="overflow-x-auto pl-8 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              >
-                <div className="flex min-w-max items-center gap-4 pr-4 text-sm font-medium text-foreground/72 xl:gap-5">
-                  {categories.map((category) => {
-                    const isActive = category.name === activeCategory;
+                  <div className="flex min-w-max items-center gap-4 pr-4 text-sm font-medium text-foreground/72 xl:gap-5">
+                    {categories.map((category) => {
+                      const isActive = category.name === activeCategory;
 
-                    return (
-                      <Link
-                        key={category.id}
-                        href={`/categoria/${category.slug}`}
-                        className={`shrink-0 transition-colors ${isActive ? "text-olive-dark" : "hover:text-olive-dark"}`}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        {category.name}
-                      </Link>
-                    );
-                  })}
+                      return (
+                        <Link
+                          key={category.id}
+                          href={`/categoria/${category.slug}`}
+                          className={`shrink-0 transition-colors ${isActive ? "text-olive-dark" : "hover:text-olive-dark"}`}
+                          aria-current={isActive ? "page" : undefined}
+                        >
+                          {category.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {activeCategory ? (
-              <div className="shrink-0 rounded-full bg-olive-soft px-3 py-1.5 text-xs font-semibold text-olive-dark">
-                Categoría: {activeCategory}
-              </div>
-            ) : null}
+              {activeCategory ? (
+                <div className="shrink-0 rounded-full bg-olive-soft px-3 py-1.5 text-xs font-semibold text-olive-dark">
+                  Categoría: {activeCategory}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
 
-        {isSearchOpen ? (
-          <div id={mobileSearchPanelId} className="mt-3 lg:hidden">
-            <form
-              className="relative"
-              role="search"
-              onSubmit={(event) => {
-                event.preventDefault();
-                onSubmitSearch();
-                setIsSearchOpen(false);
-              }}
-            >
-              <label className="organic-outline card-shadow relative block">
-                <input
-                  ref={mobileSearchInputRef}
-                  type="search"
-                  value={safeSearchQuery}
-                  onChange={(event) => onSearchChange(event.target.value)}
-                  placeholder="Buscar productos..."
-                  className="w-full rounded-[1.3rem] bg-white px-11 py-3 pr-11 text-sm font-medium text-olive-dark outline-none placeholder:text-foreground/42 focus:ring-2 focus:ring-olive/25"
-                  aria-label="Buscar productos"
-                />
-                <button
-                  type="submit"
-                  className="absolute inset-y-0 left-4 inline-flex items-center text-olive-dark/58 focus:outline-none"
-                  aria-label="Buscar productos"
-                >
-                  <SearchIcon />
-                </button>
-                {safeSearchQuery ? (
-                  <button
-                    type="button"
-                    onClick={onClearSearch}
-                    className="absolute inset-y-0 right-4 inline-flex items-center text-sm font-semibold text-olive-dark/72 hover:text-olive-dark focus:outline-none"
-                    aria-label="Limpiar búsqueda"
-                  >
-                    ✕
-                  </button>
-                ) : null}
-              </label>
-            </form>
-          </div>
-        ) : null}
-
         {isMenuOpen ? (
-          <div id={mobileCategoryPanelId} className="mt-3 lg:hidden">
+          <div id={mobileCategoryPanelId} className="mt-3 max-h-[calc(100dvh-12rem)] overflow-y-auto overscroll-contain lg:hidden">
             <div className="organic-outline rounded-[1.5rem] bg-white/76 p-4 shadow-[0_14px_30px_rgba(111,127,79,0.08)]">
               <div className="flex items-center justify-between gap-3">
                 <p
@@ -412,18 +372,14 @@ export function Header({
           </div>
         ) : null}
       </div>
-      <div
-        aria-hidden="true"
-        className="hidden h-[9px] w-full bg-[linear-gradient(180deg,#8fc9ec_0%,#8fc9ec_33.333%,#ffffff_33.333%,#ffffff_66.666%,#8fc9ec_66.666%,#8fc9ec_100%)] lg:block"
-      />
     </header>
   );
 }
 
 function InstagramLink({ variant = "desktop" }: { variant?: "desktop" | "mobile" }) {
   const linkClassName = `${
-    variant === "mobile" ? "organic-outline h-11 w-11 bg-card" : "h-10 w-10 bg-white"
-  } inline-flex shrink-0 items-center justify-center rounded-full text-olive-dark shadow-[0_4px_14px_rgba(72,82,50,0.12)] transition-transform hover:-translate-y-0.5 hover:bg-white focus:outline-none focus:ring-2 focus:ring-olive/35`;
+    variant === "mobile" ? "h-11 w-11" : "h-[48px] w-[48px]"
+  } inline-flex shrink-0 items-center justify-center rounded-full border border-olive/18 bg-cream/45 text-olive-dark transition-colors hover:bg-olive-soft/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive`;
 
   return (
     <a
@@ -480,7 +436,7 @@ function SearchIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 20 20"
-      className="h-4.5 w-4.5"
+      className="h-5 w-5"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
@@ -565,9 +521,8 @@ function CartIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="9" cy="20" r="1.5" />
-      <circle cx="18" cy="20" r="1.5" />
-      <path d="M3 4h2l2.3 10.2a1 1 0 0 0 1 .8h9.8a1 1 0 0 0 1-.8L21 7H7.2" />
+      <path d="M6 7h12l1 14H5L6 7Z" />
+      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
     </svg>
   );
 }

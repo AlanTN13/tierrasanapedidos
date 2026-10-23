@@ -326,30 +326,16 @@ function StorefrontContent({
 }
 
 function ShippingTicker({ onOpenShipping }: { onOpenShipping: () => void }) {
-  const shippingTickerText =
-    "Entregas sin costo en Avellaneda, Sarandi, Wilde, Villa Dominico, Gerli, Bernal y Don Bosco";
-  const tickerItems = Array.from({ length: 4 }, (_, index) => index);
-
   return (
     <div className="border-b border-olive/10 bg-olive">
       <button
         type="button"
         onClick={onOpenShipping}
-        className="relative block w-full overflow-hidden py-1.5 text-left text-white focus:outline-none focus:ring-2 focus:ring-white/25"
+        className="block w-full px-4 py-2 text-center text-xs font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-white"
         aria-label="Ver zonas y condiciones de entrega"
       >
-        <div className="pointer-events-none flex min-w-max animate-[shipping-marquee_28s_linear_infinite] items-center gap-8 whitespace-nowrap pr-8">
-          {[...tickerItems, ...tickerItems].map((item, index) => (
-            <span
-              key={`${item}-${index}`}
-              className="inline-flex shrink-0 items-center gap-8 text-[0.64rem] font-semibold tracking-[0.08em] uppercase sm:text-[0.68rem]"
-            >
-              <span className="inline-flex items-center gap-3">
-                <span>{shippingTickerText}</span>
-              </span>
-            </span>
-          ))}
-        </div>
+        Envíos y entregas <span aria-hidden="true">·</span>{" "}
+        <span className="font-semibold">Consultá tu zona</span>
       </button>
     </div>
   );
