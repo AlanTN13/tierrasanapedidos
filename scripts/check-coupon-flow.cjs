@@ -47,7 +47,7 @@ async function mount(props = {}) { reactRoot = createRoot(container); await act(
 async function unmount() { await act(async () => { reactRoot.unmount(); await flush(); }); }
 async function click(text) { const button = [...container.querySelectorAll("button")].find((b) => b.textContent.trim() === text); assert.ok(button, `missing button ${text}`); await act(async () => { button.click(); await flush(); }); }
 async function clickLabel(label) { const button = [...container.querySelectorAll("button")].find((b) => b.getAttribute("aria-label") === label); assert.ok(button, `missing button ${label}`); await act(async () => { button.click(); await flush(); }); }
-async function apply(code) { await act(async () => { const input = document.getElementById("cart-coupon"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(input, code); input.dispatchEvent(new Event("input", { bubbles: true })); input.dispatchEvent(new Event("change", { bubbles: true })); }); await act(async () => { container.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); await flush(); }); }
+async function apply(code) { if (!document.getElementById("cart-coupon")) await act(async () => { document.getElementById("coupon-entry-toggle").click(); await flush(); }); await act(async () => { const input = document.getElementById("cart-coupon"); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set.call(input, code); input.dispatchEvent(new Event("input", { bubbles: true })); input.dispatchEvent(new Event("change", { bubbles: true })); }); await act(async () => { container.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); await flush(); }); }
 function item(price) { const presentation = { etiqueta: "unidad", precio: price, measurementKind: "unit", amountValue: 1, amountUnit: "unit", amountInBaseUnits: 1 }; return { product: { id: "test", nombre: "Canasta de prueba", categoria: "QA", presentaciones: [presentation], imagen: "", descripcion: "", destacado: false }, presentation, quantity: 1 }; }
 async function seed(price, key = "tierra-sana-cart") { await act(async () => { localStorage.setItem(key, JSON.stringify([item(price)])); window.dispatchEvent(new Event("storage")); await flush(); }); }
 async function resumeTime(value) { now = Date.parse(value); await act(async () => { window.dispatchEvent(new Event("focus")); await flush(); }); }
@@ -57,6 +57,17 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   assert.match(container.textContent, /Tu carrito está vacío/);
   assert.ok([...container.querySelectorAll("button")].find((b) => b.textContent.trim() === "Enviar pedido por WhatsApp").disabled);
   assert.equal(document.activeElement.getAttribute("aria-label"), "Cerrar carrito");
+  assert.equal(document.getElementById("cart-coupon"), null, "coupon entry starts collapsed");
+  await click("¿Tenés un cupón de descuento?");
+  assert.equal(document.activeElement.id, "cart-coupon", "opening entry focuses the labeled input");
+  await click("Ocultar campo"); assert.equal(document.getElementById("cart-coupon"), null);
+  const conditionsToggle = container.querySelector('[aria-controls="coupon-conditions"]');
+  assert.ok(document.getElementById("coupon-conditions").hidden, "terms start collapsed");
+  await act(async () => { conditionsToggle.click(); await flush(); });
+  assert.equal(conditionsToggle.getAttribute("aria-expanded"), "true");
+  assert.ok(!document.getElementById("coupon-conditions").hidden);
+  await act(async () => { conditionsToggle.click(); await flush(); });
+  assert.ok(document.getElementById("coupon-conditions").hidden);
   await click("Seguir comprando"); assert.equal(cart.isOpen, false);
   assert.equal(document.activeElement.id, "open-cart", "closing restores the originating control");
   await unmount();
@@ -75,13 +86,16 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   assert.equal(popupDelay, 1000, "returning to Home uses the same one-second delay");
   await click("Abrir");
   await apply("inexistente"); assert.match(container.textContent, /no existe/);
-  await apply(" tierrasana10 "); assert.equal(cart.quote.discountCents, 350000); assert.match(container.textContent, /Cupón aplicado/);
+  await apply(" tierrasana10 "); assert.equal(cart.quote.discountCents, 350000); assert.match(container.textContent, /10% OFF aplicado/);
+  assert.equal(document.getElementById("cart-coupon"), null, "successful apply collapses the entry field");
+  assert.equal(document.activeElement.id, "coupon-entry-toggle", "applying restores focus to the entry toggle");
+  assert.equal(container.querySelector("progress"), null, "applied discount has no redundant progress block");
   await apply("TIERRASANA10"); assert.equal(cart.quote.discountCents, 350000, "no duplicate discount");
   await act(async () => cart.closeCart()); await click("Abrir"); assert.equal(cart.quote.totalCents, 3150000);
   await unmount(); await mount(); await click("Abrir");
   assert.equal(cart.couponCode, "TIERRASANA10", "remount/navigation restores coupon");
   assert.equal(cart.quote.discountCents, 350000);
-  await seed(19000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /debe superar/);
+  await seed(19000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /para superar/);
   await seed(30000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /falta.*1.*para superar/);
   await seed(30001); assert.equal(cart.quote.discountCents, 300010); assert.equal(cart.quote.totalCents, 2700090);
   await seed(40000); assert.equal(cart.quote.discountCents, 400000);
