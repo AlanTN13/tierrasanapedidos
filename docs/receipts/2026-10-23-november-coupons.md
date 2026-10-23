@@ -1,5 +1,15 @@
 # Noviembre Tierra Sana — cupón y carrito
 
+## Barra de progreso destacada — corrección posterior del 23/10/2026
+
+- PATCH MODE / S / T1 / R1: baseline PR8/main11e2b69b y producción dpl_FRiJdRqRt7SBAQ32HZUc5ZykYGwx activos. El usuario pide que la barra de progreso sea más llamativa; captura image(8).png confirma el incentivo actual. Autorización productiva vigente para este ajuste localizado.
+- Contexto vigente: contrato c74478a3d868c5f9dd4bdc91a5414073dc469624; campaña AlanOS5ad02b65ed12f3c835c0453e617f8a56adf8bb29 y estado337980a9c88a5bd4d7b2458c5ba83ba5a8ba4288, reconciliados en4134f1dfcb6c783090996d1b00954e3c34f01524.
+- Superficie permitida: presentación del incentivo/progress en CartCoupon y documentación. Congelados cálculo, código, fechas, condiciones, persistencia, WhatsApp, popup y todas las superficies ajenas.
+- Delta: bloque con contraste oliva claro, beneficio10% destacado, cifra faltante en mayor tamaño, barra más gruesa y lectura de subtotal/meta. Conservar progress nativo accesible y condiciones existentes.
+- Validación focal: fixture React DOM existente, typecheck/lint del componente y build/preview del proveedor. Sin nuevas pruebas que reflejen sólo estilos. QA visual real continúa pendiente por Browser no callable.
+- Pruebas del delta: typecheck, lint focal y fixture React DOM existente PASS. Build/preview/deploy y smoke se documentan en el cierre del PR y AlanOS; no se atribuye QA visual nativo.
+- Rollback: revertir únicamente este ajuste o restaurar dpl_FRiJdRqRt7SBAQ32HZUc5ZykYGwx/11e2b69b, conservando campaña activa. STOP al verificar deploy y smoke acotado; no ampliar a rediseño de carrito.
+
 ## Activación pública autorizada — 23/10/2026 (decisión vigente)
 
 EXECUTION PREFLIGHT / PATCH MODE
