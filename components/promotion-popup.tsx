@@ -6,41 +6,24 @@ import { formatCartMoney, promotionConditions, promotionStatus } from "@/lib/pro
 import { trackCampaign } from "@/lib/campaign-events";
 
 const DISMISSED_KEY = "tierra-sana-noviembre-2026-dismissed";
-const FIRST_VISIT_KEY = "tierra-sana-noviembre-2026-first-visit";
-const FIRST_VISIT_DELAY = 8000;
+const HOME_POPUP_DELAY = 1000;
 let dismissedInMemory = false;
-let firstVisitInMemory: number | null = null;
 
 function isDismissed() {
   try { return dismissedInMemory || sessionStorage.getItem(DISMISSED_KEY) === "1"; }
   catch { return dismissedInMemory; }
 }
 
-function remainingFirstVisitDelay() {
-  const current = Date.now();
-  let firstVisit = firstVisitInMemory;
-  try {
-    const saved = sessionStorage.getItem(FIRST_VISIT_KEY);
-    if (saved !== null && Number.isFinite(Number(saved))) firstVisit = Number(saved);
-  } catch { /* Memory preserves timing during navigation when storage is unavailable. */ }
-  if (firstVisit === null || firstVisit > current) {
-    firstVisit = current;
-    try { sessionStorage.setItem(FIRST_VISIT_KEY, String(firstVisit)); } catch { /* Memory fallback. */ }
-  }
-  firstVisitInMemory = firstVisit;
-  return Math.max(0, FIRST_VISIT_DELAY - (current - firstVisit));
-}
-
 export function PromotionPopup() {
-  const { promotion, now, isOpen, applyCoupon, openCart } = useCart();
+  const { promotion, now, isOpen, isPreview, applyCoupon, openCart } = useCart();
   const ref = useRef<HTMLDialogElement>(null);
   const [copyMessage, setCopyMessage] = useState("");
   const active = promotionStatus(promotion, now) === "applied";
 
   useEffect(() => {
     const dialog = ref.current;
-    if (!dialog || !active || isDismissed()) { dialog?.close(); return; }
-    const delay = remainingFirstVisitDelay();
+    const onHome = window.location.pathname === "/";
+    if (!dialog || !active || (!onHome && !isPreview) || isDismissed()) { dialog?.close(); return; }
     if (isOpen) { dialog.close(); return; }
     let timeout: number;
     function showWhenAvailable() {
@@ -54,9 +37,9 @@ export function PromotionPopup() {
       dialog.showModal();
       trackCampaign("promotion_view");
     }
-    timeout = window.setTimeout(showWhenAvailable, delay);
+    timeout = window.setTimeout(showWhenAvailable, HOME_POPUP_DELAY);
     return () => { window.clearTimeout(timeout); dialog.close(); };
-  }, [active, isOpen]);
+  }, [active, isOpen, isPreview]);
 
   function dismiss() {
     dismissedInMemory = true;

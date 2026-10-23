@@ -42,3 +42,11 @@
 
 - Aclaración posterior del usuario: el pop-up informa el cupón desde la primera navegación, sin abrir el carrito. Se conserva el plazo inicial de 8s entre páginas mediante sessionStorage; al estar ocupado el foco/otro diálogo, se posterga sin perder el aviso. Cerrar o aplicar impide reaparecer en la sesión. Vigencia y bloqueo comercial se conservan.
 - Validación del delta: 14 pruebas de promoción/WhatsApp y fixture React DOM PASS; pruebas de $40.000/$80.000, copy reducido y timer de primera navegación (tras navegar a los 3s quedan 5s). Tipos y lint focal PASS. Preview actualizada en el mismo PR7.
+
+
+## Corrección de disparador — Home al segundo
+
+- Restricción vinculante del usuario: «al segundo que voy a la home». Sustituye la espera anterior de 8s y el disparador desde cualquier página.
+- Cambio limitado a PromotionPopup: temporizador de 1.000ms al entrar a `/`, o a la simulación aislada de preview. Catálogo/productos/recetas no disparan el pop-up. Se conserva cierre por sesión, vigencia, bloqueo económico, foco ocupado y las condiciones sin tope.
+- Prueba React DOM: fuera de Home no se programa el aviso; Home programa 1.000ms sin abrir carrito; volver a Home mantiene 1.000ms; el cierre sigue conservado en sesión. Flujo restante PASS. Typecheck y lint focal PASS.
+- Preview y docs actualizadas en PR7; no se modifica producción ni se activa campaña comercial.

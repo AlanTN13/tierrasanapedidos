@@ -22,7 +22,7 @@ function PreviewContent() {
         <p className="text-sm font-bold uppercase tracking-widest text-earth">Preview · sin pedidos reales</p>
         <h1 className="mt-4 text-3xl font-semibold">Noviembre Tierra Sana</h1>
         <p className="mt-4 leading-7">Reloj simulado: 15/11/2026, Argentina. Aprobación comercial simulada sólo en esta ruta de preview. Los productos de abajo son fixtures para probar los límites, no precios del catálogo.</p>
-        <p className="mt-3 leading-7">El pop-up aparece a los 8 segundos si no hay otro diálogo abierto. Al cerrar, no vuelve durante esta sesión.</p>
+        <p className="mt-3 leading-7">El pop-up aparece después de 1 segundo si no hay otro diálogo abierto. Al cerrar, no vuelve durante esta sesión.</p>
         <button type="button" onClick={cart.openCart} className="my-5 rounded-full bg-olive px-5 py-3 font-semibold text-white">Ver carrito ({cart.totalItems})</button>
         <div className="grid gap-3 sm:grid-cols-2">
           {TEST_PRICES.map((price) => <button key={price} type="button" onClick={() => {

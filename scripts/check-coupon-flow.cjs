@@ -27,7 +27,7 @@ Date.now = () => now;
 let popupTimer;
 let popupDelay;
 const originalTimeout = window.setTimeout.bind(window);
-window.setTimeout = (fn, ms, ...args) => { if (ms > 0 && ms <= 8000) { popupTimer = fn; popupDelay = ms; return 999999; } return originalTimeout(fn, ms, ...args); };
+window.setTimeout = (fn, ms, ...args) => { if (ms === 1000) { popupTimer = fn; popupDelay = ms; return 999999; } return originalTimeout(fn, ms, ...args); };
 // jsdom doesn't implement native dialogs. These stubs test wiring only.
 dom.window.HTMLDialogElement.prototype.showModal = function() { this.open = true; this.querySelector("button")?.focus(); };
 dom.window.HTMLDialogElement.prototype.close = function() { this.open = false; };
@@ -55,12 +55,16 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   await seed(25000); await mount(); await click("Abrir"); await apply("NOVIEMBRE10");
   assert.match(container.textContent, /todavía no está habilitada/); assert.equal(cart.quote.discountCents, 0);
   await unmount();
+  dom.reconfigure({ url: "https://qa.example.test/catalogo" }); popupTimer = undefined; popupDelay = undefined;
   await mount({ promotion: approved });
-  assert.equal(popupDelay, 8000, "first visit starts delayed coupon popup without opening cart");
+  assert.equal(popupTimer, undefined, "catalog navigation does not trigger the coupon popup");
+  await unmount(); dom.reconfigure({ url: "https://qa.example.test/" });
+  await mount({ promotion: approved });
+  assert.equal(popupDelay, 1000, "Home starts coupon popup after one second without opening cart");
   assert.ok(!container.querySelector("dialog").open);
-  await unmount(); now += 3000;
+  await unmount();
   await mount({ promotion: approved });
-  assert.equal(popupDelay, 5000, "navigation preserves elapsed time instead of restarting popup delay");
+  assert.equal(popupDelay, 1000, "returning to Home uses the same one-second delay");
   await click("Abrir");
   await apply("inexistente"); assert.match(container.textContent, /no existe/);
   await apply(" noviembre10 "); assert.equal(cart.quote.discountCents, 250000); assert.match(container.textContent, /Cupón aplicado/);
