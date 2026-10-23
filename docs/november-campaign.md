@@ -6,15 +6,15 @@ Fuente única: `lib/promotions.ts`, `NOVEMBER_PROMOTION`.
 
 | Parámetro | Valor preparado |
 |---|---|
-| Código | NOVIEMBRE10 |
+| Código | TIERRASANA10 |
 | Descuento | 10% del subtotal de productos |
 | Mínimo | Estrictamente más de $30.000, antes de descontar |
 | Tope | Sin tope de descuento (`maximumDiscountCents: null`) |
-| Inicio inclusivo | 01/11/2026 00:00 Argentina = 03:00 UTC |
+| Inicio interno | Activa desde 23/10/2026 00:00 Argentina = 03:00 UTC; no se muestra fecha inicial |
 | Fin exclusivo | 01/12/2026 00:00 Argentina = 03:00 UTC |
-| Aprobación económica | `commercialApproved: false` |
+| Activación pública | `commercialApproved: true`, autorizada explícitamente por el usuario el 23/10/2026 |
 
-**No se activa automáticamente el 1/11 mientras siga pendiente la aprobación económica.** Después de validar costos vigentes, embalaje/logística absorbida y margen objetivo, registrar la aprobación en AlanOS y cambiar únicamente `commercialApproved` a true mediante PR/deploy. Corrección aprobada del usuario: descuento sin tope monetario. No hay toggle público ni cambio de fecha/campaña por query string.
+**Campaña activa por decisión expresa del usuario del 23/10/2026.** Después de explicar por qué no aparecía el pop-up y ofrecer activarlo desde hoy, respondió «sisi porfa». Luego indicó sólo fecha tope 30/11 y cambiar el cupón a tierrasana10. Esa autorización reemplaza la espera comercial anterior; no se presenta como una validación de rentabilidad. Código canónico TIERRASANA10, acepta minúsculas/espacios al ingresarlo; NOVIEMBRE10 deja de ser válido. La interfaz muestra sólo «Válido hasta el 30/11», calculado desde el fin exclusivo en Buenos Aires. No hay toggle público ni cambio por query string.
 
 El navegador revalida al llegar a los límites de fecha, al recuperar foco y al abrir WhatsApp. Las fechas no dependen de la zona horaria del dispositivo. Corrección vigente del usuario: el modal del cupón aparece 1 segundo después de entrar a la Home, sin abrir el carrito. Navegar por catálogo, productos o recetas no dispara el aviso. Al cerrarlo o aplicar el cupón, no vuelve durante la sesión. La ruta aislada de preview también simula este disparador de 1 segundo. Si hay otro diálogo abierto, una pestaña oculta o un campo en edición, espera a que se pueda mostrar sin interrumpir. Se cierra con botón, fondo o Escape; usa diálogo nativo para foco/teclado. El cierre se conserva en sessionStorage. El código va en localStorage, separado del carrito; un código válido bajo el mínimo queda pendiente y vuelve a aplicar al cumplirlo. Uno desconocido o inactivo no sustituye el cupón anterior.
 
@@ -30,7 +30,7 @@ Se consultó `https://www.tierrasanadietetica.com/api/catalog`: HTTP200, 208 pro
 
 El descuento es el 10% del subtotal sin tope monetario, por corrección explícita del usuario. Esto **no acredita rentabilidad**. Faltan costos actuales completos por SKU/presentación, envase, preparación, costos de entrega absorbidos y objetivo de contribución. AlanOS ya advertía costos incompletos/estimados: no se convirtieron en cero ni se usaron costos históricos de chat como vigentes. La validación debe comparar `subtotal - descuento - costo de mercadería - costos variables absorbidos` con el margen objetivo aprobado, incluyendo canastas de baja contribución.
 
-**Bloqueo comercial:** todavía no se validó la rentabilidad de la promoción sin tope. No se publican beneficios mientras esté bloqueado. No se agregan exclusiones ni acumulaciones. Las condiciones logísticas existentes se conservan; el descuento toma sólo productos y las condiciones promocionales muestran solamente «No incluye envío» como aclaración logística, sin tarifas inventadas. No se afirma haber revalidado zonas o mínimos de envío.
+**Riesgo económico pendiente:** no se acreditó rentabilidad con costos vigentes completos. El responsable autorizó expresamente activar el beneficio desde hoy después de informar el bloqueo; se registra esa decisión sin inventar una validación económica. No se agregan exclusiones ni acumulaciones. Las condiciones logísticas existentes se conservan; el descuento toma sólo productos y las condiciones promocionales muestran solamente «No incluye envío» como aclaración logística, sin tarifas inventadas. No se afirma haber revalidado zonas o mínimos de envío.
 
 ## Diseño vigente del pop-up
 
@@ -38,7 +38,7 @@ Corrección del usuario: mínimo superior a $30.000 y rediseño acotado del moda
 
 ## Preview y aislamiento
 
-`/previews/noviembre` existe sólo en desarrollo y en deployments Vercel de preview. En producción devuelve 404. Simula 15/11/2026 y aprobación económica para probar límites con fixtures identificados, sin alterar catálogo. Carrito y cupón usan claves separadas con sufijo preview. El botón de WhatsApp muestra el mensaje de prueba dentro del drawer; no abre ni envía mensajes. Fuera de esa ruta rige la configuración pública bloqueada.
+`/previews/noviembre` existe sólo en desarrollo y en deployments Vercel de preview. En producción devuelve 404. Simula 15/11/2026 y aprobación económica para probar límites con fixtures identificados, sin alterar catálogo. Carrito y cupón usan claves separadas con sufijo preview. El botón de WhatsApp muestra el mensaje de prueba dentro del drawer; no abre ni envía mensajes. Fuera de esa ruta rige la configuración pública activa con su reloj real y vencimiento automático.
 
 ## Cálculo y WhatsApp
 
@@ -59,6 +59,6 @@ Instrumentación sin datos personales en `dataLayer` y evento DOM `tierra-sana:c
 - `npm run typecheck`, `npm run lint`, `npm run build`.
 - QA obligatorio pendiente de navegador real: 320/390/desktop sin desbordes, modal nativo con Tab/ShiftTab/Escape/restauración de foco, copiar código y navegación real por las cuatro superficies públicas.
 
-El23/10 el usuario ordenó publicar técnicamente después de comunicar que Browser no está disponible. Se conserva la limitación de QA visual y se continúa con la publicación autorizada, sin presentar esa prueba como realizada. El gate de rentabilidad permanece bloqueado: `commercialApproved=false`; ni la publicación ni el inicio de noviembre activan por sí solos descuentos reales.
+El23/10 el usuario ordenó publicar técnicamente después de comunicar que Browser no está disponible. Se conserva la limitación de QA visual y se continúa con la publicación autorizada, sin presentar esa prueba como realizada. Posteriormente autorizó la activación pública inmediata del código TIERRASANA10; `commercialApproved=true`. Se conserva el QA visual pendiente y la falta de validación económica, sin confundir autorización con evidencia de margen.
 
-Rollback: revertir el PR y redesplegar, o restaurar producción anterior `dpl_F89GxzxWReVVaw8zeRxVZxqUcAWq` (main7f68cfbe). Sin migraciones ni restauración de datos. Desactivar `commercialApproved` y desplegar corta la oferta en el cliente nuevo; el código persistido no vence las reglas. Carritos ya abiertos con una versión antigua requieren recarga; la confirmación humana por WhatsApp conserva el control final.
+Rollback de esta activación: revertir el PR y redesplegar, o restaurar `dpl_2XcpSL6itsc7gCGnkHbW9DPtevKd` (main cc10d26c, campaña apagada). Sin migraciones ni restauración de datos. Desactivar `commercialApproved` y desplegar corta la oferta en el cliente nuevo; el código persistido no vence las reglas. Carritos ya abiertos con una versión antigua requieren recarga; la confirmación humana por WhatsApp conserva el control final.
