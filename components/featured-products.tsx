@@ -26,7 +26,7 @@ export function FeaturedProducts({
     <section
       id="destacados"
       aria-labelledby="featured-title"
-      className="container-shell pb-10 sm:pb-14"
+      className="container-shell scroll-mt-44 pb-10 sm:pb-14"
     >
       <h2
         id="featured-title"
