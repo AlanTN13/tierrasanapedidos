@@ -59,4 +59,6 @@ Instrumentación sin datos personales en `dataLayer` y evento DOM `tierra-sana:c
 - `npm run typecheck`, `npm run lint`, `npm run build`.
 - QA obligatorio pendiente de navegador real: 320/390/desktop sin desbordes, modal nativo con Tab/ShiftTab/Escape/restauración de foco, copiar código y navegación real por las cuatro superficies públicas.
 
+El23/10 el usuario ordenó publicar técnicamente después de comunicar que Browser no está disponible. Se conserva la limitación de QA visual y se continúa con la publicación autorizada, sin presentar esa prueba como realizada. El gate de rentabilidad permanece bloqueado: `commercialApproved=false`; ni la publicación ni el inicio de noviembre activan por sí solos descuentos reales.
+
 Rollback: revertir el PR y redesplegar, o restaurar producción anterior `dpl_F89GxzxWReVVaw8zeRxVZxqUcAWq` (main7f68cfbe). Sin migraciones ni restauración de datos. Desactivar `commercialApproved` y desplegar corta la oferta en el cliente nuevo; el código persistido no vence las reglas. Carritos ya abiertos con una versión antigua requieren recarga; la confirmación humana por WhatsApp conserva el control final.

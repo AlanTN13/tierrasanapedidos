@@ -59,3 +59,10 @@
 - QA: **80/80 tests**, typecheck, lint focal y fixture React DOM PASS. $25.000 y $30.000 no aplican; $30.001 descuenta $3.000,10; $35.000 descuenta $3.500; $40.000 descuenta $4.000. Carrito y WhatsApp coinciden; persistencia, cierre y timing Home1s conservados.
 - Las canastas de $25.180 y $24.650 pasan a descuento0 por mínimo; la de $40.500 conserva descuento$4.050 y total$36.450. No es validación de costos/rentabilidad ni una modificación de precios.
 - Continúa pendiente QA visual en navegador320/390/desktop y aprobación económica. Publicación de preview en el mismo PR7, sin merge/producción. Build y despliegue del delta se registran en el cierre del PR y AlanOS.
+
+## Autorización de publicación técnica — 23/10/2026
+
+- Después de informar la falta de control de Chrome y el estado de preview, el usuario instruye expresamente: «mandalo a produ nomas». Autoriza integrar/publicar la funcionalidad con las limitaciones de QA comunicadas; esto no convierte el QA visual pendiente en aprobado.
+- La publicación conserva exactamente el código validado de35009417, mínimo>$30.000, 10% sin tope, Home1s, nuevo diseño y `commercialApproved=false`. No se infiere aprobación económica ni se habilita descuento público.
+- El delta posterior a35009417 es sólo documentación de esta autorización. Se reutilizan los80tests, fixture React DOM, tipos/lint/build y preview READY del mismo código; el nuevo build del proveedor se verifica antes de integrar.
+- Merge, commit productivo, deployment/alias, smoke HTTP y logs efectivos quedan en el cierre de PR7 y AlanOS. Rollback: deployment anterior dpl_F89GxzxWReVVaw8zeRxVZxqUcAWq o revertir PR7; sin datos que restaurar.
