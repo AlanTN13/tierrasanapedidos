@@ -52,7 +52,7 @@ async function seed(price, key = "tierra-sana-cart") { await act(async () => { l
 async function resumeTime(value) { now = Date.parse(value); await act(async () => { window.dispatchEvent(new Event("focus")); await flush(); }); }
 
 (async () => {
-  await seed(25000); await mount(); await click("Abrir"); await apply("NOVIEMBRE10");
+  await seed(35000); await mount(); await click("Abrir"); await apply("NOVIEMBRE10");
   assert.match(container.textContent, /todavía no está habilitada/); assert.equal(cart.quote.discountCents, 0);
   await unmount();
   dom.reconfigure({ url: "https://qa.example.test/catalogo" }); popupTimer = undefined; popupDelay = undefined;
@@ -67,37 +67,37 @@ async function resumeTime(value) { now = Date.parse(value); await act(async () =
   assert.equal(popupDelay, 1000, "returning to Home uses the same one-second delay");
   await click("Abrir");
   await apply("inexistente"); assert.match(container.textContent, /no existe/);
-  await apply(" noviembre10 "); assert.equal(cart.quote.discountCents, 250000); assert.match(container.textContent, /Cupón aplicado/);
-  await apply("NOVIEMBRE10"); assert.equal(cart.quote.discountCents, 250000, "no duplicate discount");
-  await act(async () => cart.closeCart()); await click("Abrir"); assert.equal(cart.quote.totalCents, 2250000);
+  await apply(" noviembre10 "); assert.equal(cart.quote.discountCents, 350000); assert.match(container.textContent, /Cupón aplicado/);
+  await apply("NOVIEMBRE10"); assert.equal(cart.quote.discountCents, 350000, "no duplicate discount");
+  await act(async () => cart.closeCart()); await click("Abrir"); assert.equal(cart.quote.totalCents, 3150000);
   await unmount(); await mount({ promotion: approved }); await click("Abrir");
   assert.equal(cart.couponCode, "NOVIEMBRE10", "remount/navigation restores coupon");
-  assert.equal(cart.quote.discountCents, 250000);
+  assert.equal(cart.quote.discountCents, 350000);
   await seed(19000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /debe superar/);
-  await seed(20000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /falta.*1.*para superar/);
-  await seed(20001); assert.equal(cart.quote.discountCents, 200010); assert.equal(cart.quote.totalCents, 1800090);
+  await seed(30000); assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /falta.*1.*para superar/);
+  await seed(30001); assert.equal(cart.quote.discountCents, 300010); assert.equal(cart.quote.totalCents, 2700090);
   await seed(40000); assert.equal(cart.quote.discountCents, 400000);
   const frozen = JSON.stringify(cart.items[0].presentation);
   await act(async () => cart.updateQuantity("test", "unidad", 2)); assert.equal(cart.quote.discountCents, 800000);
   await act(async () => cart.updateQuantity("test", "unidad", 1)); assert.equal(JSON.stringify(cart.items[0].presentation), frozen);
   await act(async () => cart.removeItem("test", "unidad")); assert.equal(cart.quote.discountCents, 0);
-  await seed(25000); await click("Enviar pedido por WhatsApp");
+  await seed(35000); await click("Enviar pedido por WhatsApp");
   const message = new URL(openedUrl).searchParams.get("text");
-  assert.match(message, /Subtotal:.*25\.000/); assert.match(message, /Descuento 10%:.*2\.500/); assert.match(message, /22\.500/);
+  assert.match(message, /Subtotal:.*35\.000/); assert.match(message, /Descuento 10%:.*3\.500/); assert.match(message, /31\.500/);
   assert.equal(cart.items.length, 0, "baseline clears cart on WhatsApp intent");
   assert.ok(window.dataLayer.some((x) => x.event === "whatsapp_order_intent"));
   assert.ok(!window.dataLayer.some((x) => x.event === "purchase"));
-  await seed(25000); await click("Abrir"); await resumeTime("2026-12-01T03:00:00Z");
+  await seed(35000); await click("Abrir"); await resumeTime("2026-12-01T03:00:00Z");
   assert.equal(cart.quote.discountCents, 0); assert.match(container.textContent, /venció/);
   await click("Enviar pedido por WhatsApp"); assert.ok(!new URL(openedUrl).searchParams.get("text").includes("Cupón:"));
   await resumeTime("2026-11-01T02:59:59.999Z"); assert.equal(cart.quote.status, "upcoming");
   await resumeTime("2026-11-01T03:00:00Z"); assert.equal(cart.quote.status, "minimum");
-  await seed(25000); await click("Abrir"); await click("Quitar cupón"); assert.equal(cart.quote.discountCents, 0);
+  await seed(35000); await click("Abrir"); await click("Quitar cupón"); assert.equal(cart.quote.discountCents, 0);
   await act(async () => cart.closeCart());
   assert.ok(!container.querySelector("dialog").open, "popup is delayed");
   await act(async () => { popupTimer(); await flush(); }); assert.ok(container.querySelector("dialog").open);
   const modal = container.querySelector("dialog"); assert.equal(modal.getAttribute("aria-labelledby"), "promotion-title");
-  await click("Aplicar al carrito"); assert.equal(cart.isOpen, true); assert.equal(cart.quote.discountCents, 250000);
+  await click("Aplicar al carrito"); assert.equal(cart.isOpen, true); assert.equal(cart.quote.discountCents, 350000);
   await act(async () => cart.closeCart()); await act(async () => { popupTimer(); await flush(); }); assert.ok(!modal.open, "dismissed during session");
   await unmount(); await mount({ promotion: approved }); await act(async () => { popupTimer(); await flush(); }); assert.ok(!container.querySelector("dialog").open, "dismissal survives navigation");
   await unmount();

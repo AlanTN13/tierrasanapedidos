@@ -8,7 +8,7 @@ Fuente única: `lib/promotions.ts`, `NOVEMBER_PROMOTION`.
 |---|---|
 | Código | NOVIEMBRE10 |
 | Descuento | 10% del subtotal de productos |
-| Mínimo | Estrictamente más de $20.000, antes de descontar |
+| Mínimo | Estrictamente más de $30.000, antes de descontar |
 | Tope | Sin tope de descuento (`maximumDiscountCents: null`) |
 | Inicio inclusivo | 01/11/2026 00:00 Argentina = 03:00 UTC |
 | Fin exclusivo | 01/12/2026 00:00 Argentina = 03:00 UTC |
@@ -24,13 +24,17 @@ Se consultó `https://www.tierrasanadietetica.com/api/catalog`: HTTP200, 208 pro
 
 | Canasta | Contenido | Subtotal | Descuento propuesto | Total estimado | Descuento efectivo |
 |---|---|---:|---:|---:|---:|
-| Desayuno / snacks | Granola crocante 500g $6.290; avena tradicional 1kg $2.900; nuez mariposa 250g $6.500; mix semillas 250g $1.990; almendra 250g $7.500 | $25.180 | $2.518 | $22.662 | 10% |
-| Despensa / semillas | 2 garbanzos 1kg a $3.190; 2 lentejas 1kg a $4.190; harina avena 1kg $3.200; mix semillas 1kg $6.690 | $24.650 | $2.465 | $22.185 | 10% |
+| Desayuno / snacks | Granola crocante 500g $6.290; avena tradicional 1kg $2.900; nuez mariposa 250g $6.500; mix semillas 250g $1.990; almendra 250g $7.500 | $25.180 | $0 | $25.180 | 0% (no supera el mínimo) |
+| Despensa / semillas | 2 garbanzos 1kg a $3.190; 2 lentejas 1kg a $4.190; harina avena 1kg $3.200; mix semillas 1kg $6.690 | $24.650 | $0 | $24.650 | 0% (no supera el mínimo) |
 | Frutos secos | Almendra 1kg $28.000; nuez mariposa 500g $12.500 | $40.500 | $4.050 | $36.450 | 10% |
 
 El descuento es el 10% del subtotal sin tope monetario, por corrección explícita del usuario. Esto **no acredita rentabilidad**. Faltan costos actuales completos por SKU/presentación, envase, preparación, costos de entrega absorbidos y objetivo de contribución. AlanOS ya advertía costos incompletos/estimados: no se convirtieron en cero ni se usaron costos históricos de chat como vigentes. La validación debe comparar `subtotal - descuento - costo de mercadería - costos variables absorbidos` con el margen objetivo aprobado, incluyendo canastas de baja contribución.
 
 **Bloqueo comercial:** todavía no se validó la rentabilidad de la promoción sin tope. No se publican beneficios mientras esté bloqueado. No se agregan exclusiones ni acumulaciones. Las condiciones logísticas existentes se conservan; el descuento toma sólo productos y las condiciones promocionales muestran solamente «No incluye envío» como aclaración logística, sin tarifas inventadas. No se afirma haber revalidado zonas o mínimos de envío.
+
+## Diseño vigente del pop-up
+
+Corrección del usuario: mínimo superior a $30.000 y rediseño acotado del modal. Composición con panel verde oliva, 10% protagonista, fondo crema, tipografía editorial local, detalle botánico vectorial y bloque de código con copiar. Dos columnas en escritorio; apilado en móvil. Cierre accesible y comportamiento de Home1s conservados. Sin imágenes externas ni dependencias nuevas. La condición de compra y la aclaración «No incluye envío» siguen visibles.
 
 ## Preview y aislamiento
 
@@ -38,7 +42,7 @@ El descuento es el 10% del subtotal sin tope monetario, por corrección explíci
 
 ## Cálculo y WhatsApp
 
-Importes internos en centavos enteros; 10% redondeado al centavo más cercano, sin tope monetario y limitado únicamente al subtotal para evitar totales negativos. $20.001 produce $2.000,10 de descuento y $18.000,90 de total. El incentivo propone la cantidad de pesos enteros para superar el mínimo ($1 al estar justo en $20.000). Nunca se altera un precio unitario ni se incluye envío en la base del descuento.
+Importes internos en centavos enteros; 10% redondeado al centavo más cercano, sin tope monetario y limitado únicamente al subtotal para evitar totales negativos. $30.001 produce $3.000,10 de descuento y $27.000,90 de total. El incentivo propone la cantidad de pesos enteros para superar el mínimo ($1 al estar justo en $30.000). Nunca se altera un precio unitario ni se incluye envío en la base del descuento.
 
 `createWhatsAppUrl` vuelve a sumar las líneas y valida el cupón/fecha al click: no acepta el total descontado de la UI como autoridad. Incluye detalle, subtotal, código, porcentaje, importe, total y coordinación de entrega/retiro. Conserva el número y el comportamiento anterior de abrir WhatsApp y vaciar el carrito. Eso es una intención de compra, no venta confirmada; no se escribe una venta.
 

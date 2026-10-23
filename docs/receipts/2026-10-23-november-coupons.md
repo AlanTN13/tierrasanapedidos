@@ -50,3 +50,12 @@
 - Cambio limitado a PromotionPopup: temporizador de 1.000ms al entrar a `/`, o a la simulación aislada de preview. Catálogo/productos/recetas no disparan el pop-up. Se conserva cierre por sesión, vigencia, bloqueo económico, foco ocupado y las condiciones sin tope.
 - Prueba React DOM: fuera de Home no se programa el aviso; Home programa 1.000ms sin abrir carrito; volver a Home mantiene 1.000ms; el cierre sigue conservado en sesión. Flujo restante PASS. Typecheck y lint focal PASS.
 - Preview y docs actualizadas en PR7; no se modifica producción ni se activa campaña comercial.
+
+
+## Corrección de mínimo y diseño — 23/10/2026
+
+- Usuario autoriza subir la compra mínima a **más de $30.000** y mejorar el diseño del pop-up. Se modifica la configuración central; se mantienen 10% sin tope, Home1s, cierre por sesión, vigencia y bloqueo económico.
+- Popup: composición editorial crema/oliva, panel de descuento protagonista, tipografía display existente, detalle botánico SVG, cupón con copiar y CTA integrado. Modal nativo y semántica/foco se conservan. No se tocó el resto de la web ni se agregaron assets/dependencias.
+- QA: **80/80 tests**, typecheck, lint focal y fixture React DOM PASS. $25.000 y $30.000 no aplican; $30.001 descuenta $3.000,10; $35.000 descuenta $3.500; $40.000 descuenta $4.000. Carrito y WhatsApp coinciden; persistencia, cierre y timing Home1s conservados.
+- Las canastas de $25.180 y $24.650 pasan a descuento0 por mínimo; la de $40.500 conserva descuento$4.050 y total$36.450. No es validación de costos/rentabilidad ni una modificación de precios.
+- Continúa pendiente QA visual en navegador320/390/desktop y aprobación económica. Publicación de preview en el mismo PR7, sin merge/producción. Build y despliegue del delta se registran en el cierre del PR y AlanOS.

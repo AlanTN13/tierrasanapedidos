@@ -8,7 +8,8 @@ import type { Product } from "@/types/catalog";
 
 const previewPromotion = { ...NOVEMBER_PROMOTION, commercialApproved: true };
 const previewNow = Date.parse("2026-11-15T12:00:00-03:00");
-const TEST_PRICES = [19000, 20000, 20001, 25000, 40000];
+const minimum = NOVEMBER_PROMOTION.minimumCents / 100;
+const TEST_PRICES = [minimum - 5000, minimum, minimum + 1, minimum + 5000, minimum + 10000];
 
 export function CampaignPreview() {
   return <CartProvider promotion={previewPromotion} previewNow={previewNow}><PreviewContent /></CartProvider>;

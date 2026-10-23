@@ -13,7 +13,7 @@ export type Promotion = {
 export const NOVEMBER_PROMOTION: Promotion = {
   code: "NOVIEMBRE10",
   percent: 10,
-  minimumCents: 2_000_000,
+  minimumCents: 3_000_000,
   maximumDiscountCents: null,
   startsAt: "2026-11-01T00:00:00-03:00",
   endsAt: "2026-12-01T00:00:00-03:00",
@@ -92,7 +92,7 @@ export function promotionConditions(promotion: Promotion) {
   return `${promotion.percent}% sobre productos en compras superiores a ${formatCartMoney(promotion.minimumCents)}, antes del descuento.${cap} Del 1 al 30/11/2026, horario de Argentina. Un cupón por carrito. No incluye envío.`;
 }
 
-// Whole-peso suggestion: at exactly $20,000 the customer needs $1 more.
+// Whole-peso suggestion: at exactly the minimum the customer needs $1 more.
 export function pesosToExceedMinimum(subtotalCents: number, promotion: Promotion) {
   return subtotalCents > promotion.minimumCents ? 0 : Math.floor((promotion.minimumCents - subtotalCents) / 100) + 1;
 }
