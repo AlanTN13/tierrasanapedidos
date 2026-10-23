@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
-import { formatARS } from "@/lib/format";
 import type { CartItem, ProductPresentation } from "@/types/catalog";
+import { useCart } from "@/components/cart-provider";
+import { CartCoupon } from "@/components/cart-coupon";
+import { formatCartMoney, quoteCart, toCents } from "@/lib/promotions";
+import { trackCampaign } from "@/lib/campaign-events";
 
 type CartDrawerProps = {
   items: CartItem[];
@@ -32,6 +35,10 @@ export function CartDrawer({
   onUpdateQuantity,
 }: CartDrawerProps) {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const { couponCode, quote, promotion, checkoutNow, isPreview } = useCart();
+  const [previewMessage, setPreviewMessage] = useState("");
+  void subtotal;
 
   useEffect(() => {
     if (!isOpen) {
@@ -53,13 +60,34 @@ export function CartDrawer({
       return;
     }
 
+    const previousFocus = document.activeElement;
     closeButtonRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function trapFocus(event: KeyboardEvent) {
+      if (event.key !== "Tab") return;
+      const controls = dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), input, a[href], [tabindex="0"]');
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+    document.addEventListener("keydown", trapFocus);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", trapFocus);
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
+    };
   }, [isOpen]);
 
-  const whatsappUrl = createWhatsAppUrl(items, subtotal);
-
   function handleCheckout() {
+    const instant = checkoutNow();
+    const current = quoteCart(quote.subtotalCents, couponCode, instant, promotion);
+    const whatsappUrl = createWhatsAppUrl(items, quote.subtotalCents / 100, couponCode, instant, promotion);
+    if (isPreview) { setPreviewMessage(new URL(whatsappUrl).searchParams.get("text") ?? ""); return; }
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    trackCampaign("whatsapp_order_intent", { subtotal_cents: current.subtotalCents, discount_cents: current.discountCents, total_cents: current.totalCents, coupon_status: current.status });
     onCheckout();
   }
 
@@ -77,6 +105,7 @@ export function CartDrawer({
       />
 
       <aside
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="cart-title"
@@ -124,7 +153,7 @@ export function CartDrawer({
                       {product.nombre}
                     </p>
                     <p className="mt-1 text-sm text-foreground/62">
-                      {presentation.etiqueta} · {formatARS(presentation.precio)}
+                      {presentation.etiqueta} · {formatCartMoney(toCents(presentation.precio))}
                     </p>
                   </div>
                   <button
@@ -168,19 +197,30 @@ export function CartDrawer({
                   </div>
 
                   <p className="text-base font-semibold text-olive-dark">
-                    {formatARS(presentation.precio * quantity)}
+                    {formatCartMoney(toCents(presentation.precio) * quantity)}
                   </p>
                 </div>
               </article>
             ))
           )}
+          <CartCoupon />
+          {isPreview && previewMessage ? <div className="rounded-2xl bg-white p-4 text-sm text-olive-dark">
+            <p className="mb-2 font-semibold">Mensaje de prueba · no se abrió WhatsApp</p>
+            <textarea aria-label="Mensaje de WhatsApp de prueba" value={previewMessage} readOnly rows={12} className="w-full min-w-0 rounded-xl border border-olive/20 p-2" />
+          </div> : null}
         </div>
 
         <div className="border-t border-olive/10 bg-white/86 px-5 py-5 sm:px-6">
+          {quote.status === "applied" ? (
+            <dl className="mb-3 space-y-1 text-sm text-olive-dark">
+              <div className="flex justify-between gap-3"><dt>Subtotal de productos</dt><dd>{formatCartMoney(quote.subtotalCents)}</dd></div>
+              <div className="flex justify-between gap-3"><dt>Descuento {quote.percent}%</dt><dd>-{formatCartMoney(quote.discountCents)}</dd></div>
+            </dl>
+          ) : null}
           <div className="mb-4 flex items-center justify-between gap-4">
             <p className="text-sm font-medium text-foreground/62">Total estimado</p>
             <p className="text-2xl font-semibold text-olive-dark">
-              {formatARS(subtotal)}
+              {formatCartMoney(quote.totalCents)}
             </p>
           </div>
 
@@ -203,8 +243,8 @@ export function CartDrawer({
           )}
 
           <p className="mt-3 text-center text-xs leading-5 text-foreground/58">
-            Los precios y stock pueden confirmarse por WhatsApp antes de cerrar
-            el pedido.
+            La compra, los precios y el stock se confirman por WhatsApp.
+            Entrega o retiro a coordinar; envío no incluido.
           </p>
         </div>
       </aside>
