@@ -1,4 +1,4 @@
-type CampaignEvent = "promotion_view" | "promotion_copy" | "promotion_dismiss" | "coupon_apply" | "coupon_remove" | "whatsapp_order_intent";
+type CampaignEvent = "promotion_view" | "promotion_copy" | "promotion_browse" | "promotion_dismiss" | "coupon_apply" | "coupon_remove" | "whatsapp_order_intent";
 
 // No purchase event: opening WhatsApp is an intent, never a confirmed sale.
 // Ready for a separately configured GA4/GTM consumer; no personal data.

@@ -487,20 +487,20 @@ export function HomeShorts({
     <section
       id="ideas"
       aria-labelledby="shorts-title"
-      className="container-shell pb-12 sm:pb-16"
+      className="container-shell scroll-mt-44 pb-12 sm:pb-16"
     >
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <h2
           id="shorts-title"
-          className="font-display text-2xl font-semibold text-olive-dark sm:text-3xl"
+          className="min-w-0 font-display text-[22px] leading-tight font-semibold text-olive-dark sm:text-[26px]"
         >
           Mirá y descubrí
         </h2>
         <Link
           href="/recetas"
-          className="shrink-0 text-xs font-semibold text-olive-dark underline decoration-olive/25 underline-offset-4 hover:text-olive sm:text-sm"
+          className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-lg text-xs font-semibold text-olive-dark underline decoration-olive/25 underline-offset-4 hover:text-olive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive sm:text-sm"
         >
-          Ver más recetas →
+          Ver recetas <span aria-hidden="true">→</span>
         </Link>
       </div>
 
@@ -526,7 +526,7 @@ export function HomeShorts({
           setIsHoverPaused(false);
           pauseForInteraction();
         }}
-        className="mt-4 flex max-w-full cursor-grab gap-2 overflow-x-auto overscroll-x-contain select-none active:cursor-grabbing sm:mt-5 sm:gap-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="mt-3 flex max-w-full cursor-grab gap-[10px] overflow-x-auto overscroll-x-contain pb-2 select-none active:cursor-grabbing sm:mt-4 sm:gap-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {SHORTS_LOOP_COPIES.flatMap((copy) =>
           shorts.map((recipe, index) => {
@@ -559,25 +559,25 @@ export function HomeShorts({
                 aria-pressed={
                   isPrimaryCopy ? recipe.slug === activeSlug : undefined
                 }
-                className="group flex basis-[47%] shrink-0 flex-col overflow-hidden rounded-[1.2rem] bg-white text-left shadow-[0_10px_26px_rgba(47,51,40,0.11)] ring-1 ring-olive/8 transition select-none hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(47,51,40,0.14)] focus:outline-none focus-visible:ring-2 focus-visible:ring-olive focus-visible:ring-offset-2 sm:rounded-[1.45rem] lg:basis-[240px] xl:basis-[260px]"
+                className="group flex min-w-0 basis-[calc(50%-22px)] shrink-0 flex-col overflow-hidden rounded-2xl border border-olive/20 bg-background text-left shadow-[0_2px_8px_rgba(47,51,40,0.04)] transition-colors select-none hover:border-olive/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive focus-visible:ring-offset-2 sm:basis-[200px] lg:basis-[220px] xl:basis-[240px]"
               >
-                <span className="relative block aspect-[4/5] w-full overflow-hidden bg-olive-soft/25">
+                <span className="relative block aspect-[4/3] w-full overflow-hidden bg-[#f7f4eb]">
                   <Image
                     src={recipe.heroImage}
                     alt=""
                     fill
                     draggable={false}
-                    sizes="(max-width: 1023px) 50vw, 260px"
+                    sizes="(max-width: 639px) calc((100vw - 60px) / 2), (max-width: 1023px) 200px, (max-width: 1279px) 220px, 240px"
                     className="object-cover transition duration-500 group-hover:scale-[1.035]"
                   />
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/94 text-olive-dark shadow-[0_10px_24px_rgba(0,0,0,0.2)] transition group-hover:scale-105 sm:h-13 sm:w-13">
-                      <PlayIcon />
-                    </span>
+                  <span aria-hidden="true" className="absolute right-2 bottom-2 inline-flex h-[36px] w-[36px] items-center justify-center rounded-full bg-olive text-white shadow-sm transition-colors group-hover:bg-olive-dark">
+                    <PlayIcon />
                   </span>
                 </span>
-                <span className="line-clamp-2 min-h-[3.75rem] px-3 py-3 text-[13px] leading-[1.15rem] font-semibold text-olive-dark sm:min-h-[4.25rem] sm:px-4 sm:py-3.5 sm:text-base sm:leading-5">
-                  {recipe.title}
+                <span className="flex min-h-[64px] flex-1 items-center border-t border-olive/12 bg-cream/50 px-2.5 py-2.5 sm:px-3">
+                  <span className="line-clamp-2 w-full min-w-0 text-[12px] leading-[17px] font-semibold text-olive-dark sm:text-[14px] sm:leading-5">
+                    {recipe.title}
+                  </span>
                 </span>
               </button>
             );
@@ -591,7 +591,7 @@ export function HomeShorts({
             <button
               type="button"
               onClick={() => handleCarouselNavigation(-1)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
+              className="inline-flex h-[44px] w-[44px] items-center justify-center rounded-full border border-olive/15 bg-background text-olive-dark hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
               aria-label="Mover carrusel a la izquierda"
             >
               <ChevronIcon direction="left" />
@@ -599,7 +599,7 @@ export function HomeShorts({
             <button
               type="button"
               onClick={() => handleCarouselNavigation(1)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
+              className="inline-flex h-[44px] w-[44px] items-center justify-center rounded-full border border-olive/15 bg-background text-olive-dark hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
               aria-label="Mover carrusel a la derecha"
             >
               <ChevronIcon direction="right" />
@@ -614,7 +614,7 @@ export function HomeShorts({
             <button
               type="button"
               onClick={toggleCarouselAutoplay}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-olive/12 bg-white text-olive-dark shadow-sm hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
+              className="inline-flex h-[44px] w-[44px] items-center justify-center rounded-full border border-olive/15 bg-background text-olive-dark hover:bg-olive-soft/35 focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/35"
               aria-label={
                 isManuallyPaused
                   ? "Reanudar carrusel automático"
