@@ -1,5 +1,21 @@
 # Acceso destacado a recetas — preview del 23/10/2026
 
+## Revisión compacta aprobada — sustituye la primera tarjeta
+
+- Resultado/autorización: tras descartar el diseño alto y aprobar el último boceto, el usuario indica «ahora si mandale». Implementar la fila compacta en la misma preview; sin instrucción nueva de producción.
+- Contexto releído: runtime `c74478a3d868c5f9dd4bdc91a5414073dc469624`; estado canónico `56a577157d6d63e303d6f4ee85e2a4334062b91d`, Alanos/main `502081a13c1763795e55c029e6ce58251da6f206`; PR13 draft/open con head `dc929917fd5fbca9687d5ef46f67c1ed56c07528`, Hero `d18e4fa97737b5a18c2ce9bc4b3d9206558d80cb`. Web/main sigue `713fc6bd31162bc269b2f6ccda5097ef7481958c`. Guía local Next16/Image leída.
+- PATCH MODE / S-T1-R1: sólo `components/hero.tsx` y este receipt. Una fila de 64px, máximo 520px centrada, título pequeño, acción textual/flecha e imagen real de barritas a la derecha. Se retira el subtítulo y el botón grande por el diseño aprobado; se conserva ubicación y destino `/recetas`.
+- Congelado: carrusel/banners, header/entregas, categorías/fotos de productos, contenido de recetas/Shorts, cupón/carrito/WhatsApp, catálogo/precios/stock, ERP, Supabase/datos, logística y pagos. Sin dependencias del proyecto, migraciones o consultas nuevas.
+- Aceptación: altura real de 64px, fila sin desbordes en 320/390/desktop, foto existente, foco y navegación semántica. Tipos/lint focal, comparación literal del carrusel, build preview y un smoke. QA nativa sólo se acredita si se ejecuta; herramientas Browser/Chrome del usuario no callable. Sin tests permanentes de estilos ni repetir descuentos intactos.
+- Recuperación/STOP: actualizar rama/PR13 y entregar preview; sin merge/promoción. Revertir la revisión o cerrar PR conserva producción. Detener expansión fuera de Hero; resultados y límites finales en el cuerpo de PR13.
+
+### QA focal de la revisión
+
+- Tipos y lint de Hero: PASS. Bloque del carrusel idéntico al head previo.
+- Altura de 64px y máximo de 520px declarados en píxeles para conservarlos con el escalado de fuente global de desktop. Título en una fila; acción textual sólo desde sm y flecha en ambos tamaños; enlace completo accesible de 64px. Foto reservada de 60/72 × 48px.
+- Herramientas Browser/Chrome del usuario no callable. Se intentó QA headless aislada con Playwright temporal fuera del repo y Chrome instalado; el proceso terminó con SIGABRT/EPERM antes de abrir una página. No se repitió ni se pidieron privilegios. QA visual/interactivo nativo 320/390/desktop sigue pendiente; tipos/HTTP no lo sustituyen. Sin cambios de dependencias del proyecto.
+- Build, URL, versión desplegada y smoke finales: ver cuerpo actualizado del PR13.
+
 ## EXECUTION PREFLIGHT / PATCH MODE
 
 - Rol/superficie: Dirección de Ejecución Técnica, acceso a recetas inmediatamente debajo del carrusel de Home.
