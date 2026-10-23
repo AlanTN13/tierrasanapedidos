@@ -1,5 +1,20 @@
 # Los más elegidos — preview del 23/10/2026
 
+## Revisión de descripción y tarjeta contenida
+
+- Pedido/corrección explícita: el usuario observa que faltan descripciones y que el agregar queda suelto, especialmente en desktop. Mostrar la descripción existente y recuperar una tarjeta claramente delimitada con compra integrada. Se conserva mobile con dos productos completos y tercero asomando. Videos de recetas después; sólo preview.
+- Contexto verificado: runtime `c74478a3d868c5f9dd4bdc91a5414073dc469624`; estado canónico `580771c03c35b982459231301934ae6e5f8cbc2b`, Alanos/main `b1ebf44b4bc53afcc8964448840660a6073c404c`. PR14 draft/open head `9cbc1fdf72757809e82d0e6629e78192dc5a059c`, árbol `cf0b671857c381c7dc7a8b84d1181f5592a3facc`, componente remoto `b23806c8f6c144cc53f414abe0fba346351ed4f5`. Main/producción sigue `67966a4b`. Guía CSS local Next16 leída.
+- PATCH MODE / S-T1-R1: sólo FeaturedProducts y este receipt. Descripción del catálogo de hasta dos líneas si existe, sin copy inventado; borde exterior/sombra leve, separador de foto y franja de compra con fondo suave dentro del mismo marco. Nombre/descripción con tamaños legibles en desktop. Geometría mobile, datos/precios, orden, selección, fotos, enlaces, callback/cantidad y feedback intactos; sin dependencias/migraciones/consultas nuevas. Otras superficies y videos congelados.
+- Aceptación/checks: descripción real presente y ausencia sin texto vacío/inventado, cada compra dentro de su artículo; tipos/lint focal, fixture DOM de compra/descripcion existente, build y un smoke de preview. No tests permanentes de estilos ni repetir suite económica intacta; no reintentar navegador nativo sin nueva capacidad (Browser no callable, fallo headless previo SIGABRT/EPERM).
+- Permiso/rollback/STOP: actualizar misma rama/PR14, sin merge/promoción. Revertir revisión o cerrar PR conserva producción PR13. STOP al entregar preview corregida con evidencia y límites. El preflight anterior conserva el historial; esta corrección sustituye el diseño de contenedor abierto.
+
+### QA focal de esta corrección
+
+- Tipos y lint del componente final: PASS.
+- Fixture ReactDOM/jsdom actualizada PASS: descripción original con espacios recortados, ausencia cuando está vacía, botón/compra dentro de su artículo; compra con presentación/precio/cantidad correctos, un llamado por click, repetición/unidad, feedback/check, enlaces, producto sin presentación/vacío y datos intactos. Fixture temporal fuera del repo; no prueba de layout nativo.
+- La regla de ancho/scroll móvil y los activos de imagen no cambian respecto del head anterior; se conserva su evidencia de CSS compilado/HTTP. No se repiten pruebas económicas o de estilos intactos.
+- Build/head/URL y un smoke final del contenido/estructura se cierran en el cuerpo del PR14. Native QA visual320/390/desktop sigue pendiente.
+
 ## EXECUTION PREFLIGHT / PATCH MODE
 
 - Rol/superficie: Dirección de Ejecución Técnica, bloque Home «Los más elegidos».
