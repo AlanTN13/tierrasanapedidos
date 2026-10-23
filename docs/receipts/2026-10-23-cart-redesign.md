@@ -1,5 +1,15 @@
 # Rediseño visual del carrito — 23/10/2026
 
+## Compactar incentivo/cupón — corrección vigente posterior
+
+- PATCH MODE / S / T1 / R1. El usuario aprueba el rediseño general y pide reducir sólo el espacio ocupado por el mínimo/incentivo; referencia image(10).png / libfile_b583f926bfa8819192905d13b3a10764. Autorización productiva del hilo vigente.
+- Baseline verificado: main00fd5592c6d4b2805a42145b1a5ecab8adc128c8, árbol0313515d733be3d87f1478a07ed212c600167def; dominio oficial dpl_B81vpNQGV1hswA6ar2Lf8m9XhBXE READY. Contrato vigente c74478a3d868c5f9dd4bdc91a5414073dc469624; estado AlanOS bee02fb02307243875d28ce71418f96dd7951c59. Guías Next16/CSS ya leídas para este mismo baseline.
+- Superficie permitida: CartCoupon, fixture de regresión existente y este receipt. Conservar íntegro el resto del carrito. No cambiar reglas, mínimo, descuento sin tope, código/fechas, persistencia, WhatsApp ni datos; «tope» se interpreta según la captura como bloque del mínimo mostrado.
+- Delta: aviso y barra compactos; ocultar campo de código hasta pedirlo/editar; estado guardado/aplicado en una fila; condiciones completas desplegables con fecha final visible. Al aplicar descuento, eliminar el progreso redundante. Disclosures con botones/aria-expanded, campo etiquetado y foco restaurado al aplicar/quitar.
+- Validación focal: tipos/lint y flujo React DOM, incluyendo abrir/cerrar campo/condiciones, aplicar/quitar, recálculo y foco. Build/preview del proveedor y smoke acotado al dominio. QA visual/nativo sigue pendiente por Browser no callable; no afirmar medidas renderizadas.
+- Validación del delta: typecheck, lint focal y fixture React DOM PASS. Incluye campo cerrado por defecto, foco al abrir/restaurado al aplicar, cierre automático válido, condiciones desplegables, ausencia de progreso cuando ya descuenta y regresión completa del flujo existente. No se repiten pruebas numéricas intactas (81/81 del PR10 conservadas). Build/preview/deploy se registran al cierre.
+- Rollback: revertir este ajuste o restaurar dpl_B81vpNQGV1hswA6ar2Lf8m9XhBXE /00fd5592 para conservar el rediseño aprobado y la campaña activa. STOP al verificar despliegue y reconciliar AlanOS; no tocar otros bloques.
+
 ## EXECUTION PREFLIGHT / PATCH MODE
 
 - Resultado/autorización: el usuario pide rediseñar el carrito completo, a partir del bloque de objetivos, porque su presentación general le resulta poco estética. Referencia image(9).png / libfile_d7ff71da8bd08191abeb177e4af425cc. Publicación técnica de la experiencia comercial autorizada en este hilo; sin nueva aprobación técnica intermedia.
