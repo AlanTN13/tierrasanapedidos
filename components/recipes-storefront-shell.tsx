@@ -44,7 +44,7 @@ function RecipesStorefrontContent({
   }
 
   return (
-    <div className="pb-20 sm:pb-24">
+    <div className="min-h-screen bg-[#fffdf9] pb-20 sm:pb-24">
       <Header
         sectionLinks={[
           { id: "recetas", label: "Recetas" },
