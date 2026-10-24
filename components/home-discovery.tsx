@@ -16,7 +16,6 @@ import {
   shouldHoldContinuousCarouselPointer,
 } from "@/lib/continuous-carousel";
 import { getDefaultRecipeCartItems } from "@/lib/recipe-cart";
-import { reportPreviewCarousel } from "@/lib/preview-carousel-diagnostic";
 import { getYouTubeEmbedUrl } from "@/lib/youtube";
 import type { HomeContent, HomeRecipeHighlight } from "@/types/home";
 
@@ -300,59 +299,6 @@ export function HomeShorts({
     prefersReducedMotion,
     shorts.length,
   ]);
-
-  // Temporary geometry observation in the diagnostic preview; removed before release.
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-    let reports = 0;
-    let previousLeft = carousel.scrollLeft;
-    let idleTimer: number | undefined;
-    const snapshot = (phase: string) => {
-      if (reports >= 12) return;
-      reports += 1;
-      const trackRect = carousel.getBoundingClientRect();
-      const card = (copy: string) => {
-        const element = carousel.querySelector<HTMLElement>(`[data-loop-copy="${copy}"][data-short-index="0"]`);
-        if (!element) return null;
-        const rect = element.getBoundingClientRect();
-        return { offset: element.offsetLeft, left: rect.left, width: rect.width,
-          parent: element.offsetParent?.tagName,
-          parentClass: element.offsetParent?.getAttribute("class")?.slice(0, 70) };
-      };
-      const visible = [...carousel.querySelectorAll<HTMLElement>("[data-loop-copy]")]
-        .filter(element => { const r = element.getBoundingClientRect(); return r.right > trackRect.left && r.left < trackRect.right; })
-        .slice(0, 8)
-        .map(element => {
-          const img = element.querySelector("img");
-          const r = element.getBoundingClientRect();
-          return { copy: element.dataset.loopCopy, index: element.dataset.shortIndex,
-            x: Math.round(r.left - trackRect.left), w: Math.round(r.width),
-            loaded: img?.complete, imageWidth: img?.naturalWidth };
-        });
-      void reportPreviewCarousel(JSON.stringify({
-        phase, cycle: loopCycleWidthRef.current, left: carousel.scrollLeft,
-        width: carousel.clientWidth, content: carousel.scrollWidth,
-        behavior: getComputedStyle(carousel).scrollBehavior,
-        root: document.documentElement.clientWidth, rootScroll: document.documentElement.scrollWidth,
-        primary: card("primary"), after: card("after"), visible,
-      })).catch(() => { /* Observation must not interrupt navigation. */ });
-    };
-    const onScroll = () => {
-      const left = carousel.scrollLeft;
-      if (Math.abs(left - previousLeft) > loopCycleWidthRef.current * 0.75) snapshot("jump");
-      previousLeft = left;
-      window.clearTimeout(idleTimer);
-      idleTimer = window.setTimeout(() => snapshot("idle"), 250);
-    };
-    const initial = window.setTimeout(() => snapshot("initial"), 750);
-    const settled = window.setTimeout(() => snapshot("settled"), 2500);
-    carousel.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.clearTimeout(initial); window.clearTimeout(settled); window.clearTimeout(idleTimer);
-      carousel.removeEventListener("scroll", onScroll);
-    };
-  }, []);
 
   useEffect(() => {
     if (!activeSlug) {
