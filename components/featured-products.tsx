@@ -71,7 +71,7 @@ function FeaturedProductCard({
   }
 
   return (
-    <article className="flex min-w-0 shrink-0 basis-[calc(50%-22px)] snap-start flex-col overflow-hidden rounded-2xl border border-olive/20 bg-background shadow-[0_2px_8px_rgba(47,51,40,0.04)] sm:basis-[192px] lg:basis-auto">
+    <article className="relative flex min-w-0 shrink-0 basis-[calc(50%-22px)] snap-start flex-col overflow-hidden rounded-2xl border border-olive/20 bg-background shadow-[0_2px_8px_rgba(47,51,40,0.04)] sm:basis-[192px] lg:basis-auto">
       <Link
         href={`/producto/${product.id}`}
         className="group relative aspect-[4/3] overflow-hidden border-b border-olive/10 bg-[#f7f4eb] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-olive"
