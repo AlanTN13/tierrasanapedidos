@@ -8,6 +8,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
+import { StorefrontFooter } from "@/components/storefront-footer";
 import { formatARS } from "@/lib/format";
 import { getDefaultProductPresentation } from "@/lib/product-purchase";
 import type {
@@ -70,7 +71,7 @@ function CatalogListingContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#fffdf9] pb-24">
+    <div className="flex min-h-screen flex-col bg-[#fffdf9]">
       <Header
         sectionLinks={[{ id: "productos", label: title }]}
         categories={categories}
@@ -134,6 +135,8 @@ function CatalogListingContent({
           </div>
         </section>
       </main>
+
+      <StorefrontFooter />
 
       <FloatingWhatsAppButton />
       <CartDrawer

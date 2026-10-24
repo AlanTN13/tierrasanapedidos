@@ -6,6 +6,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
+import { StorefrontFooter } from "@/components/storefront-footer";
 import type { CatalogCategory } from "@/types/catalog";
 
 export function RecipesStorefrontShell({
@@ -44,7 +45,7 @@ function RecipesStorefrontContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#fffdf9] pb-20 sm:pb-24">
+    <div className="flex min-h-screen flex-col bg-[#fffdf9]">
       <Header
         sectionLinks={[
           { id: "recetas", label: "Recetas" },
@@ -60,6 +61,7 @@ function RecipesStorefrontContent({
         onOpenCart={cart.openCart}
       />
       {children}
+      <StorefrontFooter />
       <FloatingWhatsAppButton />
       <CartDrawer
         items={cart.items}
