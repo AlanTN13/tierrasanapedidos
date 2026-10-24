@@ -194,7 +194,7 @@ function StorefrontContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#fffdf9] pb-20">
+    <div data-home-storefront className="min-h-screen bg-[#fffdf9] pb-20">
       <ShippingTicker isOpen={isShippingOpen} onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={[

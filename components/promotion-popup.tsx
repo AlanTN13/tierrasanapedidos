@@ -60,7 +60,7 @@ export function PromotionPopup() {
     <dialog ref={ref} aria-labelledby="promotion-title" aria-describedby="promotion-conditions"
       onCancel={() => { dismiss(); trackCampaign("promotion_dismiss"); }}
       onClick={(event) => { if (event.target === event.currentTarget) { dismiss(); trackCampaign("promotion_dismiss"); } }}
-      className="fixed inset-0 m-auto max-h-[92dvh] w-[calc(100%-2rem)] max-w-[360px] overflow-y-auto rounded-3xl border border-[#e7e1d3] bg-[#fcf8ef] p-0 text-olive-dark shadow-[0_32px_100px_rgba(20,30,15,0.3)] backdrop:bg-[#1e281b]/55 backdrop:backdrop-blur-sm sm:w-[calc(100%-1.5rem)] sm:max-w-[680px] sm:rounded-[2rem]">
+      className="fixed inset-0 m-auto max-h-[92dvh] w-[calc(100vw-2rem)] max-w-[360px] overflow-y-auto rounded-3xl border border-[#e7e1d3] bg-[#fcf8ef] p-0 text-olive-dark shadow-[0_32px_100px_rgba(20,30,15,0.3)] backdrop:bg-[#1e281b]/55 backdrop:backdrop-blur-sm sm:w-[calc(100%-1.5rem)] sm:max-w-[680px] sm:rounded-[2rem]">
       <div className="relative grid sm:grid-cols-[0.85fr_1.15fr]">
         <button type="button" autoFocus aria-label="Cerrar promoción" onClick={() => { dismiss(); trackCampaign("promotion_dismiss"); }}
           className="absolute top-3 right-3 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#e4dfd2] bg-[#fcf8ef] text-olive-dark transition hover:bg-[#ebe6d8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive sm:top-4 sm:right-4 sm:h-10 sm:w-10">
