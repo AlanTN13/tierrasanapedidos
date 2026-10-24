@@ -42,14 +42,6 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (max-width: 767px) {
-  [data-home-storefront] {
-    width: 100%;
-    max-width: 100vw;
-    overflow-x: clip;
-  }
-}
-
 @media (min-width: 1024px) {
   html {
     font-size: 87%;
