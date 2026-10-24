@@ -54,19 +54,19 @@ export function RecipeProductsPicker({ products }: { products: Product[] }) {
     <section
       id="productos-receta"
       aria-labelledby="productos-title"
-      className="scroll-mt-28 rounded-[1.45rem] border border-olive/10 bg-olive-soft/35 px-4 py-5 sm:scroll-mt-32 sm:px-6 sm:py-7"
+      className="min-w-0 scroll-mt-44 overflow-hidden rounded-2xl border border-olive/20 bg-background p-4 sm:p-5"
     >
       <h2
         id="productos-title"
-        className="font-display text-3xl font-semibold text-olive-dark"
+        className="font-display text-[24px] leading-tight font-semibold text-olive-dark"
       >
         Comprá los ingredientes
       </h2>
-      <p className="mt-2 text-sm leading-6 text-foreground/62">
+      <p className="mt-2 text-[13px] leading-5 text-foreground/65">
         {products.length} productos disponibles en Tierra Sana
       </p>
 
-      <ul className="mt-5 divide-y divide-olive/12 border-y border-olive/12">
+      <ul className="mt-4 divide-y divide-olive/12 border-y border-olive/12">
         {products.map((product) => {
           const selection = selections[product.id];
           const selectedPresentation =
@@ -79,10 +79,11 @@ export function RecipeProductsPicker({ products }: { products: Product[] }) {
           return (
             <li
               key={product.id}
-              className={`grid grid-cols-[auto_2.75rem_minmax(0,1fr)_auto] items-center gap-2.5 py-3.5 transition sm:grid-cols-[auto_3rem_minmax(0,1fr)_auto] sm:gap-3 ${
+              className={`grid grid-cols-[44px_44px_minmax(0,1fr)] items-start gap-2 py-3 transition-opacity ${
                 selection.isSelected ? "" : "opacity-55"
               }`}
             >
+              <label className="inline-flex h-[44px] w-[44px] cursor-pointer items-center justify-center rounded-lg focus-within:ring-2 focus-within:ring-olive/40">
                 <input
                   type="checkbox"
                   checked={selection.isSelected}
@@ -95,57 +96,57 @@ export function RecipeProductsPicker({ products }: { products: Product[] }) {
                     setFeedback("");
                   }}
                   aria-label={`${selection.isSelected ? "Quitar" : "Agregar"} ${product.nombre}`}
-                  className="h-4.5 w-4.5 accent-olive"
+                  className="h-5 w-5 accent-olive"
                 />
+              </label>
 
-                <div className="relative aspect-square overflow-hidden rounded-lg bg-white/70">
-                  <Image
-                    src={product.imagen}
-                    alt=""
-                    fill
-                    sizes="48px"
-                    className="object-cover"
-                  />
-                </div>
+              <div className="relative aspect-square overflow-hidden rounded-lg border border-olive/10 bg-cream/40">
+                <Image
+                  src={product.imagen}
+                  alt=""
+                  fill
+                  sizes="48px"
+                  className="object-contain"
+                />
+              </div>
 
-                <div className="min-w-0">
-                  <h3 className="text-sm leading-5 font-semibold text-olive-dark">
-                    {product.nombre}
-                  </h3>
-                  {product.presentaciones.length > 1 ? (
-                    <select
-                      value={selection.presentationLabel}
-                      onChange={(event) => {
-                        const presentationLabel = event.target
-                          .value as ProductPresentation["etiqueta"];
-                        setSelections((current) => ({
-                          ...current,
-                          [product.id]: {
-                            ...current[product.id],
-                            presentationLabel,
-                          },
-                        }));
-                        setFeedback("");
-                      }}
-                      aria-label={`Elegir presentación de ${product.nombre}`}
-                      className="mt-1.5 max-w-full rounded-md border border-olive/14 bg-white/88 px-2 py-1.5 text-xs font-medium text-olive-dark outline-none focus:ring-2 focus:ring-olive/20"
-                    >
-                      {product.presentaciones.map(({ etiqueta }) => (
-                        <option key={etiqueta} value={etiqueta}>
-                          {etiqueta}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="mt-1 text-xs text-foreground/55">
-                      {selectedPresentation.etiqueta}
-                    </p>
-                  )}
-                </div>
-
-                <span className="text-xs font-semibold text-olive-dark">
+              <div className="min-w-0">
+                <h3 className="text-[13px] leading-5 font-semibold text-olive-dark">
+                  {product.nombre}
+                </h3>
+                <p className="mt-0.5 text-[13px] leading-5 font-semibold text-olive-dark">
                   {formatARS(selectedPresentation.precio)}
-                </span>
+                </p>
+                {product.presentaciones.length > 1 ? (
+                  <select
+                    value={selection.presentationLabel}
+                    onChange={(event) => {
+                      const presentationLabel = event.target
+                        .value as ProductPresentation["etiqueta"];
+                      setSelections((current) => ({
+                        ...current,
+                        [product.id]: {
+                          ...current[product.id],
+                          presentationLabel,
+                        },
+                      }));
+                      setFeedback("");
+                    }}
+                    aria-label={`Elegir presentación de ${product.nombre}`}
+                    className="mt-2 min-h-[44px] w-full min-w-0 max-w-full rounded-lg border border-olive/20 bg-cream/45 px-2 text-[16px] font-medium text-olive-dark outline-none focus:ring-2 focus:ring-olive/30 sm:text-[13px]"
+                  >
+                    {product.presentaciones.map(({ etiqueta }) => (
+                      <option key={etiqueta} value={etiqueta}>
+                        {etiqueta}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="mt-1 text-xs text-foreground/55">
+                    {selectedPresentation.etiqueta}
+                  </p>
+                )}
+              </div>
             </li>
           );
         })}
@@ -161,7 +162,7 @@ export function RecipeProductsPicker({ products }: { products: Product[] }) {
           );
           openCart();
         }}
-        className="mt-5 w-full rounded-full bg-olive px-5 py-3 text-sm font-semibold text-white transition hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/30 disabled:cursor-not-allowed disabled:opacity-45"
+        className="mt-4 min-h-[48px] w-full rounded-xl bg-olive-dark px-4 py-3 text-[13px] font-semibold text-white transition-colors hover:bg-olive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-olive disabled:cursor-not-allowed disabled:opacity-45"
       >
         Agregar {selectedItems.length} productos al carrito
       </button>

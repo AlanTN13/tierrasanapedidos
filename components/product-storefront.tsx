@@ -8,6 +8,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
+import { StorefrontFooter } from "@/components/storefront-footer";
 import { formatARS } from "@/lib/format";
 import {
   createProductCartSelection,
@@ -88,7 +89,7 @@ function ProductStorefrontContent({
   }
 
   return (
-    <div className="pb-24">
+    <div className="flex min-h-screen flex-col bg-[#fffdf9]">
       <Header
         sectionLinks={[{ id: "producto", label: "Producto" }]}
         categories={categories}
@@ -102,103 +103,107 @@ function ProductStorefrontContent({
       />
 
       <main id="main-content">
-        <section id="producto" className="container-shell py-6 sm:py-10 lg:py-14">
-          <div className="mx-auto max-w-6xl">
+        <section id="producto" className="container-shell scroll-mt-44 py-5 sm:py-8 lg:py-10">
+          <div className="mx-auto max-w-[1120px]">
             <Link
               href={primaryCategorySlug ? `/categoria/${primaryCategorySlug}` : "/"}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-olive-dark hover:text-olive"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg text-sm font-medium text-olive-dark/75 hover:text-olive-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/30"
             >
               <span aria-hidden="true">←</span>{" "}
               {primaryCategorySlug ? `Volver a ${primaryCategory}` : "Volver a Inicio"}
             </Link>
 
-            <article className="mt-5 overflow-hidden rounded-[1.7rem] bg-[#fffdf9] shadow-[0_24px_70px_rgba(47,51,40,0.12)] ring-1 ring-olive/10 sm:mt-7 sm:rounded-[2.2rem] lg:grid lg:grid-cols-[minmax(0,1.04fr)_minmax(0,0.96fr)]">
-              <div className="relative aspect-square overflow-hidden bg-olive-soft/32 lg:aspect-auto lg:min-h-[42rem]">
+            <article className="mt-4 grid min-w-0 gap-6 sm:mt-6 sm:gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-10">
+              <div className="relative mx-auto aspect-[4/3] w-full max-w-[480px] overflow-hidden rounded-2xl border border-olive/15 bg-[#f7f4eb] lg:mx-0 lg:aspect-square">
                 <Image
                   src={product.imagen}
                   alt={product.nombre}
                   fill
-                  sizes="(max-width: 1023px) 100vw, 52vw"
-                  className="object-cover"
+                  sizes="(max-width: 639px) calc(100vw - 16px), 480px"
+                  className="object-contain"
                   preload
                 />
               </div>
 
-              <div className="flex flex-col justify-center p-5 sm:p-8 lg:p-12">
-                <p className="text-[11px] font-bold tracking-[0.15em] text-earth uppercase">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold tracking-[0.12em] text-olive-dark/65 uppercase">
                   {primaryCategory}
                 </p>
-                <h1 className="mt-3 font-display text-[2.55rem] leading-[0.98] font-semibold text-olive-dark sm:text-5xl lg:text-6xl">
+                <h1 className="mt-2 font-display text-[2rem] leading-[1.08] font-semibold break-words text-olive-dark sm:text-[2.5rem]">
                   {product.nombre}
                 </h1>
-                <p className="mt-5 text-[15px] leading-7 text-foreground/68 sm:text-base">
+                <p className="mt-3 text-sm leading-6 text-foreground/75 sm:text-[15px]">
                   {product.descripcion}
                 </p>
 
-                {selectedPresentation ? (
-                  <div className="mt-7 border-y border-olive/12 py-5">
-                    <p className="text-[11px] font-bold tracking-[0.14em] text-earth uppercase">
-                      Presentación
-                    </p>
+                <div className="mt-6 rounded-2xl border border-olive/15 bg-cream/50 p-4 sm:p-5">
+                  {selectedPresentation ? (
+                    <>
+                      <p className="text-xs font-semibold text-olive-dark">
+                        Presentación
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {product.presentaciones.map((presentation) => {
+                          const isSelected =
+                            presentation.etiqueta === selectedPresentation.etiqueta;
 
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {product.presentaciones.map((presentation) => {
-                        const isSelected =
-                          presentation.etiqueta === selectedPresentation.etiqueta;
+                          return (
+                            <button
+                              key={presentation.etiqueta}
+                              type="button"
+                              onClick={() => {
+                                setSelectedPresentationLabel(presentation.etiqueta);
+                                setFeedback("");
+                              }}
+                              className={`min-h-[44px] min-w-[72px] rounded-xl border px-4 py-2.5 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/40 focus-visible:ring-offset-2 ${
+                                isSelected
+                                  ? "border-olive-dark bg-olive-dark text-white"
+                                  : "border-olive/20 bg-background text-olive-dark hover:border-olive/40 hover:bg-white"
+                              }`}
+                              aria-pressed={isSelected}
+                            >
+                              {presentation.etiqueta}
+                            </button>
+                          );
+                        })}
+                      </div>
 
-                        return (
-                          <button
-                            key={presentation.etiqueta}
-                            type="button"
-                            onClick={() => {
-                              setSelectedPresentationLabel(presentation.etiqueta);
-                              setFeedback("");
-                            }}
-                            className={`rounded-full border px-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-olive/30 ${
-                              isSelected
-                                ? "border-olive bg-olive text-white"
-                                : "border-olive/14 bg-white text-olive-dark hover:bg-olive-soft/36"
-                            }`}
-                            aria-pressed={isSelected}
-                          >
-                            {presentation.etiqueta}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="mt-6 flex items-end justify-between gap-4">
-                      <div>
-                        <p className="font-display text-4xl font-semibold text-olive-dark">
+                      <div className="mt-5 border-t border-olive/12 pt-5">
+                        <p className="text-[28px] leading-tight font-bold text-olive-dark tabular-nums sm:text-[32px]">
                           {formatARS(selectedPresentation.precio)}
                         </p>
-                        <p className="mt-1 text-sm text-foreground/58">
+                        <p className="mt-1 text-sm text-foreground/65">
                           por {selectedPresentation.etiqueta}
                         </p>
                       </div>
-                    </div>
-                  </div>
-                ) : null}
+                    </>
+                  ) : null}
 
-                <button
-                  type="button"
-                  disabled={!selectedPresentation}
-                  onClick={addSelectedPresentation}
-                  className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-olive px-5 py-3.5 text-sm font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35 disabled:cursor-not-allowed disabled:opacity-45"
-                >
-                  Agregar al carrito
-                </button>
-                <p
-                  className="mt-3 min-h-5 text-center text-xs font-semibold text-olive-dark"
-                  aria-live="polite"
-                >
-                  {feedback}
-                </p>
+                  <button
+                    type="button"
+                    disabled={!selectedPresentation}
+                    onClick={addSelectedPresentation}
+                    className="mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl bg-olive px-5 py-3 text-sm font-semibold text-white hover:bg-olive-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                    Agregar al carrito
+                  </button>
+                  <p
+                    className="mt-3 min-h-5 text-center text-xs font-medium text-olive-dark"
+                    aria-live="polite"
+                  >
+                    {feedback}
+                  </p>
+                </div>
               </div>
             </article>
           </div>
         </section>
       </main>
+
+      <StorefrontFooter />
 
       <FloatingWhatsAppButton />
       <CartDrawer

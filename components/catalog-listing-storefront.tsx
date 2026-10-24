@@ -8,6 +8,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
+import { StorefrontFooter } from "@/components/storefront-footer";
 import { formatARS } from "@/lib/format";
 import { getDefaultProductPresentation } from "@/lib/product-purchase";
 import type {
@@ -70,7 +71,7 @@ function CatalogListingContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#fffdf9] pb-24">
+    <div className="flex min-h-screen flex-col bg-[#fffdf9]">
       <Header
         sectionLinks={[{ id: "productos", label: title }]}
         categories={categories}
@@ -87,31 +88,31 @@ function CatalogListingContent({
         <section
           id="productos"
           aria-labelledby="category-title"
-          className="container-shell py-6 sm:py-9 lg:py-12"
+          className="container-shell scroll-mt-44 py-5 sm:py-8"
         >
-          <div className="mx-auto max-w-7xl">
+          <div className="min-w-0">
             <Link
               href={backHref}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-olive-dark hover:text-olive focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/30"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-lg text-sm font-medium text-olive-dark/75 hover:text-olive-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/30"
             >
               <span aria-hidden="true">←</span>
               {backLabel}
             </Link>
 
-            <div className="mt-5 border-b border-olive/12 pb-5 sm:mt-7 sm:pb-7">
+            <div className="mt-2 flex flex-wrap items-end justify-between gap-3 border-b border-olive/15 pb-5 sm:mt-3 sm:pb-6">
               <h1
                 id="category-title"
-                className="font-display text-[2.35rem] leading-[1] font-semibold text-olive-dark sm:text-5xl"
+                className="min-w-0 font-display text-[2rem] leading-tight font-semibold break-words text-olive-dark sm:text-[2.5rem]"
               >
                 {title}
               </h1>
-              <p className="mt-2 text-sm font-medium text-foreground/58 sm:text-base">
+              <p className="rounded-full bg-cream px-3 py-1.5 text-xs font-medium text-olive-dark/75 sm:text-sm">
                 {products.length} {products.length === 1 ? "producto" : "productos"}
               </p>
             </div>
 
             {products.length > 0 ? (
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-7 sm:gap-4 md:grid-cols-3 xl:grid-cols-5">
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-6 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-6">
                 {products.map((product) => (
                   <CategoryProductCard
                     key={product.id}
@@ -134,6 +135,8 @@ function CatalogListingContent({
           </div>
         </section>
       </main>
+
+      <StorefrontFooter />
 
       <FloatingWhatsAppButton />
       <CartDrawer
@@ -186,36 +189,41 @@ function CategoryProductCard({
   if (!selectedPresentation) return null;
 
   return (
-    <article className="flex min-w-0 flex-col overflow-hidden rounded-[1.2rem] bg-white shadow-[0_8px_24px_rgba(47,51,40,0.09)] ring-1 ring-olive/8">
+    <article className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-olive/20 bg-background shadow-[0_2px_8px_rgba(47,51,40,0.04)]">
       <Link
         href={`/producto/${product.id}`}
         aria-label={`Ver ${product.nombre}`}
-        className="group relative aspect-square overflow-hidden bg-[#f7f4eb] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-olive"
+        className="group relative aspect-[4/3] overflow-hidden border-b border-olive/10 bg-[#f7f4eb] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-olive"
       >
         <Image
           src={product.imagen}
           alt={product.nombre}
           fill
-          sizes="(max-width: 767px) 50vw, (max-width: 1279px) 33vw, 20vw"
-          className="object-cover transition duration-300 group-hover:scale-[1.025]"
+          sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 17vw"
+          className="object-contain transition duration-300 group-hover:scale-[1.025]"
         />
       </Link>
 
-      <div className="flex flex-1 flex-col p-3 sm:p-4">
+      <div className="flex flex-1 flex-col px-2.5 py-3 sm:px-3">
         <Link
           href={`/producto/${product.id}`}
-          className="line-clamp-2 min-h-10 text-sm leading-5 font-semibold text-olive-dark hover:text-olive focus:outline-none focus-visible:underline sm:text-base"
+          className="line-clamp-2 min-h-[36px] text-[13px] leading-[18px] font-semibold text-olive-dark hover:text-olive focus:outline-none focus-visible:underline sm:min-h-10 sm:text-[15px] sm:leading-5"
         >
           {product.nombre}
         </Link>
+        {product.descripcion?.trim() ? (
+          <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-foreground/70 sm:text-xs sm:leading-[18px]">
+            {product.descripcion}
+          </p>
+        ) : null}
 
         {product.presentaciones.length > 1 ? (
-          <label className="mt-2 block">
+          <label className="mt-auto block pt-3">
             <span className="sr-only">Presentación de {product.nombre}</span>
             <select
               value={selectedPresentation.etiqueta}
               onChange={(event) => setSelectedLabel(event.target.value)}
-              className="w-full rounded-[0.8rem] border border-olive/12 bg-[#fffdf9] px-2.5 py-2 text-[11px] font-medium text-olive-dark outline-none focus:border-olive/30 focus:ring-2 focus:ring-olive/20 sm:text-xs"
+              className="min-h-[44px] w-full min-w-0 rounded-xl border border-olive/15 bg-[#fffdf9] px-2.5 py-2 text-base font-medium text-olive-dark outline-none focus:border-olive/40 focus:ring-2 focus:ring-olive/20 sm:text-sm"
             >
               {product.presentaciones.map((presentation) => (
                 <option key={presentation.etiqueta} value={presentation.etiqueta}>
@@ -225,12 +233,14 @@ function CategoryProductCard({
             </select>
           </label>
         ) : (
-          <p className="mt-2 text-[11px] text-foreground/58 sm:text-xs">
+          <p className="mt-auto flex min-h-[44px] items-end pt-3 pb-2 text-xs text-foreground/65 sm:text-sm">
             {selectedPresentation.etiqueta}
           </p>
         )}
+      </div>
 
-        <p className="mt-2 text-base font-semibold text-olive-dark sm:text-lg">
+      <div className="flex min-h-[58px] items-center justify-between gap-1 border-t border-olive/12 bg-cream/50 px-2.5 py-1.5 sm:px-3">
+        <p className="min-w-0 text-[17px] leading-tight font-bold text-olive-dark tabular-nums [overflow-wrap:anywhere] sm:text-[18px]">
           {formatARS(selectedPresentation.precio)}
         </p>
         <button
@@ -239,10 +249,14 @@ function CategoryProductCard({
             onAdd(product, selectedPresentation);
             setJustAdded(true);
           }}
-          className="mt-3 inline-flex min-h-10 w-full items-center justify-center rounded-full bg-olive px-3 py-2 text-xs font-semibold text-white hover:bg-olive-dark focus:outline-none focus:ring-2 focus:ring-olive/35 sm:text-sm"
+          className="group inline-flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-olive/50 focus-visible:ring-offset-1"
           aria-label={`Agregar ${product.nombre}, ${selectedPresentation.etiqueta}`}
         >
-          {justAdded ? "Agregado" : "Agregar +"}
+          <span className="inline-flex h-[36px] w-[36px] items-center justify-center rounded-full bg-olive text-white transition-colors group-hover:bg-olive-dark">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+              <path d={justAdded ? "m5 12 4 4L19 6" : "M12 5v14M5 12h14"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
         </button>
       </div>
     </article>

@@ -12,6 +12,8 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { FeaturedProducts } from "@/components/featured-products";
 import { Header } from "@/components/header";
+import { ShippingDetailsContent } from "@/components/shipping-details-content";
+import { StorefrontFooter } from "@/components/storefront-footer";
 import { HomeCategories, HomeShorts } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
 import { purchaseRecipeIngredients } from "@/lib/recipe-cart";
@@ -194,7 +196,7 @@ function StorefrontContent({
   }
 
   return (
-    <div className="min-h-screen bg-[#fffdf9] pb-20">
+    <div className="flex min-h-screen flex-col bg-[#fffdf9]">
       <ShippingTicker isOpen={isShippingOpen} onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={[
@@ -228,6 +230,8 @@ function StorefrontContent({
           onBuyIngredients={handleBuyRecipeIngredients}
         />
       </main>
+
+      <StorefrontFooter />
 
       <FloatingWhatsAppButton />
 
@@ -268,18 +272,7 @@ function StorefrontContent({
             </div>
 
             <div className="mt-4 text-sm leading-6 text-foreground/75">
-              <p className="font-semibold text-olive-dark">Entrega sin costo</p>
-              <p className="mt-1">
-                Avellaneda, Sarandí, Wilde, Villa Domínico, Gerli, Bernal y Don Bosco.
-              </p>
-              <p className="mt-4 font-semibold text-olive-dark">Otras localidades</p>
-              <p className="mt-1">
-                Calculamos el costo de envío según tu localidad y te lo informamos
-                por WhatsApp.
-              </p>
-              <p className="mt-4 text-xs leading-5 text-foreground/65">
-                Día y horario a coordinar por WhatsApp.
-              </p>
+              <ShippingDetailsContent />
             </div>
 
             <button
