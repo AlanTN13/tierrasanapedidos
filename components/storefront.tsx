@@ -15,7 +15,6 @@ import { Header } from "@/components/header";
 import { HomeCategories, HomeShorts } from "@/components/home-discovery";
 import { Hero } from "@/components/hero";
 import { purchaseRecipeIngredients } from "@/lib/recipe-cart";
-import { reportPreviewLayout } from "@/lib/preview-layout-diagnostic";
 import type { CatalogCategory, Product } from "@/types/catalog";
 import type { HomeContent } from "@/types/home";
 
@@ -23,14 +22,12 @@ type StorefrontProps = {
   featuredProducts: Product[];
   categories: CatalogCategory[];
   homeContent: HomeContent;
-  previewLayoutDiagnostic?: boolean;
 };
 
 export function Storefront({
   featuredProducts,
   categories,
   homeContent,
-  previewLayoutDiagnostic = false,
 }: StorefrontProps) {
   return (
     <CartProvider>
@@ -38,7 +35,6 @@ export function Storefront({
         featuredProducts={featuredProducts}
         categories={categories}
         homeContent={homeContent}
-        previewLayoutDiagnostic={previewLayoutDiagnostic}
       />
     </CartProvider>
   );
@@ -48,7 +44,6 @@ function StorefrontContent({
   featuredProducts,
   categories,
   homeContent,
-  previewLayoutDiagnostic = false,
 }: StorefrontProps) {
   const router = useRouter();
   const [draftSearchQuery, setDraftSearchQuery] = useState("");
@@ -74,61 +69,6 @@ function StorefrontContent({
   const shippingDialogRef = useRef<HTMLDivElement | null>(null);
   const previousCartOpenRef = useRef(isOpen);
   const previousShippingOpenRef = useRef(isShippingOpen);
-
-  useEffect(() => {
-    if (!previewLayoutDiagnostic) return;
-    const measure = (phase: string) => {
-      const root = document.documentElement;
-      const width = root.clientWidth;
-      const box = (element: Element) => {
-        const rect = element.getBoundingClientRect();
-        const style = getComputedStyle(element);
-        return {
-          tag: element.tagName, id: element.id,
-          class: element.getAttribute("class")?.slice(0, 100),
-          width: Math.round(rect.width), right: Math.round(rect.right), left: Math.round(rect.left),
-          cssWidth: style.width, min: style.minWidth, max: style.maxWidth,
-          position: style.position, overflow: style.overflowX,
-          transform: style.transform, zoom: style.zoom, font: style.fontSize,
-        };
-      };
-      const nodes = [root, document.body, document.querySelector("[data-home-storefront]"),
-        document.querySelector("header"), document.querySelector("main"),
-        document.getElementById("inicio"), document.getElementById("categorias"),
-        document.getElementById("destacados"), document.getElementById("ideas")];
-      const outside = [...document.body.querySelectorAll("*")]
-        .map(element => ({ element, rect: element.getBoundingClientRect() }))
-        .filter(({ rect }) => rect.width > 0 && (rect.width > width + 1 || rect.right > width + 1))
-        .sort((a, b) => b.rect.width - a.rect.width || b.rect.right - a.rect.right)
-        .slice(0, 12)
-        .map(({ element }) => box(element));
-      const report = {
-        version: 1, phase,
-        viewport: { inner: window.innerWidth, client: width, scroll: root.scrollWidth,
-          body: document.body.scrollWidth, height: window.innerHeight,
-          visual: window.visualViewport?.width, scale: window.visualViewport?.scale,
-          dpr: window.devicePixelRatio, screen: window.screen.width,
-          mobileMedia: window.matchMedia("(max-width: 767px)").matches },
-        boxes: nodes.filter((node): node is Element => Boolean(node)).map(box), outside,
-      };
-      void reportPreviewLayout(JSON.stringify(report)).catch(() => { /* Observation must not interrupt the page. */ });
-    };
-    const first = window.setTimeout(() => measure("initial"), 250);
-    const settled = window.setTimeout(() => measure("settled"), 2500);
-    let resizeTimer: number | undefined;
-    let resizeReports = 0;
-    const onResize = () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => {
-        if (resizeReports < 3) { resizeReports += 1; measure("resized"); }
-      }, 500);
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.clearTimeout(first); window.clearTimeout(settled); window.clearTimeout(resizeTimer);
-      window.removeEventListener("resize", onResize);
-    };
-  }, [previewLayoutDiagnostic]);
 
   useEffect(() => {
     if (!recentlyAddedLabel) {
@@ -254,7 +194,7 @@ function StorefrontContent({
   }
 
   return (
-    <div data-home-storefront className="min-h-screen bg-[#fffdf9] pb-20">
+    <div className="min-h-screen bg-[#fffdf9] pb-20">
       <ShippingTicker isOpen={isShippingOpen} onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={[

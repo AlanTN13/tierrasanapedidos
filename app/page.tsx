@@ -28,7 +28,6 @@ async function HomeContent() {
       featuredProducts={featuredProducts}
       categories={categories}
       homeContent={homeContent}
-      previewLayoutDiagnostic={process.env.VERCEL_ENV === "preview"}
     />
   );
 }
