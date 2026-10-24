@@ -1,0 +1,14 @@
+# Recetas Home — continuidad del carrusel (24/10/2026)
+
+## Execution preflight / PATCH MODE
+- Resultado autorizado: resolver el espacio en blanco al terminar las recetas y conservar desplazamiento continuo. Es corrección de una función publicada, sin rediseño.
+- Baseline verificado: main15ab68cacd061cc429d1bf378dca54ec1e8cddb2, árbol b222e8393a7462853f99b8c963a22d28085715e6, producción dpl_DNky9kMqrBkz3rLXjTqXNbKVXumX READY. Runtime leído c74478a3d868c5f9dd4bdc91a5414073dc469624; estado canónico blob0152478a9a964dad794ac3699d2bf86f0cc6362e; AGENTS dfa783c8483b937985003de40cfe3d1a19d0b783 y guía local Next16 Client Components leídos.
+- Budget M/T1/R1, un escritor. Superficie de arreglo: HomeShorts en components/home-discovery.tsx, helper lib/continuous-carousel.ts si la causa lo exige y regresiones focales. Observar primero geometría real del ciclo/posición/imágenes; no adivinar ni aplicar clips/zoom.
+- Congelados: diseño/copy/orden/contenido/URLs de recetas, modal/reproducción/compra de ingredientes, categorías, productos y corrección relative de PR15, header/banners/popup/cupón/carrito/WhatsApp, precios/stock/ERP/Supabase/logística/pagos y dependencias.
+- Diagnóstico temporal de preview en HomeShorts y una Server Action con guard VERCEL_ENV=preview, máximo12 reportes por montaje y JSON<=6000 caracteres. Sólo medidas/copia/índice/estado de imágenes públicas; sin textos/inputs/compradores/URLs/tokens/DB. Logs Vercel existentes, sin otra infraestructura/router/credencial. Retirar completamente antes de merge/publicación.
+- Validación: tipos/lint, tests existentes de loop; después regresión de causa concreta (varias vueltas, extremos/resize/movimiento reducido/controles según delta), build/HTML y evidencia nativa del caso. No certificar layout por fixture o HTTP.
+- Rama fix/recipes-loop-2026-10-24 desde baseline y PR draft/preview. Producción permanece baseline hasta corregir y validar. La orden previa de publicación corresponde al release mobile; no registrar autorización nueva de producción sólo por este diagnóstico.
+- Recuperación: quitar observación/revertir rama/cerrar PR conserva baseline. STOP con checkpoint seguro si falta medición nativa o la causa queda fuera de alcance; no repetir headless fallido ni otro control de navegador no habilitado.
+
+## Evidencia inicial
+HTML oficial HTTP200:7 recetas,21 tarjetas (before/primary/after), mismos índices0–6 y orden en las tres copias. Producción/SHA verificados. Los archivos locales coinciden con los blobs remotos: home-discovery fb9269e1, helper f7962ac1, tests9a331a44. Hay lógica de normalización y tres copias; todavía no se identificó qué provoca el blanco del cliente. Medir ciclo guardado, offsets/rects, ancho/posición, imágenes visibles y raíz para distinguir un corte del loop de una carga tardía. Sin afirmar solución aún.
