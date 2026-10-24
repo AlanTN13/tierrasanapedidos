@@ -16,7 +16,6 @@ import {
   shouldHoldContinuousCarouselPointer,
 } from "@/lib/continuous-carousel";
 import { getDefaultRecipeCartItems } from "@/lib/recipe-cart";
-import { reportPreviewCarousel } from "@/lib/preview-carousel-diagnostic";
 import { getYouTubeEmbedUrl } from "@/lib/youtube";
 import type { HomeContent, HomeRecipeHighlight } from "@/types/home";
 
@@ -300,63 +299,6 @@ export function HomeShorts({
     prefersReducedMotion,
     shorts.length,
   ]);
-
-  // Temporary observation of the reported blank row on the same mobile device.
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-    let count = 0, previousLeft = carousel.scrollLeft, touching = false;
-    let idle: number | undefined;
-    const report = (phase: string) => {
-      if (count++ >= 16) return;
-      const track = carousel.getBoundingClientRect();
-      const first = (copy: string) => {
-        const el = carousel.querySelector<HTMLElement>(`[data-loop-copy="${copy}"][data-short-index="0"]`);
-        if (!el) return null;
-        const r = el.getBoundingClientRect();
-        return { offset: el.offsetLeft, left: r.left, width: r.width, parent: el.offsetParent?.tagName };
-      };
-      const visible = [...carousel.querySelectorAll<HTMLElement>("[data-loop-copy]")]
-        .filter(el => { const r = el.getBoundingClientRect(); return r.right > track.left && r.left < track.right; })
-        .slice(0, 6).map(el => {
-          const r = el.getBoundingClientRect(), img = el.querySelector("img"), css = getComputedStyle(el);
-          return { copy: el.dataset.loopCopy, index: el.dataset.shortIndex, x: Math.round(r.left - track.left),
-            w: Math.round(r.width), loaded: img?.complete, imageWidth: img?.naturalWidth,
-            opacity: css.opacity, visibility: css.visibility };
-        });
-      const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-      void reportPreviewCarousel(JSON.stringify({
-        phase, ios, touching, touchPoints: navigator.maxTouchPoints, dpr: window.devicePixelRatio,
-        cycle: loopCycleWidthRef.current, left: carousel.scrollLeft, width: carousel.clientWidth,
-        content: carousel.scrollWidth, behavior: getComputedStyle(carousel).scrollBehavior,
-        root: document.documentElement.clientWidth, rootScroll: document.documentElement.scrollWidth,
-        primary: first("primary"), after: first("after"), visible,
-      })).catch(() => { /* Observation must not interrupt the page. */ });
-    };
-    const onScroll = () => {
-      const left = carousel.scrollLeft;
-      if (Math.abs(left - previousLeft) > loopCycleWidthRef.current * 0.75) report("jump");
-      previousLeft = left;
-      window.clearTimeout(idle);
-      idle = window.setTimeout(() => report("idle"), 250);
-    };
-    const start = () => { touching = true; report("touch-start"); };
-    const end = () => { touching = false; window.clearTimeout(idle); idle = window.setTimeout(() => report("touch-end"), 350); };
-    const initial = window.setTimeout(() => report("initial"), 750);
-    const settled = window.setTimeout(() => report("settled"), 2500);
-    carousel.addEventListener("scroll", onScroll, { passive: true });
-    carousel.addEventListener("touchstart", start, { passive: true });
-    carousel.addEventListener("touchend", end, { passive: true });
-    carousel.addEventListener("touchcancel", end, { passive: true });
-    return () => {
-      window.clearTimeout(initial); window.clearTimeout(settled); window.clearTimeout(idle);
-      carousel.removeEventListener("scroll", onScroll);
-      carousel.removeEventListener("touchstart", start);
-      carousel.removeEventListener("touchend", end);
-      carousel.removeEventListener("touchcancel", end);
-    };
-  }, []);
 
   useEffect(() => {
     if (!activeSlug) {
