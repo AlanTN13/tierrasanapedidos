@@ -115,7 +115,19 @@ function StorefrontContent({
     };
     const first = window.setTimeout(() => measure("initial"), 250);
     const settled = window.setTimeout(() => measure("settled"), 2500);
-    return () => { window.clearTimeout(first); window.clearTimeout(settled); };
+    let resizeTimer: number | undefined;
+    let resizeReports = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        if (resizeReports < 3) { resizeReports += 1; measure("resized"); }
+      }, 500);
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.clearTimeout(first); window.clearTimeout(settled); window.clearTimeout(resizeTimer);
+      window.removeEventListener("resize", onResize);
+    };
   }, [previewLayoutDiagnostic]);
 
   useEffect(() => {

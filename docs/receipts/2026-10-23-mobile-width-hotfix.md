@@ -30,3 +30,5 @@
 ### Checks de observación temporal
 
 Tipos/lint PASS. Acción validada en fixture Node/TypeScript: producción no registra, JSON inválido/oversized se rechaza, preview acepta sólo estructura prevista y campos superiores conocidos. Globals y Popup restaurados literalmente a producción; no se modifican dimensiones para aparentar una solución. Build/smoke y medición real se cierran en PR15.
+
+La medición41cc17b ya llegó desde escritorio1440px: client/scroll/body1440, escala1, sin encogimiento en esa visita. Mobile todavía no observado por el probe. La salida de logs recorta mensajes largos: se divide el reporte en grupos pequeños y se observa resize (debounce500ms, máximo3 reportes, cleanup completo), para capturar el paso de escritorio a400px sin otra intervención. Sigue siendo diagnóstico temporal, no una solución de layout.
