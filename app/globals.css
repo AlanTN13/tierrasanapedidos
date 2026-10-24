@@ -42,6 +42,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Bound the mobile Home viewport; nested carousels keep their own scrolling. */
+@media (max-width: 767px) {
+  html:has([data-home-storefront]) {
+    overflow-x: clip;
+  }
+}
+
 @media (min-width: 1024px) {
   html {
     font-size: 87%;
