@@ -12,6 +12,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { FeaturedProducts } from "@/components/featured-products";
 import { Header } from "@/components/header";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { ShippingDetailsContent } from "@/components/shipping-details-content";
 import { StorefrontFooter } from "@/components/storefront-footer";
 import { HomeCategories, HomeShorts } from "@/components/home-discovery";
@@ -197,6 +198,7 @@ function StorefrontContent({
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fffdf9]">
+      <GoogleAnalytics />
       <ShippingTicker isOpen={isShippingOpen} onOpenShipping={handleOpenShipping} />
       <Header
         sectionLinks={[
