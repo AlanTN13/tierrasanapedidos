@@ -6,6 +6,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { CartProvider, useCart } from "@/components/cart-provider";
 import { FloatingWhatsAppButton } from "@/components/floating-whatsapp-button";
 import { Header } from "@/components/header";
+import { GoogleAnalytics } from "@/components/google-analytics";
 import { StorefrontFooter } from "@/components/storefront-footer";
 import type { CatalogCategory } from "@/types/catalog";
 
@@ -46,6 +47,7 @@ function RecipesStorefrontContent({
 
   return (
     <div className="flex min-h-screen flex-col bg-[#fffdf9]">
+      <GoogleAnalytics />
       <Header
         sectionLinks={[
           { id: "recetas", label: "Recetas" },
